@@ -1,0 +1,19 @@
+name = "QuantSem"
+version = "0.1.0"
+defaultTargets = ["quantsem"]
+keywords = ["math physics quantum semantics"]
+
+[leanOptions]
+pp.unicode.fun = true # pretty-prints `fun a ↦ b`
+relaxedAutoImplicit = false
+weak.linter.mathlibStandardSet = true
+maxSynthPendingDepth = 3
+backward.isDefEq.respectTransparency = false 
+
+[[lean_lib]]
+name = "QuantSem"
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.30.0"

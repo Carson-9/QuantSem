@@ -3,38 +3,31 @@ module
 public import QuantSem.Syntax.HighLevel.Register
 public import QuantSem.Syntax.HighLevel.State
 
-namespace SyntacticGate
-
 open SyntacticRegister
 open SyntacticState
 open ContinuousLinearMap
 
+/- Lean shenanigans as it cannot easily produce the required default instances -/
+section test
+namespace SyntacticGate
+variable (R : QuantumRegister)
 
 @[default_instance]
-instance (R : QuantumRegister) : TopologicalSpace (RegisterGetSpace R) :=
-  (RegisterGetStructure R).toMetricSpace.toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
+instance : SeminormedAddCommGroup R.fst :=
+  R.snd.toSeminormedAddCommGroup
 
+public def QuantumGate : Type := (R.fst →ₗᵢ[ℂ] R.fst)
+end SyntacticGate
+end test
 
-@[expose]
-public def QuantumGate (R : QuantumRegister) : Type :=
-  unitary ((RegisterGetSpace R) →L[ℂ] (RegisterGetSpace R))
-  /- Sigma.fst R -/
-  /- unitary (RegisterGetSpace R)   ---> Talk about unitary endomorphisms over (RegisterGetSpace R)-/
+section
+namespace SyntacticGate
+public abbrev TypeQuantumGate := Σ R : QuantumRegister, QuantumGate R
 
-/- TODO : Find some other general representation of unitarity.
-    Maybe isometries are nice enough in our setting? -/
-
-public abbrev QuantumGateType := Σ R, QuantumGate R
-
-public abbrev QuantumGateGetRegister (G : QuantumGateType) : QuantumRegister := Sigma.fst G
-public abbrev QuantumGateGetSpace (G : QuantumGateType) : Type := RegisterGetSpace (Sigma.fst G)
-
-
-public class QuantumGateAlgebra extends Monoid QuantumGateType where
+public class QuantumGateAlgebra extends Monoid TypeQuantumGate where
   mul := Mul.mul
-  liftMap {C : QuantumRegisterClass} (G1 G2 : QuantumGateType) :
-    (QuantumGateGetSpace (mul G1 G2))
-    → QuantumGate ( C.mul (QuantumGateGetRegister G1) (QuantumGateGetRegister G2))
+  liftMap {C : QuantumRegisterAlgebra} (G1 G2 : TypeQuantumGate) :
+    ((mul G1 G2).fst.fst) → QuantumGate ( C.mul (G1.fst) (G2.fst))
 
 /-
         G(R) ⊗ₘ G(R)
@@ -49,3 +42,4 @@ public class QuantumGateAlgebra extends Monoid QuantumGateType where
 notation A "⊗ₘ" B => QuantumGateAlgebra.mul A B
 
 end SyntacticGate
+end

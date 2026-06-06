@@ -3,25 +3,18 @@ module
 public import QuantSem.Syntax.HighLevel.Register
 public import QuantSem.Syntax.HighLevel.State
 
+namespace SyntacticGate
+
+
 open SyntacticRegister
 open SyntacticState
 open ContinuousLinearMap
 
-/- Lean shenanigans as it cannot easily produce the required default instances -/
-section test
-namespace SyntacticGate
-variable (R : QuantumRegister)
-
-@[default_instance]
-instance : SeminormedAddCommGroup R.fst :=
+@[default_instance 100]
+instance (R : QuantumRegister) : SeminormedAddCommGroup R.fst :=
   R.snd.toSeminormedAddCommGroup
 
-public def QuantumGate : Type := (R.fst →ₗᵢ[ℂ] R.fst)
-end SyntacticGate
-end test
-
-section
-namespace SyntacticGate
+public def QuantumGate (R : QuantumRegister) : Type := (R.fst →ₗᵢ[ℂ] R.fst)
 public abbrev TypeQuantumGate := Σ R : QuantumRegister, QuantumGate R
 
 public class QuantumGateAlgebra extends Monoid TypeQuantumGate where
@@ -40,6 +33,10 @@ public class QuantumGateAlgebra extends Monoid TypeQuantumGate where
 
 
 notation A "⊗ₘ" B => QuantumGateAlgebra.mul A B
+
+def GateStateEvolve (R : QuantumRegister) (g : QuantumGate R) (s : QuantumStateSpace R)
+  : QuantumStateSpace R :=
+  ⟨(g.toFun s.val), by trans; apply (LinearIsometry.norm_map' g s.val); apply s.prop ⟩
 
 end SyntacticGate
 end

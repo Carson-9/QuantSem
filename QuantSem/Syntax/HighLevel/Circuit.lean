@@ -55,11 +55,15 @@ public def SimpleCircuitGateCount (c : SimpleCircuitOverRegister R) : ℕ :=
 public def SimpleCircuitGetShape :
   SimpleCircuitOverRegister R → QuantumRegister := fun _ => R
 
+@[default_instance]
+instance (R : QuantumRegister) : SeminormedAddCommGroup (QuantumStateSpace R) :=
+  R.snd.toSeminormedAddCommGroup
+
 public def EvolveState (c : SimpleCircuitOverRegister R)
   (s : QuantumStateSpace R) :
   QuantumStateSpace R :=
   match c with
-  | SimpleCircuitOverRegister.Gate g => (LinearIsometry.toLinearMap g) s
+  | SimpleCircuitOverRegister.Gate g => GateStateEvolve R g s
   | SimpleCircuitOverRegister.HorizontalComp c1 c2 => EvolveState c2 (EvolveState c1 s)
 
 end SyntacticCircuit

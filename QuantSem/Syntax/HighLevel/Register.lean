@@ -23,11 +23,11 @@ public class QuantumRegisterAlgebra extends Monoid TypeQuantumTypes where
   mul := Mul.mul
 notation A "⊗ᵣ" B =>  QuantumRegisterAlgebra.mul A B
 
+@[default_instance 100]
+instance (R : QuantumRegister) : SeminormedAddCommGroup R.fst :=
+  R.snd.toSeminormedAddCommGroup
+
 /-
-public abbrev RegisterSpace (R : QuantumRegister) := Sigma.fst R
-public abbrev RegisterStructure (R : QuantumRegister) := Sigma.snd R
-
-
 @[default_instance 100]
 instance RegNormAddCommGroup (R : QuantumRegister) : NormedAddCommGroup (RegisterSpace R) :=
   (RegisterStructure R).toNormedAddCommGroup

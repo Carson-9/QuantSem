@@ -22,7 +22,7 @@ variable {C : QuantumRegisterAlgebra} {S : QuantumStateAlgebra} {G : QuantumGate
     or other quantum operations I'm not aware of -/
 
 public inductive SimpleCircuitOverRegister (R : Type) [QuantReg R] where
-  | Gate (g : QuantumGate R)
+  | Gate (g : QuantumGate R R)
   | HorizontalComp (c1 c2 : SimpleCircuitOverRegister R)
 
 public abbrev TypeSimpleCircuit := Σ R : TypeQuantumRegister, @SimpleCircuitOverRegister R.fst R.snd
@@ -79,7 +79,7 @@ public def EvolveState (c : SimpleCircuitOverRegister R)
   (s : QuantumStateSpace R) :
   QuantumStateSpace R :=
   match c with
-  | SimpleCircuitOverRegister.Gate g => GateStateEvolve R g s
+  | SimpleCircuitOverRegister.Gate g => GateStateEvolve R R g s
   | SimpleCircuitOverRegister.HorizontalComp c1 c2 => EvolveState c2 (EvolveState c1 s)
 
 end SyntacticCircuit

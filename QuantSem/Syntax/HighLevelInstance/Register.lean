@@ -30,7 +30,8 @@ Often, the given composition will be the Tensor product of hilbert spaces
 -/
 
 --public abbrev QuantumRegister := TypeQuantumTypes
-public class QuantReg (R : Type) extends HilbertSpace R
+public class QuantReg (R : Type) extends HilbertSpace R where
+  inner := inner
 public abbrev TypeQuantumRegister := Σ E, QuantReg E
 
 public class QuantumRegisterAlgebra extends Monoid TypeQuantumRegister where

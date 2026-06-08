@@ -16,14 +16,23 @@ open FinDimStates
 open SyntacticGate
 namespace FinDimGates
 
-variable (R : Type) [FinDimReg R]
+variable (M N : Type) [FinDimReg M] [FinDimReg N]
 
 @[expose]
-public def FinDimGate : Type :=  R →ₗᵢ[ℂ] R
-public abbrev TypeFinDimGate := Σ E : TypeFinRegister, @FinDimGate E.fst E.snd
+public def FinDimGate : Type :=  M →ₗᵢ[ℂ] N
+public abbrev TypeFinDimGate := Σ E : TypeFinRegister, Σ E' : TypeFinRegister,
+  @FinDimGate E.fst E'.fst E.snd E'.snd
 
 @[expose, coe]
 public def FinDimGateAsGate (g : TypeFinDimGate) : TypeQuantumGate :=
-  ⟨ FinRegAsRegFun g.fst, g.snd ⟩
+  ⟨ FinRegAsRegFun g.fst, ⟨ FinRegAsRegFun g.snd.fst, g.snd.snd ⟩ ⟩
+
+public def MatrixToFinDimGate (Mat : Matrix (Fin (FinDimReg.dim M)) (Fin (FinDimReg.dim N)) ℂ)
+  [LinearIsometry (Matrix.toLin Mat)] : FinDimGate M N
+  := Matrix.toLin Mat
+
+public def FinDimGateToMatrix (g : FinDimGate M N) : Matrix (Fin (FinDimReg.dim M)) (Fin (FinDimReg.dim N)) ℂ :=
+  fun i j => (QuantReg.inner N) (N.basis i) (M (M.basis j))
+
 
 end FinDimGates

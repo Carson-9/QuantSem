@@ -19,15 +19,16 @@ open SyntacticState
 open QuantumTypes
 open ContinuousLinearMap
 
-variable (R : Type) [QuantReg R]
+variable (R₁ R₂ : Type) [QuantReg R₁] [QuantReg R₂]
 
 @[expose]
-public def QuantumGate : Type :=  R →ₗᵢ[ℂ] R
-public abbrev TypeQuantumGate := Σ E : TypeQuantumRegister, @QuantumGate E.fst E.snd
+public def QuantumGate : Type :=  R₁ →ₗᵢ[ℂ] R₂
+public abbrev TypeQuantumGate := Σ E : TypeQuantumRegister, Σ F : TypeQuantumRegister,
+  @QuantumGate E.fst F.fst E.snd F.snd
 
 
-public def GateStateEvolve (g : QuantumGate R) (s : QuantumStateSpace R)
-  : QuantumStateSpace R :=
+public def GateStateEvolve (g : QuantumGate R₁ R₂) (s : QuantumStateSpace R₁)
+  : QuantumStateSpace R₂ :=
   Subtype.mk (g.toLinearMap s.val)
   (by rw [LinearIsometry.norm_map' g s.val]; apply s.prop)
 
@@ -36,7 +37,8 @@ public class QuantumGateAlgebra extends Monoid TypeQuantumGate where
   mul := Mul.mul
   liftMap {C : QuantumRegisterAlgebra} (G1 G2 : TypeQuantumGate) :
     ((mul G1 G2).fst.fst) →
-      @QuantumGate (C.mul (G1.fst) (G2.fst)).fst ((C.mul (G1.fst) (G2.fst)).snd)
+      @QuantumGate (C.mul (G1.fst) (G2.fst)).fst (C.mul (G1.snd.fst) (G2.snd.fst)).fst
+        ((C.mul (G1.fst) (G2.fst)).snd) ((C.mul (G1.snd.fst) (G2.snd.fst)).snd)
 
 /-
         G(R) ⊗ₘ G(R)

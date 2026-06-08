@@ -20,6 +20,12 @@ public def QuantumStateSpace := { x : R // ‖x‖ = 1}
 public abbrev TypeQuantumStates : Type 1 :=
   Σ E : TypeQuantumRegister, @QuantumStateSpace E.fst E.snd
 
+@[expose, coe]
+public def QuantumSpaceInSpaceCoe (x : TypeQuantumStates)
+  : @QuantumStateSpace x.fst.fst x.fst.snd :=
+  Subtype.mk x.snd.val x.snd.prop
+
+
 public class QuantumStateAlgebra extends Monoid TypeQuantumStates where
   mul := Mul.mul
   liftMap {C : QuantumRegisterAlgebra} (s1 s2 : TypeQuantumStates) :

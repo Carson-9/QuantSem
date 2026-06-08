@@ -7,27 +7,24 @@ Authors: William Hasley
 
 module
 
-public import QuantSem.Syntax.HighLevel.HighLevel
+public import QuantSem.Syntax.HighLevelInstance.HighLevelInstance
 
 open QuantumTypes
 open SyntacticRegister
 namespace QubitSpaces
 
-public class QubitSpace (E : Type) extends QuantumType E where
+public class QubitLikeReg (E : Type) extends QuantReg E where
   qubitZero : E
   qubitOne : E
   zeroUnit : ‖qubitZero‖ = 1
   oneUnit : ‖qubitOne‖ = 1
   orthogonalBasis : inner qubitZero qubitOne = 0
 
-public abbrev TypeQubitSpace := Σ E, QubitSpace E
-public abbrev QubitLikeRegister := TypeQubitSpace
+public abbrev TypeQubitRegister := Σ E, QubitLikeReg E
 
-def QubitAsTypeInclusion (Q : TypeQubitSpace) : TypeQuantumTypes :=
-  ⟨ Q.fst, Q.snd.toQuantumType ⟩
-
-def QubitLikeRegAsReg (QR : QubitLikeRegister) : QuantumRegister :=
-  QubitAsTypeInclusion QR
+@[coe]
+def QubitAsTypeInclusion (Q : TypeQubitRegister) : TypeQuantumRegister :=
+  ⟨ Q.fst, Q.snd.toQuantReg ⟩
 
 
 end QubitSpaces

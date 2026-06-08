@@ -7,22 +7,24 @@ Authors: William Hasley
 
 module
 
-public import QuantSem.Syntax.HighLevel.Register
-public import QuantSem.Syntax.HighLevel.QuantumTypes
+public import QuantSem.Syntax.HighLevelInstance.Register
+public import QuantSem.Syntax.HighLevelInstance.QuantumTypes
 
 open SyntacticRegister QuantumTypes
 namespace SyntacticState
 
+variable (R : Type) [QuantReg R]
 
 @[expose]
-public def QuantumStateSpace (R : QuantumRegister) := { x : R.fst // R.snd.toNorm.norm x = 1 }
+public def QuantumStateSpace := { x : R // ‖x‖ = 1}
 public abbrev TypeQuantumStates : Type 1 :=
-  Σ R : QuantumRegister, QuantumStateSpace R
+  Σ E : TypeQuantumRegister, @QuantumStateSpace E.fst E.snd
 
 public class QuantumStateAlgebra extends Monoid TypeQuantumStates where
   mul := Mul.mul
   liftMap {C : QuantumRegisterAlgebra} (s1 s2 : TypeQuantumStates) :
-    ((mul s1 s2).fst.fst) → QuantumStateSpace (C.mul (s1.fst) (s2.fst))
+    ((mul s1 s2).fst.fst) →
+      @QuantumStateSpace (C.mul (s1.fst) (s2.fst)).fst (C.mul (s1.fst) (s2.fst)).snd
   /- Not useful here for now, may have surprises later, but very easily fixable! -/
   /- univPropertyInj : Injective liftMap -/
 /-

@@ -10,7 +10,8 @@ module
 public import QuantSem.Syntax.HighLevel.HighLevel
 
 open QuantumTypes
-
+open SyntacticRegister
+namespace QubitSpaces
 
 public class QubitSpace (E : Type) extends QuantumType E where
   qubitZero : E
@@ -19,5 +20,14 @@ public class QubitSpace (E : Type) extends QuantumType E where
   oneUnit : ‖qubitOne‖ = 1
   orthogonalBasis : inner qubitZero qubitOne = 0
 
-
 public abbrev TypeQubitSpace := Σ E, QubitSpace E
+public abbrev QubitLikeRegister := TypeQubitSpace
+
+def QubitAsTypeInclusion (Q : TypeQubitSpace) : TypeQuantumTypes :=
+  ⟨ Q.fst, Q.snd.toQuantumType ⟩
+
+def QubitLikeRegAsReg (QR : QubitLikeRegister) : QuantumRegister :=
+  QubitAsTypeInclusion QR
+
+
+end QubitSpaces

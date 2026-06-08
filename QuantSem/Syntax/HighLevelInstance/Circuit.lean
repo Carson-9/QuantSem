@@ -8,7 +8,7 @@ Authors: William Hasley
 module
 
 
-public import QuantSem.Syntax.HighLevel.Gate
+public import QuantSem.Syntax.HighLevelInstance.Gate
 
 open SyntacticGate
 open SyntacticRegister
@@ -17,20 +17,21 @@ open SyntacticState
 namespace SyntacticCircuit
 
 variable {C : QuantumRegisterAlgebra} {S : QuantumStateAlgebra} {G : QuantumGateAlgebra}
-
+--variable (R : Type) [QuantReg R]
 /- Simple circuits are always representable as unitary matrices, no pesky measurement
     or other quantum operations I'm not aware of -/
 
-public inductive SimpleCircuitOverRegister (R : QuantumRegister) where
+public inductive SimpleCircuitOverRegister (R : Type) [QuantReg R] where
   | Gate (g : QuantumGate R)
   | HorizontalComp (c1 c2 : SimpleCircuitOverRegister R)
 
-public abbrev TypeSimpleCircuit := Σ R : QuantumRegister, SimpleCircuitOverRegister R
+public abbrev TypeSimpleCircuit := Σ R : TypeQuantumRegister, @SimpleCircuitOverRegister R.fst R.snd
 
 public class SimpleCircuitAlgebra extends Monoid TypeSimpleCircuit where
   mul := Mul.mul
   liftMap (c1 c2 : TypeSimpleCircuit) :
-    ((mul c1 c2).fst.fst) → SimpleCircuitOverRegister (C.mul (c1.fst) (c2.fst))
+    ((mul c1 c2).fst.fst) →
+      @SimpleCircuitOverRegister (C.mul (c1.fst) (c2.fst)).fst (C.mul (c1.fst) (c2.fst)).snd
   /- univPropertyInj : Injective liftMap -/
 /-
      C(R) ⊗ₖ C(R)
@@ -44,18 +45,17 @@ public class SimpleCircuitAlgebra extends Monoid TypeSimpleCircuit where
 
 notation A "⊗ₖ" B =>  SimpleCircuitAlgebra.mul A B
 
-public def SimpleCircuit.MulTensor {K : SimpleCircuitAlgebra}
-  (famReg : List TypeSimpleCircuit) (buffer : TypeSimpleCircuit) (fstRound : Bool) :=
-  match famReg with
-  | [] => buffer
-  | h :: t => if fstRound then @QuantumState.MulTensor K t h false
-                          else @QuantumState.MulTensor K t (K.mul buffer h) false
+--public def SimpleCircuit.MulTensor
+--  {K : SimpleCircuitAlgebra}
+--  (famReg : List TypeSimpleCircuit) (buffer : TypeSimpleCircuit) (fstRound : Bool) :=
+--  match famReg with
+--  | [] => buffer
+--  | h :: t => if fstRound then @SimpleCircuit.MulTensor C S G K t h false
+--                          else @SimpleCircuit.MulTensor C S G K t (@K.mul buffer h) false
 
-notation "⨂ₖ" l => SimpleCircuit.MulTensor l SimpleCircuitAlgebra.one true
+--notation "⨂ₖ" l => SimpleCircuit.MulTensor l SimpleCircuitAlgebra.one true
 
-
-
-variable {R : QuantumRegister}
+variable (R : Type) [QuantReg R]
 
 public def SimpleCircuitDepth (c : SimpleCircuitOverRegister R) : ℕ :=
   match c with
@@ -68,10 +68,11 @@ public def SimpleCircuitGateCount (c : SimpleCircuitOverRegister R) : ℕ :=
   match c with
   | SimpleCircuitOverRegister.Gate _ => 1
   | SimpleCircuitOverRegister.HorizontalComp c1 c2 =>
-    (SimpleCircuitDepth c1) + (SimpleCircuitDepth c2)
+    (SimpleCircuitGateCount c1) + (SimpleCircuitGateCount c2)
 
-public def SimpleCircuitGetShape :
-  SimpleCircuitOverRegister R → QuantumRegister := fun _ => R
+public def SimpleCircuitGetShape {E : Type} [I : QuantReg E] :
+  SimpleCircuitOverRegister E → TypeQuantumRegister :=
+    fun _ => ⟨E, I⟩
 
 
 public def EvolveState (c : SimpleCircuitOverRegister R)

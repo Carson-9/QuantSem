@@ -9,21 +9,18 @@ module
 
 public import QuantSem.Syntax.HighLevelInstance.HighLevelInstance
 public import Mathlib.Logic.Function.Defs
+public import Mathlib.LinearAlgebra.Basis.Defs
 
 open QuantumTypes
 open SyntacticRegister
 namespace FinDimRegisters
 
 public class FinDimReg (E : Type) extends QuantReg E, FiniteDimensional ℂ E where
+  inner := inner
   dim : ℕ
-  computationalBasis : Fin dim → E
+  computationalBasis : Module.Basis (Fin dim) ℂ E
   orthogonalBasis : ∀ i j : Fin dim, inner (computationalBasis i) (computationalBasis j) = 0
   normalBasis : ∀ i : Fin dim, ‖computationalBasis i‖ = 1
-  basisDecomp (v : E) (i : Fin dim) : ℂ := inner v (computationalBasis i)
-  isDecomp (v : E) : (∑ i : Fin dim, (basisDecomp v i) • (computationalBasis i)) = v
-  decompUnique (v : E) (f : Fin dim → ℂ) (h : (∑ i : Fin dim, (f i) • (computationalBasis i)) = v)
-    : f = (basisDecomp v)
-    -- Could be proven here once theory of finite dimensional hilbert spaces is developped
 
 
 public abbrev TypeFinRegister := Σ E, FinDimReg E

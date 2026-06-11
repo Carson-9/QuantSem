@@ -10,10 +10,14 @@ module
 public import QuantSem.Syntax.HighLevelInstance.HighLevelInstance
 public import QuantSem.Syntax.FinDim.FinDimRegister
 public import QuantSem.Syntax.FinDim.FinDimState
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.LinearAlgebra.Matrix.Unique
 
+open ComplexInnerProductSpace
 open FinDimRegisters
 open FinDimStates
 open SyntacticGate
+open SyntacticRegister
 namespace FinDimGates
 
 variable (M N : Type) [M' : FinDimReg M] [N' : FinDimReg N]
@@ -45,6 +49,37 @@ public noncomputable def FinDimGateToMatrix (g : FinDimGate M N)
     (@FinDimReg.computationalBasis M M')
     (@FinDimReg.computationalBasis N N')
     g.toLinearMap
+
+
+/-
+
+  Another presentation of Finite Dimensional Quantum Gates are as the Complex Unitary group
+  This presentation only represents n by n gates, less general!
+
+-/
+
+@[expose]
+public def FinDimGateUnitary : Type := Matrix.unitaryGroup (Fin M'.dim) ℂ
+
+public theorem GateUnitaryIsIsometric (U : FinDimGateUnitary M) (x : M) :
+  ‖(Matrix.toLin
+    (@FinDimReg.computationalBasis M M')
+    (@FinDimReg.computationalBasis M M') U.val) x‖ = ‖x‖ :=
+  by symm; nth_rw 1 [xId]; rw[NormFromInner]; nth_rw 1 [<-test]
+
+  --     rw[NormFromInner];       --rw[<- ContinuousLinearMap.adjoint_inner_right Ulin x (Ulin x)]
+  where
+  Ulin := (Matrix.toLin (@FinDimReg.computationalBasis M M') (@FinDimReg.computationalBasis M M') U.val)
+  xId : x = (LinearMap.id) x
+        := by rfl
+
+  test : LinearMap.id = Matrix.toLin (@FinDimReg.computationalBasis M M') (@FinDimReg.computationalBasis M M') (U.val * (star U).val)
+  := Matrix.UnitaryGroup.star_mul_self U
+
+public noncomputable def UnitaryToFinDimGate (U : FinDimGateUnitary M) : FinDimGate M M :=
+  MatrixToFinDimGate M M U.val (GateUnitaryIsIsometric M U)
+
+
 
 public noncomputable def FinDimGateToBasisChar (g : FinDimGate M N) : Fin M'.dim → N :=
   fun i => g.toLinearMap (M'.computationalBasis i)

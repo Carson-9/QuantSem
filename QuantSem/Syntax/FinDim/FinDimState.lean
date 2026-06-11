@@ -29,7 +29,7 @@ public noncomputable def basisAreStates (E : TypeFinRegister) (i : Fin E.snd.dim
 
 
 public class FinDimStateAlgebra extends Monoid TypeFinDimState where
-  mul := Mul.mul
+  mulFun := toSemigroup.toMul.mul
   liftMap {C : FiniteDimRegTensorAlgebra} (s1 s2 : TypeFinDimState) :
     ((mul s1 s2).fst.fst) →
       @FinDimStateSpace (C.mul (s1.fst) (s2.fst)).fst (C.mul (s1.fst) (s2.fst)).snd
@@ -47,5 +47,8 @@ public noncomputable def StateInBasis (s : FinDimStateSpace R) : Fin (R'.dim) �
 
 --public noncomputable def StateFromBasis (f : Fin (R'.dim) →₀ ℂ) : FinDimStateSpace R :=
 -- Need for unitarity in this format, TODO
+--  Subtype.mk
+--    (R'.computationalBasis.repr.invFun f)
+--    ()
 
 end FinDimStates

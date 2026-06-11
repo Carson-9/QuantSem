@@ -16,7 +16,7 @@ open SyntacticRegister
 namespace FinDimRegisters
 
 public class FinDimReg (E : Type) extends QuantReg E, FiniteDimensional ℂ E where
-  inner := inner
+  innerFun := inner
   dim : ℕ
   computationalBasis : Module.Basis (Fin dim) ℂ E
   orthogonalBasis : ∀ i j : Fin dim, inner (computationalBasis i) (computationalBasis j) = 0
@@ -39,7 +39,7 @@ notation "|" i "⟩" => FinDimReg.basis i
 -- Cannot extend the existing algebra on register as it must preserve it's finite
 -- dimensional property
 public class FiniteDimRegTensorAlgebra extends Monoid TypeFinRegister where
-  mul := Mul.mul
+  mulFun := toSemigroup.toMul.mul
   basisFactorization (E F : TypeFinRegister) :
     (Fin E.snd.dim) × (Fin F.snd.dim) → Fin (mul E F).snd.dim
   factorizationBij (E F : TypeFinRegister) : Function.Bijective (basisFactorization E F)

@@ -25,9 +25,13 @@ public def QuantumSpaceInSpaceCoe (x : TypeQuantumStates)
   : @QuantumStateSpace x.fst.fst x.fst.snd :=
   Subtype.mk x.snd.val x.snd.prop
 
+@[expose, coe, reducible]
+public def TypeQuantumStatesToQuantumStateSpace (s : TypeQuantumStates) :
+  @QuantumStateSpace s.fst.fst s.fst.snd := s.snd
+
 
 public class QuantumStateAlgebra extends Monoid TypeQuantumStates where
-  mul := Mul.mul
+  mulFun := toSemigroup.toMul.mul
   liftMap {C : QuantumRegisterAlgebra} (s1 s2 : TypeQuantumStates) :
     ((mul s1 s2).fst.fst) →
       @QuantumStateSpace (C.mul (s1.fst) (s2.fst)).fst (C.mul (s1.fst) (s2.fst)).snd

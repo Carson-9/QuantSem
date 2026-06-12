@@ -46,7 +46,8 @@ public def TypeQuantumRegisterToStructure (R : TypeQuantumRegister) : QuantReg R
 public class QuantumRegisterAlgebra extends Monoid TypeQuantumRegister where
   mulFun := toSemigroup.toMul.mul
 
-notation A "⊗ᵣ" B =>  QuantumRegisterAlgebra.mul A B
+
+notation A "⊗ᵣ" B =>  QuantumRegisterAlgebra.mulFun A B
 
 public def QuantumRegister.MulTensor {C : QuantumRegisterAlgebra}
   (famReg : List TypeQuantumRegister) (buffer : TypeQuantumRegister) (fstRound : Bool) :=

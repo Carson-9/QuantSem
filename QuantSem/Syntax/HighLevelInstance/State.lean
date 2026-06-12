@@ -13,6 +13,7 @@ public import QuantSem.Syntax.HighLevelInstance.QuantumTypes
 open SyntacticRegister QuantumTypes
 namespace SyntacticState
 
+variable [QuantumRegisterAlgebra]
 variable (R : Type) [QuantReg R]
 
 @[expose]
@@ -32,9 +33,8 @@ public def TypeQuantumStatesToQuantumStateSpace (s : TypeQuantumStates) :
 
 public class QuantumStateAlgebra extends Monoid TypeQuantumStates where
   mulFun := toSemigroup.toMul.mul
-  liftMap {C : QuantumRegisterAlgebra} (s1 s2 : TypeQuantumStates) :
-    ((mul s1 s2).fst.fst) →
-      @QuantumStateSpace (C.mul (s1.fst) (s2.fst)).fst (C.mul (s1.fst) (s2.fst)).snd
+  liftMap (s1 s2 : TypeQuantumStates) : ((toSemigroup.toMul.mul s1 s2).fst.fst) →
+      @QuantumStateSpace ((s1.fst) ⊗ᵣ (s2.fst)).fst ((s1.fst) ⊗ᵣ (s2.fst)).snd
   /- Not useful here for now, may have surprises later, but very easily fixable! -/
   /- univPropertyInj : Injective liftMap -/
 /-
@@ -63,10 +63,32 @@ public def QuantumState.MulTensor {S : QuantumStateAlgebra}
 notation "⨂ₛ" l => QuantumState.MulTensor l QuantumStateAlgebra.one true
 
 
-notation "| " ψ " ⟩" => (ψ : QuantumStateSpace)
+-- notation "| " ψ " ⟩" => (ψ : QuantumStateSpace)
 
 /- TODO : Continue denotational stuff.
 notation "⟨ " ψ " |" => (ψ†)
 -/
+
+
+@[expose]
+public def QuantumStateSpace' (R : TypeQuantumRegister) : Type := @QuantumStateSpace R.fst R.snd
+
+@[expose, coe]
+public def StateToState' {R : Type} [R' : QuantReg R] (s : QuantumStateSpace R)
+  : QuantumStateSpace' (QuantRegToTypeQuantumRegister R) :=
+    Subtype.mk s.val s.prop
+
+@[default_instance]
+instance (R : Type) [QuantReg R] : Coe (QuantumStateSpace R) (QuantumStateSpace' (QuantRegToTypeQuantumRegister R)) where
+  coe := StateToState'
+
+@[expose, coe]
+public def State'ToState {R : TypeQuantumRegister} (s : @QuantumStateSpace' R) :
+  @QuantumStateSpace R.fst R.snd := Subtype.mk s.val s.prop
+
+@[default_instance]
+instance (R : TypeQuantumRegister) : Coe (QuantumStateSpace' R) (@QuantumStateSpace R.fst R.snd) where
+  coe := State'ToState
+
 
 end SyntacticState

@@ -13,8 +13,12 @@ backward.isDefEq.respectTransparency = false
 [[lean_lib]]
 name = "QuantSem"
 
+[[lean_exe]]
+name = "QuantSem"
+root = "QuantSem"
+
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
-rev = "v4.29.0"
+rev = "v4.31.0"
 path = "../mathlib4"

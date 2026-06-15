@@ -116,4 +116,18 @@ public theorem TensorOfIdIsId (E F : Type) [E' : HilbertSpace E] [F' : HilbertSp
     IdMap (TensorProduct ℂ E F)
   := TensorProduct.mapIsometry_id_id
 
+public theorem IdIsNeutralLeft (E F : Type) [HilbertSpace E] [HilbertSpace F] (f : E →ₗᵢ[ℂ] F):
+  f.comp (IdMap E) = f := by apply LinearIsometry.comp_id
+
+public theorem IdIsNeutralRight (E F : Type) [HilbertSpace E] [HilbertSpace F] (f : E →ₗᵢ[ℂ] F):
+  (IdMap F).comp f = f := by apply LinearIsometry.comp_id
+
+public theorem TensorFactorises (E E' F G G' H : Type) [HilbertSpace E] [HilbertSpace E']
+  [HilbertSpace F] [HilbertSpace G] [HilbertSpace G'] [HilbertSpace H]
+  (f : E' →ₗᵢ[ℂ] F) (g : G' →ₗᵢ[ℂ] H) (h : E →ₗᵢ[ℂ] E') (i :G →ₗᵢ[ℂ] G') :
+  LinearIsometry.comp (TensorLinearIsometries f g) (TensorLinearIsometries h i) =
+  TensorLinearIsometries (LinearIsometry.comp f h) (LinearIsometry.comp g i) :=
+  by unfold TensorLinearIsometries; sorry
+
+
 end QuantumTypes

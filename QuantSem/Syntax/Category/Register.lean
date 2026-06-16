@@ -17,7 +17,7 @@ public import Mathlib.Data.Complex.Basic
 public import Mathlib.Analysis.Real.Sqrt
 
 
-public import QuantSem.Syntax.HighLevel.QuantumTypes
+public import QuantSem.Syntax.Category.QuantumTypes
 
 namespace SyntacticRegister
 
@@ -33,6 +33,9 @@ Often, the given composition will be the Tensor product of hilbert spaces
 --public abbrev QuantumRegister := TypeQuantumTypes
 public abbrev QuantReg (R : Type) := QuantumTypes.HilbertSpace R
 public abbrev TypeQuantumRegister := Σ E, QuantReg E
+
+public abbrev TypeQuantumRegister.space (R : TypeQuantumRegister) := R.fst
+public abbrev TypeQuantumRegister.struct (R : TypeQuantumRegister) := R.snd
 
 @[default_instance]
 public instance (R : TypeQuantumRegister) : SeminormedAddCommGroup R.fst :=
@@ -73,6 +76,8 @@ public noncomputable def QuantRegHomTensor {R1 R2 R3 R4 : TypeQuantumRegister}
   QuantumRegisterTensor R1 R2 ⟶ QuantumRegisterTensor R3 R4 :=
   @TensorLinearIsometries R1.fst R2.fst R3.fst  R4.fst R1.snd R2.snd R3.snd R4.snd
     (f : R1.fst →ₗᵢ[ℂ] R3.fst) g
+
+notation f "⊗ₕ" g => QuantRegHomTensor f g
 
 public theorem id_tensor_id : ∀ X Y,
   QuantRegHomTensor (@IdMap X.fst X.snd) (@IdMap Y.fst Y.snd) = @IdMap (X ⊗ᵣ Y).fst (X ⊗ᵣ Y).snd :=
@@ -153,18 +158,18 @@ public noncomputable def QuantumRegister.MulTensor
   | h :: t => if fstRound then QuantumRegister.MulTensor t h false
                           else QuantumRegister.MulTensor t (buffer ⊗ᵣ h) false
 
-notation "⨂ᵣ" l => QuantumRegister.MulTensor l 𝟙 true
+notation "⨂ᵣ" l => QuantumRegister.MulTensor l MonCatRegister.tensorUnit true
 
 
 /-
-  Prove that the norm is expressed with the inner product
+    Properties on the norm of registers
 -/
+
 public theorem NormFromInner (R : Type) [R' : QuantReg R] (z : R) :
   ‖z‖ = √ (Complex.re (R'.inner z z)) :=
   by calc
     ‖z‖ = √(‖z‖ ^ 2)                    := by symm; simp;
     _   = √(Complex.re (R'.inner z z))  := by rw[R'.norm_sq_eq_re_inner]; rfl
-
 
 
 end SyntacticRegister

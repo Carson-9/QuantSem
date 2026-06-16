@@ -54,10 +54,10 @@ notation g1 "-<" R ">-" g2 => GateComp' g1 g2 (Iso.refl R)
     Gates can update states
 -/
 
-public noncomputable def GateStateEvolve (g : TypeQuantumGate) (s : QuantumStateSpace g.entrySpace)
+public noncomputable abbrev GateStateEvolve (g : TypeQuantumGate) (s : QuantumStateSpace g.entrySpace)
   : QuantumStateSpace g.exitSpace := s ≫ g.gate
 
-public noncomputable def GateStateEvolve' (g : TypeQuantumGate) (s : QuantumStateSpace g.entrySpace)
+public noncomputable abbrev GateStateEvolve' (g : TypeQuantumGate) (s : QuantumStateSpace g.entrySpace)
   : TypeQuantumState := ⟨g.exitSpace, GateStateEvolve g s⟩
 
 public noncomputable def GateStateEvolve'' (g : TypeQuantumGate) (s : TypeQuantumState)
@@ -76,6 +76,22 @@ public theorem GateCompositionCommutation {R1 R2 R3 R4 R5 R6 : TypeQuantumRegist
   (g21 : QuantumGate R4 R5) (g22 : QuantumGate R5 R6) :
   GateTensor (g11 ≫ g12) (g21 ≫ g22) = (GateTensor g11 g21) ≫ (GateTensor g12 g22) :=
   by unfold GateTensor; rw [<-tensor_factorises]
+
+public theorem GateId (R : TypeQuantumRegister) :
+  ∀ s : QuantumStateSpace R, GateStateEvolve (⟨R, ⟨R, id_map R⟩⟩) s = s :=
+  by intro s; unfold GateStateEvolve; apply id_map_is_neutral_right
+
+/-
+    Gate Extensionality
+-/
+@[ext]
+public theorem GateExt {R1 R2 : TypeQuantumRegister} (g1 g2 : QuantumGate R1 R2) :
+  (∀ s : QuantumStateSpace R1, (s ≫ g1) = (s ≫ g2)) → (g1 = g2) :=
+  by intro h; sorry
+
+public theorem GateExtIff {R1 R2 : TypeQuantumRegister} (g1 g2 : QuantumGate R1 R2)
+  : (g1 = g2) ↔ ∀ s : QuantumStateSpace R1, (s ≫ g1) = (s ≫ g2) :=
+  by apply Iff.intro; intro h; rw[h]; intro s; rfl; apply GateExt
 
 
 end SyntacticGate

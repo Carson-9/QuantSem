@@ -79,6 +79,14 @@ public noncomputable def QuantRegHomTensor {R1 R2 R3 R4 : TypeQuantumRegister}
 
 notation f "⊗ₕ" g => QuantRegHomTensor f g
 
+public def id_map (R : TypeQuantumRegister) : R ⟶ R := @IdMap R.fst R.snd
+
+public theorem id_map_is_neutral_left {R1 R2 : TypeQuantumRegister}
+  (f : R1 ⟶ R2) : id_map R1 ≫ f = f := by rfl
+
+public theorem id_map_is_neutral_right {R1 R2 : TypeQuantumRegister}
+  (f : R1 ⟶ R2) : f ≫ id_map R2 = f := by rfl
+
 public theorem id_tensor_id : ∀ X Y,
   QuantRegHomTensor (@IdMap X.fst X.snd) (@IdMap Y.fst Y.snd) = @IdMap (X ⊗ᵣ Y).fst (X ⊗ᵣ Y).snd :=
   by intro X Y; apply @TensorOfIdIsId X.fst Y.fst X.snd Y.snd

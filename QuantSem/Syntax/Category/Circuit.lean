@@ -124,9 +124,11 @@ public def CircuitEquivalence {R : TypeQuantumRegister} (c1 c2 : SimpleCircuitOv
 
 notation c1 "≅ₖ" c2 => CircuitEquivalence c1 c2
 
+@[simp]
 public theorem CircuitEquivalenceRefl {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R)
   : c ≅ₖ c := by intro s; rfl
 
+@[simp]
 public theorem CircuitEquivalenceSym {R : TypeQuantumRegister} (c1 c2 : SimpleCircuitOverRegister R)
   : (c1 ≅ₖ c2) → (c2 ≅ₖ c1) := by intro h s; rw[h]
 
@@ -137,12 +139,14 @@ public theorem CircuitEquivalenceTrans {R : TypeQuantumRegister} (c1 c2 c3 : Sim
     Theorems on Equivalence
 -/
 
+@[simp]
 public theorem CircuitCompositionsCommute {R1 R2 : TypeQuantumRegister}
 (c11 c12 : SimpleCircuitOverRegister R1) (c21 c22 : SimpleCircuitOverRegister R2) :
   VerticalComp (HorizontalComp c11 c12) (HorizontalComp c21 c22) ≅ₖ
   HorizontalComp (VerticalComp c11 c21) (VerticalComp c12 c22) :=
   by unfold CircuitEquivalence; intro s; unfold SimpleCircuitCompute; unfold SimpleCircuitGateRepr'; rw[VerticalIsTensor, HorizontalIsComp, HorizontalIsComp, HorizontalIsComp, VerticalIsTensor, VerticalIsTensor]; rw[GateCompositionCommutation]
 
+@[simp]
 public theorem CircuitEquivalenceToGateCircuit {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R) :
   c ≅ₖ Gate (SimpleCircuitGateRepr c) :=
   by unfold CircuitEquivalence; intro s; rfl
@@ -154,27 +158,33 @@ public theorem CircuitEquivalenceGateIff  {R : TypeQuantumRegister} (c1 c2 : Sim
   (c1 ≅ₖ c2) ↔ (SimpleCircuitGateRepr c1) = (SimpleCircuitGateRepr c2) :=
   by apply Iff.intro; intro h; rw [GateExtIff]; intro s; unfold CircuitEquivalence at h; apply h; intro h; unfold CircuitEquivalence; unfold SimpleCircuitCompute; unfold GateStateEvolve; rw[GateRepr'IsGateRepr, GateRepr'IsGateRepr]; intro s; rw[h]; rfl
 
+@[simp]
 public theorem IdWireIsIdLeft {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R)
   : HorizontalComp (IdWire) c ≅ₖ c :=
   by unfold CircuitEquivalence; intro s; rw[HorizontalComputation, IdWireIsNeutral]
 
+@[simp]
 public theorem IdWireIsIdRight {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R)
   : HorizontalComp c (IdWire) ≅ₖ c :=
   by unfold CircuitEquivalence; intro s; rw[HorizontalComputation, IdWireIsNeutral]
 
+@[simp]
 public theorem HorizontalRewriteLeft {R : TypeQuantumRegister} (c1 c1' c2 : SimpleCircuitOverRegister R)
   (hEquiv : c1 ≅ₖ c1') : HorizontalComp c1 c2 ≅ₖ HorizontalComp c1' c2 :=
   by unfold CircuitEquivalence; intro s; rw[HorizontalComputation, HorizontalComputation]; rw[hEquiv s]
 
+@[simp]
 public theorem HorizontalRewriteRight {R : TypeQuantumRegister} (c1 c2 c2' : SimpleCircuitOverRegister R)
   (hEquiv : c2 ≅ₖ c2') : HorizontalComp c1 c2 ≅ₖ HorizontalComp c1 c2' :=
   by unfold CircuitEquivalence; intro s; rw[HorizontalComputation, HorizontalComputation]; rw[hEquiv]
 
+@[simp]
 public theorem ParallelRewriteUp {R1 R2 : TypeQuantumRegister} (c1 c1' : SimpleCircuitOverRegister R1)
   (c2 : SimpleCircuitOverRegister R2) (hEquiv:  c1 ≅ₖ c1') :
   VerticalComp c1 c2 ≅ₖ VerticalComp c1' c2 :=
   by rw[CircuitEquivalenceGateIff, VerticalIsTensor, VerticalIsTensor]; rw[CircuitEquivalenceGateIff] at hEquiv; rw[hEquiv]
 
+@[simp]
 public theorem ParallelRewriteDown {R1 R2 : TypeQuantumRegister} (c1 : SimpleCircuitOverRegister R1)
   (c2 c2' : SimpleCircuitOverRegister R2) (hEquiv:  c2 ≅ₖ c2') :
   VerticalComp c1 c2 ≅ₖ VerticalComp c1 c2' :=

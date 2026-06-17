@@ -24,8 +24,13 @@ namespace SyntacticCircuit
 
 
 -- Should the circuit algebra be fixed? Eckman hilton can come in handy ⟶ Only in 1D
+-- Better to add IdWire as a separate construction as it now becomes decidable to know
+-- whether we are dealing with IdWire or a non-trivial gate (although the trivial gate)
+-- is still possible
+
 
 public inductive SimpleCircuitOverRegister : (TypeQuantumRegister → Type 1) where
+  | IdWire {R : TypeQuantumRegister} : SimpleCircuitOverRegister R
   | Gate {R : TypeQuantumRegister} (g : QuantumGate R R) : SimpleCircuitOverRegister R
   | HorizontalComp {R : TypeQuantumRegister} (c1 c2 : SimpleCircuitOverRegister R) : SimpleCircuitOverRegister R
   | VerticalComp {R₁ R₂ : TypeQuantumRegister} (c1 : SimpleCircuitOverRegister R₁) (c2 :SimpleCircuitOverRegister R₂ ) : SimpleCircuitOverRegister (R₁ ⊗ᵣ R₂)
@@ -35,12 +40,11 @@ public abbrev TypeSimpleCircuit := Σ R : TypeQuantumRegister, SimpleCircuitOver
 public abbrev TypeSimpleCircuit.register (c : TypeSimpleCircuit) := c.fst
 public abbrev TypeSimpleCircuit.circuit (c : TypeSimpleCircuit) := c.snd
 
-public abbrev IdWire (R : TypeQuantumRegister) := SimpleCircuitOverRegister.Gate (id_map R)
-
 open SimpleCircuitOverRegister
 
 public def SimpleCircuitDepth {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R) : ℕ :=
   match c with
+  | IdWire => 1
   | Gate _ => 1
   | HorizontalComp c1 c2 => (SimpleCircuitDepth c1) + (SimpleCircuitDepth c2)
   | VerticalComp c1 c2 => max (SimpleCircuitDepth c1) (SimpleCircuitDepth c2)
@@ -49,6 +53,7 @@ public def SimpleCircuitDepth' (c : TypeSimpleCircuit) := SimpleCircuitDepth c.c
 
 public def SimpleCircuitGateCount {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R) : ℕ :=
   match c with
+  | IdWire => 0
   | Gate _ => 1
   | HorizontalComp c1 c2 => (SimpleCircuitGateCount c1) + (SimpleCircuitGateCount c2)
   | VerticalComp c1 c2 => (SimpleCircuitGateCount c1) + (SimpleCircuitGateCount c2)
@@ -57,15 +62,17 @@ public def SimpleCircuitGateCount' (c : TypeSimpleCircuit) := SimpleCircuitGateC
 
 public def SimpleCircuitGetShape {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R) :
   List TypeQuantumRegister := match c with
-    | SimpleCircuitOverRegister.Gate _ => [R]
-    | SimpleCircuitOverRegister.HorizontalComp c1 c2 => SimpleCircuitGetShape c1
-    | SimpleCircuitOverRegister.VerticalComp c1 c2 => (SimpleCircuitGetShape c1) ++ (SimpleCircuitGetShape c2)
+    | IdWire => [R]
+    | Gate _ => [R]
+    | HorizontalComp c1 c2 => SimpleCircuitGetShape c1
+    | VerticalComp c1 c2 => (SimpleCircuitGetShape c1) ++ (SimpleCircuitGetShape c2)
 
 public def SimpleCircuitGetShape' (c : TypeSimpleCircuit) := SimpleCircuitGetShape c.circuit
 
 
 public noncomputable def SimpleCircuitGateRepr {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R)
   : QuantumGate R R := match c with
+  | IdWire => id_map R
   | Gate g => g
   | HorizontalComp c1 c2 => (SimpleCircuitGateRepr c1) ≫ (SimpleCircuitGateRepr c2)
   | VerticalComp c1 c2 => GateTensor (SimpleCircuitGateRepr c1) (SimpleCircuitGateRepr c2)
@@ -100,7 +107,7 @@ public theorem VerticalIsTensor {R1 R2 : TypeQuantumRegister} (c1 : SimpleCircui
   := by rfl
 
 public theorem IdWireIsNeutral (R : TypeQuantumRegister) :
-  ∀ s : QuantumStateSpace R, SimpleCircuitCompute (IdWire R) s = s :=
+  ∀ s : QuantumStateSpace R, SimpleCircuitCompute (IdWire) s = s :=
   by apply GateId
 
 public theorem GateRepr'IsGateRepr {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R) :
@@ -148,11 +155,11 @@ public theorem CircuitEquivalenceGateIff  {R : TypeQuantumRegister} (c1 c2 : Sim
   by apply Iff.intro; intro h; rw [GateExtIff]; intro s; unfold CircuitEquivalence at h; apply h; intro h; unfold CircuitEquivalence; unfold SimpleCircuitCompute; unfold GateStateEvolve; rw[GateRepr'IsGateRepr, GateRepr'IsGateRepr]; intro s; rw[h]; rfl
 
 public theorem IdWireIsIdLeft {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R)
-  : HorizontalComp (IdWire R) c ≅ₖ c :=
+  : HorizontalComp (IdWire) c ≅ₖ c :=
   by unfold CircuitEquivalence; intro s; rw[HorizontalComputation, IdWireIsNeutral]
 
 public theorem IdWireIsIdRight {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R)
-  : HorizontalComp c (IdWire R) ≅ₖ c :=
+  : HorizontalComp c (IdWire) ≅ₖ c :=
   by unfold CircuitEquivalence; intro s; rw[HorizontalComputation, IdWireIsNeutral]
 
 public theorem HorizontalRewriteLeft {R : TypeQuantumRegister} (c1 c1' c2 : SimpleCircuitOverRegister R)

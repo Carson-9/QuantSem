@@ -46,4 +46,12 @@ notation "⨂ₛ" l => QuantumState.MulTensor l MonCatRegister.tensorUnit true
 
 
 
+public noncomputable def QuantumStateSelection {R : TypeQuantumRegister} (x : R.space) (hNorm : ‖x‖ = 1)
+  : QuantumStateSpace R :=
+  ElementInSpaceAsIso R.space x (by intro hAbs; rw[hAbs] at hNorm; rw[norm_zero] at hNorm; apply zero_ne_one at hNorm; apply hNorm)
+
+@[simp]
+public theorem StateSelectionOfOne  {R : TypeQuantumRegister} (x : R.space) (hNorm : ‖x‖ = 1) :
+  (QuantumStateSelection x hNorm).toFun (1 : ℂ) = x := by unfold QuantumStateSelection; rw[ElementInSpacePointsTo]; rw[hNorm]; simp
+
 end SyntacticState

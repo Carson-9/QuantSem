@@ -96,6 +96,27 @@ public noncomputable def CIsRightNeutral (E : Type) [HilbertSpace E] :
   TensorProduct ℂ E ℂ ≃ₗᵢ[ℂ] E :=
   LinearIsometryEquiv.trans (TensorProduct.commIsometry ℂ E ℂ) (CIsLeftNeutral E)
 
+
+/-
+    An element of R is uniquely determined by an isometry from ℂ to R
+-/
+
+
+public noncomputable def ElementInSpaceAsIso (E : Type) [E' : HilbertSpace E] (x : E) (hX : x ≠ 0)
+  : ℂ →ₗᵢ[ℂ] E :=
+  LinearIsometry.mk
+    (LinearMap.mk
+      (AddHom.mk (fun c : ℂ => ((c * ‖x‖⁻¹) : ℂ) • x) (by intro y z; simp; ring; rw[E'.add_smul]))
+      (by intro y z; simp; rw[E'.mul_smul, E'.mul_smul, E'.mul_smul]))
+    (by intro y; simp; rw[E'.mul_smul, norm_smul, norm_smul,]; simp; calc
+      ‖y‖ * (‖x‖⁻¹ * ‖x‖) = ‖y‖ * (‖x‖ * ‖x‖⁻¹) := by rw[mul_comm ‖x‖⁻¹ ‖x‖]
+      _ = ‖y‖ * 1 := by rw[Field.mul_inv_cancel ‖x‖]; simp; apply hX
+      _ = ‖y‖ := by simp
+       )
+
+public theorem ElementInSpacePointsTo (E : Type)  [E' : HilbertSpace E] (x : E) (hX : x ≠ 0) :
+  (ElementInSpaceAsIso E x hX).toFun (1 : ℂ) = (‖x‖⁻¹ : ℂ) • x := by unfold ElementInSpaceAsIso; simp
+
 /-
     One can tensor Linear Isometries out
 -/
@@ -111,17 +132,21 @@ public noncomputable def TensorLinearIsometries {E F G H : Type} [HilbertSpace E
 
 public abbrev IdMap (E : Type) [HilbertSpace E] : E →ₗᵢ[ℂ] E := LinearIsometry.id
 
+@[simp]
 public theorem TensorOfIdIsId (E F : Type) [E' : HilbertSpace E] [F' : HilbertSpace F]
   : @TensorLinearIsometries E F E F E' F' E' F' (IdMap E) (IdMap F) =
     IdMap (TensorProduct ℂ E F)
   := TensorProduct.mapIsometry_id_id
 
+@[simp]
 public theorem IdIsNeutralLeft (E F : Type) [HilbertSpace E] [HilbertSpace F] (f : E →ₗᵢ[ℂ] F):
   f.comp (IdMap E) = f := by apply LinearIsometry.comp_id
 
+@[simp]
 public theorem IdIsNeutralRight (E F : Type) [HilbertSpace E] [HilbertSpace F] (f : E →ₗᵢ[ℂ] F):
   (IdMap F).comp f = f := by apply LinearIsometry.comp_id
 
+@[simp]
 public theorem TensorFactorises (E E' F G G' H : Type) [HilbertSpace E] [HilbertSpace E']
   [HilbertSpace F] [HilbertSpace G] [HilbertSpace G'] [HilbertSpace H]
   (f : E' →ₗᵢ[ℂ] F) (g : G' →ₗᵢ[ℂ] H) (h : E →ₗᵢ[ℂ] E') (i :G →ₗᵢ[ℂ] G') :
@@ -132,16 +157,19 @@ public theorem TensorFactorises (E E' F G G' H : Type) [HilbertSpace E] [Hilbert
    --unfold TensorLinearIsometries; rw[TensorProduct.mapIsometry, TensorProduct.mapIsometry, TensorProduct.mapIsometry]; rw[<- TensorProduct.map_comp]; sorry
 
 
+@[simp]
 public theorem LinearIsometryEquivalenceComp {E E' E'' : Type} [HilbertSpace E]
   [HilbertSpace E'] [HilbertSpace E''] (f : E ≃ₗᵢ[ℂ] E') (g : E' ≃ₗᵢ[ℂ] E'') :
     (g.toLinearIsometry ∘ f.toLinearIsometry) = (f.trans g).toLinearIsometry :=
     by rfl
 
+@[simp]
 public theorem EquivalenceToIsometryOfSymmLeft {E E' : Type} [HilbertSpace E] [HilbertSpace E']
   (f : E ≃ₗᵢ[ℂ] E') :  LinearIsometry.comp f.toLinearIsometry f.symm.toLinearIsometry = IdMap E' :=
     by unfold LinearIsometry.comp; ext; simp;
 
 
+@[simp]
 public theorem EquivalenceToIsometryOfSymmRight {E E' : Type} [HilbertSpace E] [HilbertSpace E']
   (f : E ≃ₗᵢ[ℂ] E') : LinearIsometry.comp  f.symm.toLinearIsometry f.toLinearIsometry  = IdMap E :=
     by unfold LinearIsometry.comp; ext; simp;

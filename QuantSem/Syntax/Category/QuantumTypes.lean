@@ -67,11 +67,10 @@ public noncomputable instance HilbertTensor {E F : Type} [H1 : HilbertSpace E] [
   complete := by intro f cauchy_f; sorry
 
 
-@[expose, implicit_reducible]
-public noncomputable def HilbertTensorFun (E F : Type) [H1 : HilbertSpace E] [H2 : HilbertSpace F]
+public noncomputable abbrev HilbertTensorFun (E F : Type) [H1 : HilbertSpace E] [H2 : HilbertSpace F]
   : HilbertSpace (TensorProduct ℂ E F) := HilbertTensor
 
-public noncomputable def HilbertTensorAssoc (E F G : Type) [H1 : HilbertSpace E] [H2 : HilbertSpace F]
+public noncomputable abbrev HilbertTensorAssoc (E F G : Type) [H1 : HilbertSpace E] [H2 : HilbertSpace F]
   [H3 : HilbertSpace G] :
   TensorProduct ℂ (TensorProduct ℂ E F) G ≃ₗᵢ[ℂ]
   TensorProduct ℂ E (TensorProduct ℂ F G) :=
@@ -121,10 +120,25 @@ public theorem ElementInSpacePointsTo (E : Type)  [E' : HilbertSpace E] (x : E) 
     One can tensor Linear Isometries out
 -/
 
-@[expose]
-public noncomputable def TensorLinearIsometries {E F G H : Type} [HilbertSpace E] [HilbertSpace F] [HilbertSpace G]
+public noncomputable abbrev TensorLinearIsometries {E F G H : Type} [HilbertSpace E] [HilbertSpace F] [HilbertSpace G]
   [HilbertSpace H] (f : E →ₗᵢ[ℂ] G) (g : F →ₗᵢ[ℂ] H) :
   (TensorProduct ℂ E F) →ₗᵢ[ℂ] (TensorProduct ℂ G H) := TensorProduct.mapIsometry f g
+
+
+
+@[simp]
+public theorem TensorAssocOverComp (E E' F F' G G' : Type) [H1 : HilbertSpace E]
+  [H1' : HilbertSpace E'] [H2 : HilbertSpace F] [H2' : HilbertSpace F'] [H3 : HilbertSpace G]
+  [H3' : HilbertSpace G'] (f : E →ₗᵢ[ℂ] E') (g : F →ₗᵢ[ℂ] F') (h : G →ₗᵢ[ℂ] G')
+  : LinearIsometry.comp (TensorLinearIsometries f (TensorLinearIsometries g h)) (HilbertTensorAssoc E F G).toLinearIsometry =
+    LinearIsometry.comp ((HilbertTensorAssoc E' F' G').toLinearIsometry) (TensorLinearIsometries (TensorLinearIsometries f g) h) :=
+  by ext x; simp; calc
+  (TensorProduct.map f.toLinearMap (TensorProduct.map g.toLinearMap h.toLinearMap)) ((TensorProduct.assoc ℂ E F G) x)
+  = ((TensorProduct.map f.toLinearMap (TensorProduct.map g.toLinearMap h.toLinearMap)) ∘ₗ (TensorProduct.assoc ℂ E F G)) x
+  := by simp;
+  _ = ((TensorProduct.assoc ℂ E' F' G') ∘ₗ ((TensorProduct.map (TensorProduct.map f.toLinearMap g.toLinearMap) h.toLinearMap))) x
+  := by rw[TensorProduct.map_map_comp_assoc_eq f.toLinearMap g.toLinearMap h.toLinearMap];
+
 
 /-
     Expected monoidal properties of the setting
@@ -152,7 +166,7 @@ public theorem TensorFactorises (E E' F G G' H : Type) [HilbertSpace E] [Hilbert
   (f : E' →ₗᵢ[ℂ] F) (g : G' →ₗᵢ[ℂ] H) (h : E →ₗᵢ[ℂ] E') (i :G →ₗᵢ[ℂ] G') :
   LinearIsometry.comp (TensorLinearIsometries f g) (TensorLinearIsometries h i) =
   TensorLinearIsometries (LinearIsometry.comp f h) (LinearIsometry.comp g i) :=
-  by sorry; --rw[<- TensorProduct.map_comp]
+  by unfold TensorLinearIsometries; ext x; simp; rw[<- LinearMap.comp_apply, <- TensorProduct.map_comp f.toLinearMap g.toLinearMap h.toLinearMap i.toLinearMap]; rfl
 
    --unfold TensorLinearIsometries; rw[TensorProduct.mapIsometry, TensorProduct.mapIsometry, TensorProduct.mapIsometry]; rw[<- TensorProduct.map_comp]; sorry
 

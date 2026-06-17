@@ -59,6 +59,15 @@ public instance CatRegister : Category TypeQuantumRegister where
   comp f1 f2 := LinearIsometry.comp f2 f1
 
 
+@[ext]
+public theorem CatRegisterHomExt {R1 R2 : TypeQuantumRegister} (f g : R1 ⟶ R2) :
+  (∀ x : R1.space, f.toFun x = g.toFun x) → f = g :=
+  by intro h; apply LinearIsometry.ext_iff.mpr; apply h
+
+public theorem CatRegisterHomExtIff {R1 R2 : TypeQuantumRegister} (f g : R1 ⟶ R2) :
+  f = g ↔ (∀ x : R1.space, f.toFun x = g.toFun x) :=
+  by apply Iff.intro; intro hEq; rw[hEq]; intro x; rfl; apply CatRegisterHomExt
+
 /-
   Registers can be endowed with the structure of a Monoidal Category
 -/
@@ -78,6 +87,10 @@ public noncomputable def QuantRegHomTensor {R1 R2 R3 R4 : TypeQuantumRegister}
     (f : R1.fst →ₗᵢ[ℂ] R3.fst) g
 
 notation f "⊗ₕ" g => QuantRegHomTensor f g
+
+@[simp]
+public theorem arrow_is_comp {R1 R2 R3 : TypeQuantumRegister} (f : R1 ⟶ R2) (g : R2 ⟶ R3)
+  : (f ≫ g) = (LinearIsometry.comp g f) := by rfl
 
 public def id_map (R : TypeQuantumRegister) : R ⟶ R := @IdMap R.fst R.snd
 
@@ -144,6 +157,16 @@ public noncomputable def CRightUnitor (R : TypeQuantumRegister) :
     (by rw[one_is_id]; unfold CategoryStruct.comp; unfold CatRegister; simp; apply (EquivalenceToIsometryOfSymmLeft existingIso))
     where existingIso := @CIsRightNeutral R.fst R.snd
 
+public theorem AssocNaturality {R1 R2 R3 R4 R5 R6 : TypeQuantumRegister}
+  (f : R1 ⟶ R4) (g : R2 ⟶ R5) (h : R3 ⟶ R6) :
+  (((f ⊗ₕ g) ⊗ₕ h) ≫ (QuantRegHomTensorAssoc R4 R5 R6).hom) =
+  ((QuantRegHomTensorAssoc R1 R2 R3).hom ≫ ((f ⊗ₕ (g ⊗ₕ h)))) :=
+  by
+    unfold QuantRegHomTensorAssoc QuantRegHomTensorAssoc.existingIso QuantumRegisterTensor
+    unfold QuantRegHomTensor
+    simp
+
+
 @[default_instance]
 public noncomputable instance MonCatRegister : MonoidalCategory TypeQuantumRegister where
   tensorObj := QuantumRegisterTensor
@@ -158,7 +181,7 @@ public noncomputable instance MonCatRegister : MonoidalCategory TypeQuantumRegis
     intro X1 X2 Y1 Y2 Z1 Z2 f g h i; rw[tensor_factorises, tensor_factorises, id_is_neutral_left, id_is_neutral_left, id_is_neutral_right, id_is_neutral_right, tensor_factorises, tensor_factorises, id_is_neutral_left, id_is_neutral_right];
   whiskerLeft_id := by intro X Y; rw[one_is_id, id_tensor_id]; rfl
   id_whiskerRight := by intro X Y; rw[one_is_id, id_tensor_id]; rfl
-  associator_naturality := by intro X1 X2 X3 Y1 Y2 Y3 f1 f2 f3; simp; sorry-- rw[tensor_factorises, tensor_factorises, tensor_factorises, id_is_neutral_left, id_is_neutral_right, id_is_neutral_right, id_is_neutral_left, id_is_neutral_right]; sorry
+  associator_naturality := by intro X1 X2 X3 Y1 Y2 Y3 f1 f2 f3; simp; ext x; unfold QuantRegHomTensorAssoc; unfold QuantRegHomTensorAssoc.existingIso; simp; sorry--rw[TensorAssocOverComp]
   leftUnitor_naturality := by intro X Y f; unfold CLeftUnitor; simp; sorry
   rightUnitor_naturality := by sorry
   triangle := by intro X Y; sorry

@@ -24,6 +24,8 @@ namespace SyntacticRegister
 open QuantumTypes
 open Monoid
 open CategoryTheory
+open InnerProductSpace
+open InnerProductSpace.Core
 
 /-
 Quantum registers depend on Quantum Type composition.
@@ -58,6 +60,24 @@ public instance CatRegister : Category TypeQuantumRegister where
   id T1 := LinearIsometry.id
   comp f1 f2 := LinearIsometry.comp f2 f1
 
+/-
+    Normalize vectors.
+-/
+
+public noncomputable abbrev NormalizeElement {R1 : TypeQuantumRegister} (x : R1.space) : R1.space :=
+  ‖x‖⁻¹ • x
+
+public theorem ElementIsUnitAndSize  {R1 : TypeQuantumRegister} (x : R1.space) :
+  ‖x‖ ≠ 0 → x = ‖x‖ • (NormalizeElement x) := by intro h; unfold NormalizeElement; rw[<- mul_smul, Field.mul_inv_cancel ‖x‖]; simp; apply h
+
+public theorem NormOfNormalizedIsOne {R1 : TypeQuantumRegister} (x : R1.space) :
+  ‖x‖ ≠ 0 → ‖(NormalizeElement x)‖ = 1 := by intro hX; unfold NormalizeElement; rw[norm_smul]; simp; rw[mul_comm, Field.mul_inv_cancel ‖x‖]; apply hX
+
+public theorem NormZeroIffZero {R1 : TypeQuantumRegister} :
+  ∀ x : R1.space, ‖x‖ = 0 ↔ x = 0 := by intro x; apply Iff.trans (normSqZero x) (innerZero x) where
+    normSqZero : ∀ x : R1.space, ‖x‖ = 0 ↔ (R1.struct.inner x x).re = 0 := by intro x; rw[NormFromInner]; simp; apply Real.sqrt_eq_zero; rw[<- Complex.ofReal_pow, Complex.ofReal_re]; apply Even.pow_nonneg; simp
+    normSqExpr : ∀ x : R1.space, (R1.struct.inner x x).re = 0 ↔ R1.struct.inner x x = 0 := by intro x; apply Iff.intro; intro hX; apply Complex.ext; rw[hX]; simp; simp; rw[<- Complex.ofReal_pow, Complex.ofReal_im]; intro h; rw[h]; simp
+    innerZero : ∀ x : R1.space, (R1.struct.inner x x).re = 0 ↔ x = 0 := by intro x; apply Iff.trans (normSqExpr x) (inner_self_eq_zero)
 
 @[ext]
 public theorem CatRegisterHomExt {R1 R2 : TypeQuantumRegister} (f g : R1 ⟶ R2) :
@@ -183,8 +203,8 @@ public noncomputable instance MonCatRegister : MonoidalCategory TypeQuantumRegis
   id_whiskerRight := by intro X Y; rw[one_is_id, id_tensor_id]; rfl
   associator_naturality := by intro X1 X2 X3 Y1 Y2 Y3 f1 f2 f3; simp; ext x; unfold QuantRegHomTensorAssoc; unfold QuantRegHomTensorAssoc.existingIso; simp; sorry--rw[TensorAssocOverComp]
   leftUnitor_naturality := by intro X Y f; unfold CLeftUnitor; simp; sorry
-  rightUnitor_naturality := by sorry
-  triangle := by intro X Y; sorry
+  rightUnitor_naturality := by intro X Y f; ext x; simp; sorry
+  triangle := by intro X Y; ext x; simp; sorry
   pentagon := by sorry
 
 
@@ -197,17 +217,6 @@ public noncomputable def QuantumRegister.MulTensor
                           else QuantumRegister.MulTensor t (buffer ⊗ᵣ h) false
 
 notation "⨂ᵣ" l => QuantumRegister.MulTensor l MonCatRegister.tensorUnit true
-
-
-/-
-    Properties on the norm of registers
--/
-
-public theorem NormFromInner (R : Type) [R' : QuantReg R] (z : R) :
-  ‖z‖ = √ (Complex.re (R'.inner z z)) :=
-  by calc
-    ‖z‖ = √(‖z‖ ^ 2)                    := by symm; simp;
-     _  = √(Complex.re (R'.inner z z))  := by rw[R'.norm_sq_eq_re_inner]; rfl
 
 
 end SyntacticRegister

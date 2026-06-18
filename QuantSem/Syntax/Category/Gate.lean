@@ -84,7 +84,13 @@ public theorem GateId (R : TypeQuantumRegister) :
   by intro s; unfold GateStateEvolve; apply id_map_is_neutral_right
 
 /-
-    Gate Extensionality
+    Gate Extensionality --- /!\ THIS IS NOT TRUE IN HIGHER ORDER LOGIC!
+    --> The unit sphere cannot be proven to be a generating set, as this
+    would prove that every module has a generating set, which would prove
+    the axiom of choice and thus the Law of excluded middle
+
+    This is not surprising, as π₀(ℂ) and π₀(ℂ*) are not isomorphic, but π₀(ℂ) ↪ π₀(ℂ*)
+    (See univalent foundations for more intuition)
 -/
 
 @[ext]
@@ -93,11 +99,19 @@ public theorem GateExtTotalSpace {R1 R2 : TypeQuantumRegister} (g1 g2 : QuantumG
   by intro h; apply LinearIsometry.ext; exact h
 
 @[ext]
-public theorem GateExtUnitary {R1 R2 : TypeQuantumRegister} (g1 g2 : QuantumGate R1 R2) :
-  (∀ s : QuantumStateSpace R1, (s ≫ g1) = (s ≫ g2)) → (g1 = g2) :=
-  by intro h; ext x; sorry;
+public axiom GateExtUnitVectors {R1 R2 : TypeQuantumRegister} (g1 g2 : QuantumGate R1 R2) :
+  (∀ x : R1.space, ‖x‖ = 1 → (g1.toFun x) = (g2.toFun x)) → (g1 = g2)
+  -- := by intro h; apply GateExtTotalSpace; intro x; sorry
   -- calc
-  -- g1.toFun x =g1.toFun ((1 : ℂ) • x) := by simp
+  -- g1.toFun x = ‖‖
+  -- apply (h (NormalizeElement x) (NormOfNormalizedIsOne x))
+
+@[ext]
+public axiom GateExtUnitary {R1 R2 : TypeQuantumRegister} (g1 g2 : QuantumGate R1 R2) :
+  (∀ s : QuantumStateSpace R1, (s ≫ g1) = (s ≫ g2)) → (g1 = g2)
+  -- := by intro h; ext x; sorry
+  -- calc
+  -- g1.toFun x = g1.toFun ((1 : ℂ) • x) := by simp
   -- _ = g1.toFun ((‖x‖ * ‖x‖⁻¹) • x) := by rw[<- Field.mul_inv_cancel ‖x‖]
   -- _ = g1.toFun (‖x‖ • (‖x‖⁻¹ • x)) := by simp
   -- _ = ‖x‖ • g1.toFun (‖x‖⁻¹ • x) := by simp
@@ -107,6 +121,10 @@ public theorem GateExtUnitary {R1 R2 : TypeQuantumRegister} (g1 g2 : QuantumGate
   -- _ = g2.toFun x := by simp
 
 -- LinearIsometry.map_smul
+
+public theorem GateEqImpliesStateEvolve {R1 R2 : TypeQuantumRegister} (g1 g2 : QuantumGate R1 R2)
+  : (g1 = g2) → ∀ s : QuantumStateSpace R1, (s ≫ g1) = (s ≫ g2) :=
+  by intro h; rw[h]; intro s; rfl
 
 public theorem GateExtIff {R1 R2 : TypeQuantumRegister} (g1 g2 : QuantumGate R1 R2)
   : (g1 = g2) ↔ ∀ s : QuantumStateSpace R1, (s ≫ g1) = (s ≫ g2) :=

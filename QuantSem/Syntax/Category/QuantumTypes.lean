@@ -116,6 +116,7 @@ public noncomputable def ElementInSpaceAsIso (E : Type) [E' : HilbertSpace E] (x
 public theorem ElementInSpacePointsTo (E : Type)  [E' : HilbertSpace E] (x : E) (hX : x ≠ 0) :
   (ElementInSpaceAsIso E x hX).toFun (1 : ℂ) = (‖x‖⁻¹ : ℂ) • x := by unfold ElementInSpaceAsIso; simp
 
+
 /-
     One can tensor Linear Isometries out
 -/
@@ -138,6 +139,40 @@ public theorem TensorAssocOverComp (E E' F F' G G' : Type) [H1 : HilbertSpace E]
   := by simp;
   _ = ((TensorProduct.assoc ℂ E' F' G') ∘ₗ ((TensorProduct.map (TensorProduct.map f.toLinearMap g.toLinearMap) h.toLinearMap))) x
   := by rw[TensorProduct.map_map_comp_assoc_eq f.toLinearMap g.toLinearMap h.toLinearMap];
+
+/-
+    By linearity, Isometries over tensor spaces are uniquely determined by the image on
+    the base spaces
+-/
+
+public noncomputable def LinearIsometryFromTensorLeft (E E' F : Type) [HilbertSpace E] [HilbertSpace E']
+  [HilbertSpace F] (f : (TensorProduct ℂ E E') →ₗᵢ[ℂ] F) (y : E') (hY : ‖y‖ = 1) : E →ₗᵢ[ℂ] F :=
+  LinearIsometry.mk
+  (
+    LinearMap.mk
+    (
+      AddHom.mk (fun x => f (TensorProduct.tmul ℂ x y)) (by intro a b; rw[TensorProduct.add_tmul, LinearIsometry.map_add])
+    )
+    (by intro m x; simp; rw[<- TensorProduct.smul_tmul']; apply LinearIsometry.map_smul)
+  )
+  (by intro x; simp; rw[hY]; simp)
+
+
+public noncomputable def LinearIsometryFromTensorRight (E E' F : Type) [HilbertSpace E] [HilbertSpace E']
+  [HilbertSpace F] (f : (TensorProduct ℂ E E') →ₗᵢ[ℂ] F) (x : E) (hX : ‖x‖ = 1) : E' →ₗᵢ[ℂ] F :=
+  LinearIsometry.mk
+  (
+    LinearMap.mk
+    (
+      AddHom.mk (fun y => f (TensorProduct.tmul ℂ x y)) (by intro a b; rw[TensorProduct.tmul_add, LinearIsometry.map_add])
+    )
+    (by intro m x; simp)
+  )
+  (by intro x; simp; rw[hX]; simp)
+
+public noncomputable def LinearIsometryFromTensorProd (E E' F : Type) [HilbertSpace E] [HilbertSpace E']
+  [HilbertSpace F] (f : (TensorProduct ℂ E E') →ₗᵢ[ℂ] F) : E × E'→ F :=
+  fun c => f (TensorProduct.tmul ℂ c.fst c.snd)
 
 
 /-
@@ -187,5 +222,18 @@ public theorem EquivalenceToIsometryOfSymmLeft {E E' : Type} [HilbertSpace E] [H
 public theorem EquivalenceToIsometryOfSymmRight {E E' : Type} [HilbertSpace E] [HilbertSpace E']
   (f : E ≃ₗᵢ[ℂ] E') : LinearIsometry.comp  f.symm.toLinearIsometry f.toLinearIsometry  = IdMap E :=
     by unfold LinearIsometry.comp; ext; simp;
+
+
+/-
+    Computation of the norm in a Hilbert Space
+-/
+
+public theorem NormFromInner (E : Type) [E' : HilbertSpace E] (z : E) :
+  ‖z‖ = √ (Complex.re (E'.inner z z)) :=
+  by calc
+    ‖z‖ = √(‖z‖ ^ 2)                    := by symm; simp;
+     _  = √(Complex.re (E'.inner z z))  := by rw[E'.norm_sq_eq_re_inner]; rfl
+
+
 
 end QuantumTypes

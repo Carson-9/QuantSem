@@ -203,9 +203,6 @@ public theorem TensorFactorises (E E' F G G' H : Type) [HilbertSpace E] [Hilbert
   TensorLinearIsometries (LinearIsometry.comp f h) (LinearIsometry.comp g i) :=
   by unfold TensorLinearIsometries; ext x; simp; rw[<- LinearMap.comp_apply, <- TensorProduct.map_comp f.toLinearMap g.toLinearMap h.toLinearMap i.toLinearMap]; rfl
 
-   --unfold TensorLinearIsometries; rw[TensorProduct.mapIsometry, TensorProduct.mapIsometry, TensorProduct.mapIsometry]; rw[<- TensorProduct.map_comp]; sorry
-
-
 @[simp]
 public theorem LinearIsometryEquivalenceComp {E E' E'' : Type} [HilbertSpace E]
   [HilbertSpace E'] [HilbertSpace E''] (f : E ≃ₗᵢ[ℂ] E') (g : E' ≃ₗᵢ[ℂ] E'') :

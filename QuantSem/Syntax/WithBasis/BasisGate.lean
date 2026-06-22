@@ -46,5 +46,10 @@ public theorem GateExtBasisIff {R1 R2 : TypeBasisRegister} (g1 g2 : BasisGateTyp
    (g1 = g2) ↔ (∀ i : R1.indexing , ((GetBasisState i) ≫ g1) = ((GetBasisState i) ≫ g2)):=
   by apply Iff.intro; intro hyp; rw[hyp]; intro i; rfl; apply GateExtBasis
 
+/-
+    Id Gate
+-/
+
+public abbrev IdGate (R : TypeBasisRegister) : BasisGateType R R := SyntacticRegister.CatRegister.id (BasisRegToQuantReg R)
 
 end BasisGate

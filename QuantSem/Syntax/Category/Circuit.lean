@@ -69,7 +69,7 @@ public def SimpleCircuitGetShape {R : TypeQuantumRegister} (c : SimpleCircuitOve
 
 public def SimpleCircuitGetShape' (c : TypeSimpleCircuit) := SimpleCircuitGetShape c.circuit
 
-
+@[expose]
 public noncomputable def SimpleCircuitGateRepr {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R)
   : QuantumGate R R := match c with
   | IdWire => id_map R
@@ -78,11 +78,11 @@ public noncomputable def SimpleCircuitGateRepr {R : TypeQuantumRegister} (c : Si
   | VerticalComp c1 c2 => GateTensor (SimpleCircuitGateRepr c1) (SimpleCircuitGateRepr c2)
 
 
-@[expose]
-public noncomputable def SimpleCircuitGateRepr' (c : TypeSimpleCircuit) : TypeQuantumGate :=
+public noncomputable abbrev SimpleCircuitGateRepr' (c : TypeSimpleCircuit) : TypeQuantumGate :=
   ⟨c.register, ⟨ c.register, SimpleCircuitGateRepr c.circuit ⟩⟩
 
 
+@[expose]
 public noncomputable def SimpleCircuitCompute {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R)
   (s : QuantumStateSpace R) : QuantumStateSpace R :=
     GateStateEvolve (SimpleCircuitGateRepr' ⟨R, c⟩) s
@@ -119,6 +119,7 @@ public theorem GateRepr'IsGateRepr {R : TypeQuantumRegister} (c : SimpleCircuitO
     Circuit Equivalence
 -/
 
+@[expose]
 public def CircuitEquivalence {R : TypeQuantumRegister} (c1 c2 : SimpleCircuitOverRegister R)
   : Prop := ∀ s : QuantumStateSpace R, SimpleCircuitCompute c1 s = SimpleCircuitCompute c2 s
 
@@ -156,7 +157,7 @@ public theorem GateEquivalenceIff  {R : TypeQuantumRegister} (g1 g2 : QuantumGat
 
 public theorem CircuitEquivalenceGateIff  {R : TypeQuantumRegister} (c1 c2 : SimpleCircuitOverRegister R) :
   (c1 ≅ₖ c2) ↔ (SimpleCircuitGateRepr c1) = (SimpleCircuitGateRepr c2) :=
-  by apply Iff.intro; intro h; rw [GateExtIff]; intro s; unfold CircuitEquivalence at h; apply h; intro h; unfold CircuitEquivalence; unfold SimpleCircuitCompute; unfold GateStateEvolve; rw[GateRepr'IsGateRepr, GateRepr'IsGateRepr]; intro s; rw[h]; rfl
+  by apply Iff.intro; intro h; rw [GateExtIff]; intro s; unfold CircuitEquivalence at h; apply h; intro h; unfold CircuitEquivalence; unfold SimpleCircuitCompute; unfold GateStateEvolve; rw[GateRepr'IsGateRepr, GateRepr'IsGateRepr]; intro s; rw[h];
 
 @[simp]
 public theorem IdWireIsIdLeft {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R)

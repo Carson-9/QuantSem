@@ -28,7 +28,7 @@ public abbrev TypeQuantumGate.exitSpace (g : TypeQuantumGate) := g.snd.fst
 public abbrev TypeQuantumGate.gate (g : TypeQuantumGate) := g.snd.snd
 
 
-public noncomputable def GateTensor {R1 R2 R3 R4 : TypeQuantumRegister}
+public noncomputable abbrev GateTensor {R1 R2 R3 R4 : TypeQuantumRegister}
   (g1 : QuantumGate R1 R2) (g2 : QuantumGate R3 R4)
   : QuantumGate (R1 ⊗ᵣ R3) (R2 ⊗ᵣ R4) := g1 ⊗ₕ g2
 

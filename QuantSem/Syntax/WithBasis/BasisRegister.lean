@@ -117,6 +117,11 @@ public noncomputable instance CatBasisReg : Category TypeBasisRegister where
 public noncomputable instance MonCatBasisReg : MonoidalCategory (ObjectProperty.FullSubcategory QuantumRegHasBasis) :=
   ObjectProperty.fullMonoidalSubcategory QuantumRegHasBasis
 
+notation A "⊗ᵣ" B => MonCatBasisReg.tensorObj A B
+
+
+public noncomputable def id_map (R : TypeBasisRegister) : R ⟶ R := CatBasisReg.id R
+
 --@[default_instance]
 --public noncomputable instance MonCatBasisReg : MonoidalCategory TypeBasisRegister where
 --  tensorObj X Y := CatElementQuantumReg (MonCatBasisReg'.tensorObj (QuantumRegCatElement X) (QuantumRegCatElement Y))

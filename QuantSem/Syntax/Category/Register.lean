@@ -116,6 +116,7 @@ notation f "⊗ₕ" g => QuantRegHomTensor f g
 public theorem arrow_is_comp {R1 R2 R3 : TypeQuantumRegister} (f : R1 ⟶ R2) (g : R2 ⟶ R3)
   : (f ≫ g) = (LinearIsometry.comp g f) := by rfl
 
+@[expose]
 public def id_map (R : TypeQuantumRegister) : R ⟶ R := @IdMap R.fst R.snd
 
 @[simp]

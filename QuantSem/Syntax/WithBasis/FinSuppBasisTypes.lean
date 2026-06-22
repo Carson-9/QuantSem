@@ -10,7 +10,6 @@ module
 
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
-public import Mathlib.Analysis.InnerProductSpace.l2Space
 
 public import QuantSem.Syntax.Category.QuantumTypes
 
@@ -22,34 +21,25 @@ open QuantumTypes
 
 namespace BasisTypes
 
+-- ι should be a set to receive a decidable equality which is better for orthogonality check
+
 public class HilbertSpaceWithBasis (E : Type) (ι : Type) extends HilbertSpace E, Module.Basis ι ℂ E where
   basisType := ι
-  orthogonalBasis : ∀ (i j : ι), i ≠ j → inner (toBasis i) (toBasis j) = 0
-  normalBasis : ∀ i : ι, ‖toBasis i‖ = 1
+  isOrthonormal : Orthonormal ℂ (fun i : ι => toBasis i)
 
 /-
     Hilbert spaces with basis can be composed with the Tensor product
 -/
 
 
+-- The (lack of) excluded middle is both annoying and insightful
 @[default_instance]
 public noncomputable instance HilbertBasisTensor {E F : Type} {ι γ : Type}
   [H1 : HilbertSpaceWithBasis E ι] [H2 : HilbertSpaceWithBasis F γ]
   : HilbertSpaceWithBasis (TensorProduct ℂ E F) (ι × γ) where
-  repr := (TensorProduct.congr (H1.repr) (H2.repr)) ≪≫ₗ (finsuppTensorFinsuppLid ℂ ℂ ι γ)
-  orthogonalBasis :=
-    by  intro i j hneq
-        unfold finsuppTensorFinsuppLid
-        simp
-        sorry
-
-  normalBasis :=
-    by intro i
-       unfold finsuppTensorFinsuppLid
-       simp
-       rw[H1.normalBasis i.1]
-       rw[H2.normalBasis i.2]
-       simp
+  repr := (Module.Basis.tensorProduct H1.toBasis H2.toBasis).repr
+  --(TensorProduct.congr (H1.repr) (H2.repr)) ≪≫ₗ (finsuppTensorFinsuppLid ℂ ℂ ι γ)
+  isOrthonormal := Orthonormal.basisTensorProduct H1.isOrthonormal H2.isOrthonormal
 
 public noncomputable abbrev HilbertBasisTensorFun (E F : Type) (ι γ : Type)
   [H1 : HilbertSpaceWithBasis E ι] [H2 : HilbertSpaceWithBasis F γ]
@@ -69,8 +59,8 @@ public theorem BasisOfTensor (E F : Type) (ι γ : Type) [H1 : HilbertSpaceWithB
   [H2 : HilbertSpaceWithBasis F γ] :
   ∀ index : ι × γ, (HilbertBasisTensorFun E F ι γ).toBasis index =
     TensorProduct.tmul ℂ (H1.toBasis index.fst) (H2.toBasis index.snd) :=
-  by intro i; sorry -- rw[<- finsuppTensorFinsupp_apply ℂ ℂ E F ι γ H1.toBasis H2.toBasis i.1 i.2];
-
+  by intro i; unfold HilbertBasisTensorFun; unfold HilbertBasisTensor; simp
+     rw[Module.Basis.tensorProduct_apply' H1.toBasis H2.toBasis i]
 
 /-
     ℂ is the unit of the tensor product. It is a Hilbert space
@@ -87,8 +77,11 @@ public noncomputable instance CHilbertBasis : HilbertSpaceWithBasis ℂ (Fin 1) 
   ( by unfold Function.LeftInverse; intro x; simp;)
   ( by unfold Function.RightInverse; intro x; simp; ext z; rw[Fin.fin_one_eq_zero z])
   )).repr
-  orthogonalBasis := by intro i j hNeq; rw[Fin.fin_one_eq_zero i] at hNeq; rw[Fin.fin_one_eq_zero j] at hNeq; contradiction
-  normalBasis := by intro i; rw[Fin.fin_one_eq_zero i]; simp
+  isOrthonormal :=
+  by  unfold Orthonormal
+      apply And.intro
+      intro i; simp; rw[Fin.fin_one_eq_zero i]; simp
+      unfold Pairwise; intro i j hneq; rw[Fin.fin_one_eq_zero i] at hneq; rw[Fin.fin_one_eq_zero j] at hneq; contradiction
 
 @[expose, implicit_reducible]
 public noncomputable def CIsHilbertBasis : HilbertSpaceWithBasis ℂ (Fin 1) := CHilbertBasis
@@ -100,9 +93,16 @@ public noncomputable def CIsHilbertBasis : HilbertSpaceWithBasis ℂ (Fin 1) := 
 
 
 @[ext]
-public theorem LinearIsometryBasisExt (E E' F ι κ γ : Type) [EH : HilbertSpaceWithBasis E ι]
+public theorem LinearIsometryProductBasisExt (E E' F ι κ γ : Type) [EH : HilbertSpaceWithBasis E ι]
   [E'H : HilbertSpaceWithBasis E' κ] [F' : HilbertSpaceWithBasis F γ] (f g : (TensorProduct ℂ E E') →ₗᵢ[ℂ] F)
   : (∀ c : E × E', f (TensorProduct.tmul ℂ c.fst c.snd) = g (TensorProduct.tmul ℂ c.fst c.snd)) → (f = g) :=
   by intro h; apply (Module.Basis.ext_linearIsometry (Module.Basis.ofRepr (HilbertBasisTensorFun E E' ι κ).repr)); intro i; simp; rw[BasisOfTensor]; apply (h (EH.toBasis i.1, E'H.toBasis i.2))
+
+@[ext]
+public theorem LinearIsometryBasisExt (E F ι γ : Type) [EH : HilbertSpaceWithBasis E ι]
+   [F' : HilbertSpaceWithBasis F γ] (f g : E →ₗᵢ[ℂ] F)
+  : (∀ i : ι, f (EH.toBasis i) = g (EH.toBasis i)) → (f = g) :=
+  by intro h; apply (Module.Basis.ext_linearIsometry EH.toBasis); exact h
+
 
 end BasisTypes

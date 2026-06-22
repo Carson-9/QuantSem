@@ -99,6 +99,10 @@ public noncomputable def QuantumRegisterTensor (T1 T2 : TypeQuantumRegister) : T
 
 notation A "⊗ᵣ" B => QuantumRegisterTensor A B
 
+@[simp]
+public theorem SpaceCommutesWithTensor (R1 R2 : TypeQuantumRegister) :
+  (R1 ⊗ᵣ R2).space = TensorProduct ℂ R1.space R2.space := by rfl
+
 @[expose]
 public noncomputable def QuantRegHomTensor {R1 R2 R3 R4 : TypeQuantumRegister}
   (f : R1 ⟶ R3) (g : R2 ⟶ R4) :

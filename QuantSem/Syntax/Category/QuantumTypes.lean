@@ -100,7 +100,7 @@ public noncomputable def CIsRightNeutral (E : Type) [HilbertSpace E] :
     An element of R is uniquely determined by an isometry from ℂ to R
 -/
 
-
+ @[expose]
 public noncomputable def ElementInSpaceAsIso (E : Type) [E' : HilbertSpace E] (x : E) (hX : x ≠ 0)
   : ℂ →ₗᵢ[ℂ] E :=
   LinearIsometry.mk
@@ -221,6 +221,20 @@ public theorem EquivalenceToIsometryOfSymmRight {E E' : Type} [HilbertSpace E] [
     by unfold LinearIsometry.comp; ext; simp;
 
 
+/-
+    LinearIsometries from ℂ to X are equal iff they agree at (1 : ℂ)
+-/
+
+
+public theorem LinearIsometriesOnCAgree {E : Type} [HilbertSpace E]
+  (f g : ℂ →ₗᵢ[ℂ] E) : f = g ↔ (f 1) = (g 1) :=
+  by apply Iff.intro;intro hyp; rw[hyp]; intro hyp; ext x;
+     rw[<- mul_one x]; calc
+     f (x * 1) = f (x • 1) := by simp
+     _ = x • (f 1) := by rw[LinearIsometry.map_smul]
+     _ = x • (g 1) := by rw[hyp]
+     _ = g (x • 1) := by rw[<- LinearIsometry.map_smul]
+     _ = g (x * 1) := by simp;
 /-
     Computation of the norm in a Hilbert Space
 -/

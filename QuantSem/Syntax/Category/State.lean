@@ -45,7 +45,7 @@ public noncomputable def QuantumState.MulTensor
 notation "⨂ₛ" l => QuantumState.MulTensor l MonCatRegister.tensorUnit true
 
 
-
+@[expose]
 public noncomputable def QuantumStateSelection {R : TypeQuantumRegister} (x : R.space) (hNorm : ‖x‖ = 1)
   : QuantumStateSpace R :=
   ElementInSpaceAsIso R.space x (by intro hAbs; rw[hAbs] at hNorm; rw[norm_zero] at hNorm; apply zero_ne_one at hNorm; apply hNorm)
@@ -53,5 +53,17 @@ public noncomputable def QuantumStateSelection {R : TypeQuantumRegister} (x : R.
 @[simp]
 public theorem StateSelectionOfOne  {R : TypeQuantumRegister} (x : R.space) (hNorm : ‖x‖ = 1) :
   (QuantumStateSelection x hNorm).toFun (1 : ℂ) = x := by unfold QuantumStateSelection; rw[ElementInSpacePointsTo]; rw[hNorm]; simp
+
+@[simp]
+public theorem StateExtAtOne {R : TypeQuantumRegister} (x y : R.space) (hx : ‖x‖ = 1) (hy : ‖y‖ = 1)
+  : (QuantumStateSelection x hx).toFun (1 : ℂ) = (QuantumStateSelection y hy).toFun (1 : ℂ)
+    → (QuantumStateSelection x hx) = (QuantumStateSelection y hy) :=
+  by intro hyp; unfold QuantumStateSelection; apply LinearIsometry.ext; intro z;
+     unfold ElementInSpaceAsIso; simp; simp at hyp; rw [hyp];
+
+public theorem StateEqualAreAtOne {R : TypeQuantumRegister} (x y : R.space) (hx : ‖x‖ = 1) (hy : ‖y‖ = 1)
+  : (QuantumStateSelection x hx) = (QuantumStateSelection y hy) →
+    (QuantumStateSelection x hx).toFun (1 : ℂ) = (QuantumStateSelection y hy).toFun (1 : ℂ)
+  := by intro hyp; rw[hyp]
 
 end SyntacticState

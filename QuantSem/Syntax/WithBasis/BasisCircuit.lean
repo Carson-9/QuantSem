@@ -77,6 +77,18 @@ public def BasisCircuitEquivalence {R : TypeBasisRegister}
 
 notation c1 "≅ₖ₂" c2 => BasisCircuitEquivalence c1 c2
 
+@[simp]
+public theorem BasisEquivalenceRefl {R : TypeBasisRegister} (c : BasisCircuitOverRegister R)
+  : c ≅ₖ₂ c := by intro s; rfl
+
+@[simp]
+public theorem BasisEquivalenceSym {R : TypeBasisRegister} (c1 c2 : BasisCircuitOverRegister R)
+  : (c1 ≅ₖ₂ c2) → (c2 ≅ₖ₂ c1) := by intro h s; rw[h]
+
+public theorem BasisEquivalenceTrans {R : TypeBasisRegister} (c1 c2 c3 : BasisCircuitOverRegister R)
+  : (c1 ≅ₖ₂ c2) → (c2 ≅ₖ₂ c3) → (c1 ≅ₖ₂ c3) := by intro h1 h2 s; rw[h1, h2]
+
+
 
 public theorem BasisEquivalenceOverBasisState {R : TypeBasisRegister} (c1 c2 : BasisCircuitOverRegister R) :
   (c1 ≅ₖ₂ c2) ↔ ((BasisCircuitGateRepr c1) = (BasisCircuitGateRepr c2)) :=
@@ -94,6 +106,10 @@ public theorem BasisEquivalenceIsEquivalence {R : TypeBasisRegister} (c1 c2 : Ba
      simp; unfold SimpleCircuitGateRepr'; rw[BasisEquivalenceOverBasisState] at h;
      rw [BasisGateReprIsSimpleGateRepr, BasisGateReprIsSimpleGateRepr] at h; rw[h]; simp;
      intro h; unfold CircuitEquivalence at h; intro i; apply h
+
+
+public theorem GateEquivalenceIff  {R : TypeBasisRegister} (g1 g2 : BasisGateType R R) :
+  ((Gate g1) ≅ₖ₂ (Gate g2)) ↔ (g1 = g2) := by apply Iff.intro; intro h; apply GateExtBasis; apply h; intro h; rw[h]; apply BasisEquivalenceRefl
 
 
 

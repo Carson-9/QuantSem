@@ -1,3 +1,8 @@
--- This module serves as the root of the `QuantSem` library.
--- Import modules here that should be built as part of the library.
-import QuantSem.Syntax.HighLevel.HighLevel
+/-
+Copyright (c) 2026 William Hasley. All rights reserved.
+Released under GNU GPL3 license as described in the file LICENSE.
+Authors: William Hasley
+-/
+
+import QuantSem.Syntax.Category.Category
+import QuantSem.Syntax.WithBasis.WithBasis

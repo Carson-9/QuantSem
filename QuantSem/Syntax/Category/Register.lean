@@ -79,6 +79,7 @@ public theorem NormZeroIffZero {R1 : TypeQuantumRegister} :
     normSqExpr : ∀ x : R1.space, (R1.struct.inner x x).re = 0 ↔ R1.struct.inner x x = 0 := by intro x; apply Iff.intro; intro hX; apply Complex.ext; rw[hX]; simp; simp; rw[<- Complex.ofReal_pow, Complex.ofReal_im]; intro h; rw[h]; simp
     innerZero : ∀ x : R1.space, (R1.struct.inner x x).re = 0 ↔ x = 0 := by intro x; apply Iff.trans (normSqExpr x) (inner_self_eq_zero)
 
+
 @[ext]
 public theorem CatRegisterHomExt {R1 R2 : TypeQuantumRegister} (f g : R1 ⟶ R2) :
   (∀ x : R1.space, f.toFun x = g.toFun x) → f = g :=
@@ -103,6 +104,28 @@ notation A "⊗ᵣ" B => QuantumRegisterTensor A B
 public theorem SpaceCommutesWithTensor (R1 R2 : TypeQuantumRegister) :
   (R1 ⊗ᵣ R2).space = TensorProduct ℂ R1.space R2.space := by rfl
 
+/-
+    Elements of a Tensor can always be written as a sum of separables
+-/
+
+public def StatesAsCombinationOfSeparables {R1 R2 : TypeQuantumRegister} :
+  (R1 ⊗ᵣ R2).space ≃
+    Submodule.span ℂ {t : TensorProduct ℂ R1.space R2.space | ∃ (m : R1.space) (n : R2.space), m ⊗ₜ[ℂ] n = t} :=
+    .mk (fun x => ⟨x, by rw[TensorProduct.span_tmul_eq_top ℂ R1.space R2.space]; simp⟩) (fun a => a.val)
+    (by unfold Function.LeftInverse; intro x; simp)
+    (by unfold Function.RightInverse; intro x; simp)
+
+public theorem RegisterInduction{R1 R2 : TypeQuantumRegister}
+  (property : (R1 ⊗ᵣ R2).space → Prop)
+  (hzero : property 0)
+  (hAllBasis : ∀ x1 : R1.space, ∀ x2 : R2.space, property (x1 ⊗ₜ[ℂ] x2))
+  (hLinear : ∀ x1 x2 : ((R1 ⊗ᵣ R2).space), property x1 → property x2 → property (x1 + x2))
+  (hmul :  ∀ x : ((R1 ⊗ᵣ R2).space), ∀ c : ℂ, property x → property (c • x)) :
+  ∀ x : ((R1 ⊗ᵣ R2).space), property x :=
+  by intro x; sorry
+  -- submodule span induction
+
+
 @[expose]
 public noncomputable def QuantRegHomTensor {R1 R2 R3 R4 : TypeQuantumRegister}
   (f : R1 ⟶ R3) (g : R2 ⟶ R4) :
@@ -111,6 +134,7 @@ public noncomputable def QuantRegHomTensor {R1 R2 R3 R4 : TypeQuantumRegister}
     (f : R1.fst →ₗᵢ[ℂ] R3.fst) g
 
 notation f "⊗ₕ" g => QuantRegHomTensor f g
+
 
 @[simp]
 public theorem arrow_is_comp {R1 R2 R3 : TypeQuantumRegister} (f : R1 ⟶ R2) (g : R2 ⟶ R3)

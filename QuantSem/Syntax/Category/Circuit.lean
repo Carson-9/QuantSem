@@ -184,6 +184,9 @@ public theorem ParallelRewriteUp {R1 R2 : TypeQuantumRegister} (c1 c1' : SimpleC
   (c2 : SimpleCircuitOverRegister R2) (hEquiv:  c1 ≅ₖ c1') :
   VerticalComp c1 c2 ≅ₖ VerticalComp c1' c2 :=
   by rw[CircuitEquivalenceGateIff, VerticalIsTensor, VerticalIsTensor]; rw[CircuitEquivalenceGateIff] at hEquiv; rw[hEquiv]
+  --by unfold CircuitEquivalence;
+  --   apply Submodule.span_induction
+  --    (_) _ _ _ _ _ _
 
 @[simp]
 public theorem ParallelRewriteDown {R1 R2 : TypeQuantumRegister} (c1 : SimpleCircuitOverRegister R1)

@@ -8,6 +8,7 @@ Authors: William Hasley
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Category
+public import Mathlib.LinearAlgebra.TensorProduct.Defs
 public import QuantSem.Syntax.Category.Register
 
 open SyntacticRegister QuantumTypes

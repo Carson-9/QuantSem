@@ -7,6 +7,7 @@ Authors: William Hasley
 module
 
 public import QuantSem.Semantics.CoordinateSpace.ComplexSpaces
+public import QuantSem.Semantics.CoordinateSpace.ConcreteSpaceTactics
 
 namespace CoordinateSpace
 open ComplexSpaces

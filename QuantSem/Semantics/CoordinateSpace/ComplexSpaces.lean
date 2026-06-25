@@ -187,4 +187,13 @@ public theorem MatrixGateMulComm {n : ℕ} (M N : Matrix.unitaryGroup (Fin n) �
 --  by simp; sorry
 
 
+/-
+    Fin dim matrix product expression
+-/
+
+-- Not very usable
+public theorem FinDimMatrixMul {n m p : ℕ} (M : Matrix (Fin n) (Fin m) ℂ) (N : Matrix (Fin m) (Fin p) ℂ)
+  : ∀ i : (Fin n), ∀ j : (Fin p), (M * N) i j = ∑ k : (Fin m), (M i k) * (N k j) :=
+  by intro i j; rfl
+
 end ComplexSpaces

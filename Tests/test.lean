@@ -13,16 +13,22 @@ open CoordinateSpace
 
 
 
-noncomputable def qubit_zero : BasisStateSpace QubitSpace := UnitVectorToState ⟨ !₂[(1 : ℂ), (0 : ℂ)], by rw[EuclideanSpace.norm_eq]; simp⟩
-noncomputable def qubit_one : BasisStateSpace QubitSpace := UnitVectorToState ⟨ !₂[(0 : ℂ), (1 : ℂ)], by rw[EuclideanSpace.norm_eq]; simp⟩
+noncomputable def qubit_zero : BasisStateSpace QubitSpace :=
+  UnitVectorToState ⟨ !₂[(1 : ℂ), 0], by unit_vector_simple ⟩
+noncomputable def qubit_one : BasisStateSpace QubitSpace :=
+  UnitVectorToState ⟨ !₂[(0 : ℂ), 1], by unit_vector_simple ⟩
+noncomputable def qubit_plus  : BasisStateSpace QubitSpace :=
+  UnitVectorToState ⟨ (√2)⁻¹ • !₂[(1 : ℂ), 1], by unit_vector_simple ⟩
+  noncomputable def qubit_minus  : BasisStateSpace QubitSpace :=
+  UnitVectorToState ⟨ (√2)⁻¹ • !₂[(1 : ℂ), -1], by unit_vector_simple ⟩
 
 
 -- Since this is using √2, we have to fight with algebra to prove things,
 -- Work is currently being done to identify √2 with it's galois representation
 -- Which simplifies the work down to identifying different conjugates, but is heavy computationally
 noncomputable def hadamard : BasisGateType QubitSpace QubitSpace :=
-  MatrixToGate ⟨ (((√2)⁻¹ : ℂ) • !![(1 : ℂ), (1 : ℂ); (1 : ℂ), (-1 : ℂ)]),
-    by rw[Matrix.mem_unitaryGroup_iff, Matrix.smul_mul]; sorry  ⟩
+  MatrixToGate ⟨ (((√2)⁻¹ : ℂ) • !![(1 : ℂ), 1; 1, -1]),
+    by rw[Matrix.mem_unitaryGroup_iff]; ext i j; rw[FinDimMatrixMul]; simp; sorry ⟩ --Matrix.smul_mul
 
 -- This is simpler on nice matrices
 noncomputable def pauli_x : BasisGateType QubitSpace QubitSpace := MatrixToGate ⟨!![0, 1 ; 1 , 0],

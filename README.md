@@ -36,6 +36,14 @@ $\mathrm{QuantSem}$ is a Lean formalization of Quantum Computing aimed at concil
 
 </br>
 
+## 🏆 Current capabilities
+
+$\mathrm{QuantSem}$ provides a ```Test``` folder, in which the .lean files give an idea of the language and it's current expressiveness power.
+
+* ```test.lean``` shows the concrete description of states, gates and circuits as programmed by the user. Some useful tactics for proving unitarity allow the user to not worry about their implementation as long as the data is indeed unitary in the usual Euclidean spaces.
+
+</br>
+
 ## TODO : 
 * Refine the Category of Hilbert spaces with a basis to be a dependent product allowing to carry the data of the basis (for now, it is the full subcategory produced by the property "there exists a basis", the axiom of choice comes back to bite us later) [ ❌ ]
   _one could also think of refining the non-dependent product with the property that the second element of the tuple forms a basis of the first element_

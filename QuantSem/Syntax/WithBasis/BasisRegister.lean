@@ -103,6 +103,26 @@ public noncomputable instance HavingBasisIsMonoidal : ObjectProperty.IsMonoidal 
 -/
 
 
+/-
+
+    The right category for TypeBasisRegister __depends__ on the chosen basis,
+    Simply quotienting by the proposition "there exists a basis" is not enough, the axiom
+    of choice obscures the chosen basis which creates problems when defining isometries
+    between basis
+
+    The right construction is as follows (as the dependent product does not exist yet afaik):
+
+
+    *Hilb* ────────⟩ *Hilb* × Types
+                          ∣
+                          ∣   Quotient by property : Makes a basis
+                          ∣
+                          ∨
+                    *BasisMonCat*
+-/
+
+
+
 @[default_instance]
 public noncomputable instance CatBasisReg' : Category (ObjectProperty.FullSubcategory QuantumRegHasBasis) :=
   ObjectProperty.FullSubcategory.category QuantumRegHasBasis
@@ -118,7 +138,6 @@ public noncomputable instance MonCatBasisReg : MonoidalCategory (ObjectProperty.
   ObjectProperty.fullMonoidalSubcategory QuantumRegHasBasis
 
 notation A "⊗ᵣ" B => MonCatBasisReg.tensorObj A B
-
 
 public noncomputable def id_map (R : TypeBasisRegister) : R ⟶ R := CatBasisReg.id R
 

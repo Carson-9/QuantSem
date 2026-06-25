@@ -31,6 +31,7 @@ namespace SyntacticCircuit
 
 public inductive SimpleCircuitOverRegister : (TypeQuantumRegister → Type 1) where
   | IdWire {R : TypeQuantumRegister} : SimpleCircuitOverRegister R
+  | RegisterSwap {R1 R2 : TypeQuantumRegister} (iso : R1 ≅ R2) (c : SimpleCircuitOverRegister R1) : SimpleCircuitOverRegister R2
   | Gate {R : TypeQuantumRegister} (g : QuantumGate R R) : SimpleCircuitOverRegister R
   | HorizontalComp {R : TypeQuantumRegister} (c1 c2 : SimpleCircuitOverRegister R) : SimpleCircuitOverRegister R
   | VerticalComp {R₁ R₂ : TypeQuantumRegister} (c1 : SimpleCircuitOverRegister R₁) (c2 :SimpleCircuitOverRegister R₂ ) : SimpleCircuitOverRegister (R₁ ⊗ᵣ R₂)
@@ -45,6 +46,7 @@ open SimpleCircuitOverRegister
 public def SimpleCircuitDepth {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R) : ℕ :=
   match c with
   | IdWire => 1
+  | RegisterSwap _ _ => 0
   | Gate _ => 1
   | HorizontalComp c1 c2 => (SimpleCircuitDepth c1) + (SimpleCircuitDepth c2)
   | VerticalComp c1 c2 => max (SimpleCircuitDepth c1) (SimpleCircuitDepth c2)
@@ -54,6 +56,7 @@ public def SimpleCircuitDepth' (c : TypeSimpleCircuit) := SimpleCircuitDepth c.c
 public def SimpleCircuitGateCount {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R) : ℕ :=
   match c with
   | IdWire => 0
+  | RegisterSwap _ _ => 0
   | Gate _ => 1
   | HorizontalComp c1 c2 => (SimpleCircuitGateCount c1) + (SimpleCircuitGateCount c2)
   | VerticalComp c1 c2 => (SimpleCircuitGateCount c1) + (SimpleCircuitGateCount c2)
@@ -63,6 +66,7 @@ public def SimpleCircuitGateCount' (c : TypeSimpleCircuit) := SimpleCircuitGateC
 public def SimpleCircuitGetShape {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R) :
   List TypeQuantumRegister := match c with
     | IdWire => [R]
+    | RegisterSwap _ c => SimpleCircuitGetShape c
     | Gate _ => [R]
     | HorizontalComp c1 c2 => SimpleCircuitGetShape c1
     | VerticalComp c1 c2 => (SimpleCircuitGetShape c1) ++ (SimpleCircuitGetShape c2)
@@ -73,6 +77,7 @@ public def SimpleCircuitGetShape' (c : TypeSimpleCircuit) := SimpleCircuitGetSha
 public noncomputable def SimpleCircuitGateRepr {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R)
   : QuantumGate R R := match c with
   | IdWire => id_map R
+  | RegisterSwap iso c => iso.symm.hom ≫ (SimpleCircuitGateRepr c) ≫ iso.hom
   | Gate g => g
   | HorizontalComp c1 c2 => (SimpleCircuitGateRepr c1) ≫ (SimpleCircuitGateRepr c2)
   | VerticalComp c1 c2 => GateTensor (SimpleCircuitGateRepr c1) (SimpleCircuitGateRepr c2)
@@ -106,13 +111,33 @@ public theorem VerticalIsTensor {R1 R2 : TypeQuantumRegister} (c1 : SimpleCircui
   : SimpleCircuitGateRepr (VerticalComp c1 c2) = GateTensor (SimpleCircuitGateRepr c1) (SimpleCircuitGateRepr c2)
   := by rfl
 
+@[simp]
 public theorem IdWireIsNeutral (R : TypeQuantumRegister) :
   ∀ s : QuantumStateSpace R, SimpleCircuitCompute (IdWire) s = s :=
   by apply GateId
 
+@[simp]
 public theorem GateRepr'IsGateRepr {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R) :
   (SimpleCircuitGateRepr' ⟨R, c⟩).gate = SimpleCircuitGateRepr c :=
   by rfl
+
+public theorem RegisterSwapIsComp {R1 R2 : TypeQuantumRegister} {iso : R1 ≅ R2}
+ (c : SimpleCircuitOverRegister R1) :
+ ∀ s : QuantumStateSpace R2, SimpleCircuitCompute (RegisterSwap iso c) s = iso.hom.comp (SimpleCircuitCompute c (s ≫ iso.symm.hom)) :=
+by intro s; rfl
+
+public theorem RegisterSwapComp {R1 R2 R3 : TypeQuantumRegister} {iso1 : R1 ≅ R2} {iso2 : R2 ≅ R3}
+  (c : SimpleCircuitOverRegister R1) :
+  ∀ s : QuantumStateSpace R3,
+    SimpleCircuitCompute (RegisterSwap iso2 (RegisterSwap iso1 c)) s =
+    SimpleCircuitCompute (RegisterSwap (iso1.trans iso2) c) s :=
+    by intro s; rw[RegisterSwapIsComp, RegisterSwapIsComp]; rfl
+
+public theorem DoubleRegisterSwap {R1 R2 : TypeQuantumRegister} {iso : R1 ≅ R2}
+ (c : SimpleCircuitOverRegister R1) :
+ ∀ s : QuantumStateSpace R1, SimpleCircuitCompute (RegisterSwap iso.symm (RegisterSwap iso c)) s
+  = SimpleCircuitCompute c s :=
+ by intro s; rw[RegisterSwapComp]; rw[CategoryTheory.Iso.self_symm_id]; rfl
 
 
 /-
@@ -193,6 +218,15 @@ public theorem ParallelRewriteDown {R1 R2 : TypeQuantumRegister} (c1 : SimpleCir
   (c2 c2' : SimpleCircuitOverRegister R2) (hEquiv:  c2 ≅ₖ c2') :
   VerticalComp c1 c2 ≅ₖ VerticalComp c1 c2' :=
   by rw[CircuitEquivalenceGateIff, VerticalIsTensor, VerticalIsTensor]; rw[CircuitEquivalenceGateIff] at hEquiv; rw[hEquiv]
+
+
+@[simp]
+public theorem RegisterSwapCong {R1 R2 : TypeQuantumRegister} {iso : R1 ≅ R2} (c1 c2 : SimpleCircuitOverRegister R1)
+  : (c1 ≅ₖ c2) ↔ (RegisterSwap iso c1) ≅ₖ (RegisterSwap iso c2) :=
+  by apply Iff.intro; intro h; unfold CircuitEquivalence; intro s;
+      unfold CircuitEquivalence at h; rw[RegisterSwapIsComp, RegisterSwapIsComp];
+      rw[h]; intro h; unfold CircuitEquivalence at h; unfold CircuitEquivalence; intro s; rw[<- @DoubleRegisterSwap R1 R2 iso];
+      rw[RegisterSwapIsComp, h, <- RegisterSwapIsComp]; rw[@DoubleRegisterSwap R1 R2 iso];
 
 
 /-

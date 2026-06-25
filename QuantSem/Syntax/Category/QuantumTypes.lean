@@ -235,6 +235,11 @@ public theorem LinearIsometriesOnCAgree {E : Type} [HilbertSpace E]
      _ = x • (g 1) := by rw[hyp]
      _ = g (x • 1) := by rw[<- LinearIsometry.map_smul]
      _ = g (x * 1) := by simp;
+
+public theorem LinearIsometriesOnCAgree' {E : Type} [HilbertSpace E]
+  (f g : ℂ →ₗᵢ[ℂ] E) : f = g ↔ (f.toFun 1) = (g.toFun 1) :=
+  by simp; apply LinearIsometriesOnCAgree
+
 /-
     Computation of the norm in a Hilbert Space
 -/

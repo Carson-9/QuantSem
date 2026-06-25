@@ -32,6 +32,7 @@ open SimpleCircuitOverRegister
 public def SimpleCircuitRemoveIdWire {R : TypeQuantumRegister} (c : SimpleCircuitOverRegister R) :
   SimpleCircuitOverRegister R := match c with
   | IdWire => IdWire -- If IdWire is the whole circuit, must keep it
+  | RegisterSwap iso c =>  RegisterSwap iso (SimpleCircuitRemoveIdWire c)
   | Gate g => Gate g
   | HorizontalComp c1 c2 => match (SimpleCircuitRemoveIdWire c1) with
         | IdWire => SimpleCircuitRemoveIdWire c2
@@ -44,6 +45,7 @@ public theorem RemoveIdWireEquiv {R : TypeQuantumRegister} (c : SimpleCircuitOve
   : c ≅ₖ SimpleCircuitRemoveIdWire c
   := by induction c with
     | IdWire => unfold SimpleCircuitRemoveIdWire; apply CircuitEquivalenceRefl
+    | RegisterSwap iso c ic => unfold SimpleCircuitRemoveIdWire; unfold CircuitEquivalence; _
     | Gate g => unfold SimpleCircuitRemoveIdWire; apply CircuitEquivalenceRefl
     | HorizontalComp c1 c2 c1ih c2ih =>
         unfold SimpleCircuitRemoveIdWire

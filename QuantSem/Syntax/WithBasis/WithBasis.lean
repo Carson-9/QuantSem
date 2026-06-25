@@ -11,3 +11,12 @@ public import QuantSem.Syntax.WithBasis.BasisRegister
 public import QuantSem.Syntax.WithBasis.BasisState
 public import QuantSem.Syntax.WithBasis.BasisGate
 public import QuantSem.Syntax.WithBasis.BasisCircuit
+
+
+namespace WithBasis
+open BasisTypes
+open BasisRegister
+open BasisState
+open BasisGate
+open BasisCircuit
+end WithBasis

@@ -11,5 +11,14 @@ public import QuantSem.Syntax.Category.Register
 public import QuantSem.Syntax.Category.State
 public import QuantSem.Syntax.Category.Gate
 public import QuantSem.Syntax.Category.Circuit
-public import QuantSem.Syntax.Category.CircuitComplexity
-public import QuantSem.Syntax.Category.CircuitTactic
+--public import QuantSem.Syntax.Category.CircuitComplexity
+--public import QuantSem.Syntax.Category.CircuitTactic
+
+
+namespace Category
+open QuantumTypes
+open SyntacticRegister
+open SyntacticState
+open SyntacticGate
+open SyntacticCircuit
+end Category

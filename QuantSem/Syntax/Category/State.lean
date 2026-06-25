@@ -67,4 +67,22 @@ public theorem StateEqualAreAtOne {R : TypeQuantumRegister} (x y : R.space) (hx 
     (QuantumStateSelection x hx).toFun (1 : ℂ) = (QuantumStateSelection y hy).toFun (1 : ℂ)
   := by intro hyp; rw[hyp]
 
+
+/-
+    True extensionality for states
+-/
+
+@[ext]
+public theorem StateExt {R : TypeQuantumRegister} (s1 s2 : QuantumStateSpace R) :
+  s1.toFun (1 : ℂ) = s2.toFun (1 : ℂ) → s1 = s2 :=
+  by rw[LinearIsometriesOnCAgree' s1 s2]; intro h; apply h
+
+/-
+    States are "unitaries"
+-/
+
+public theorem StateNormAtOne {R : TypeQuantumRegister} (s : QuantumStateSpace R) :
+  ‖s.toFun (1 : ℂ)‖ = ‖(1 : ℂ)‖ := by apply LinearIsometry.norm_map
+
+
 end SyntacticState

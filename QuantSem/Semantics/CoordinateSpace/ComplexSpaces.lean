@@ -45,19 +45,19 @@ public noncomputable abbrev QutritSpace : TypeBasisRegister := ComplexSpace 3
     Tensor products of ℂⁿ-like spaces are isomorphic to ℂᵐ-like spaces
 -/
 
-@[default_instance]
-instance {n m : ℕ} : Fintype (CatElementQuantumReg ((ComplexSpace n) ⊗ᵣ (ComplexSpace m))).indexing :=
-  instFintypeProd (Fin n) (Fin m)
-
-
-public def ComplexSpaceTensor (n m : ℕ) :
-  (CatElementQuantumReg ((ComplexSpace n) ⊗ᵣ (ComplexSpace m))).space
-  ≃ₗᵢ[ℂ]
-  (CatElementQuantumReg (ComplexSpace (n • m))).space :=
-  .mk ( Module.Basis.linearMap
-        (CatElementQuantumReg ((ComplexSpace n) ⊗ᵣ (ComplexSpace m))).struct.toBasis
-        (CatElementQuantumReg ((ComplexSpace (n • m)))).struct.toBasis)
-  (_)
+-- @[default_instance]
+-- instance {n m : ℕ} : Fintype (CatElementQuantumReg ((ComplexSpace n) ⊗ᵣ (ComplexSpace m))).indexing :=
+--   instFintypeProd (Fin n) (Fin m)
+--
+--
+-- public def ComplexSpaceTensor (n m : ℕ) :
+--   (CatElementQuantumReg ((ComplexSpace n) ⊗ᵣ (ComplexSpace m))).space
+--   ≃ₗᵢ[ℂ]
+--   (CatElementQuantumReg (ComplexSpace (n • m))).space :=
+--   .mk ( Module.Basis.linearMap
+--         (CatElementQuantumReg ((ComplexSpace n) ⊗ᵣ (ComplexSpace m))).struct.toBasis
+--         (CatElementQuantumReg ((ComplexSpace (n • m)))).struct.toBasis)
+--   (_)
 
 
 
@@ -139,6 +139,38 @@ public noncomputable def MatrixToGate {n : ℕ} (M : Matrix.unitaryGroup (Fin n)
 public noncomputable instance {n : ℕ} : Coe (Matrix.unitaryGroup (Fin n) ℂ) (BasisGateType (ComplexSpace n) (ComplexSpace n)) where
   coe := MatrixToGate
 
+--@[coe]
+--public noncomputable def GateToMatrix {n : ℕ} (G : BasisGateType (ComplexSpace n) (ComplexSpace n)) : Matrix.unitaryGroup (Fin n) ℂ
+--  := (UnitaryMatrixToLinearIsometry.symm G.toLinearIsometryEquiv)
+--
+--public noncomputable instance {n : ℕ} : Coe (BasisGateType (ComplexSpace n) (ComplexSpace n)) (Matrix.unitaryGroup (Fin n) ℂ) where
+--  coe := MatrixToGate
+
+
+/-
+    Coercions of Unit vectors to States
+-/
+
+public abbrev nDimUnitVector (n : ℕ) := {v : (EuclideanSpace ℂ (Fin n)) // ‖v‖ = 1}
+
+@[coe]
+public noncomputable def UnitVectorToState {n : ℕ} :
+  (nDimUnitVector n) → BasisStateSpace (ComplexSpace n) :=
+  (fun v => @SyntacticState.QuantumStateSelection (BasisRegToQuantReg (ComplexSpace n)) v.val v.prop)
+
+
+public noncomputable instance {n : ℕ} : Coe (nDimUnitVector n) (BasisStateSpace (ComplexSpace n)) where
+  coe := UnitVectorToState
+
+--public noncomputable def UnitVectorToState' {n : ℕ} :
+--  (nDimUnitVector n) ≃ BasisStateSpace (ComplexSpace n) :=
+--  .mk
+--  (fun v => @SyntacticState.QuantumStateSelection (BasisRegToQuantReg (ComplexSpace n)) v.val v.prop)
+--  (fun s => Subtype.mk (s.toFun (1 : ℂ)) (by simp; rw[s.norm_map (1 : ℂ)]))
+--  (by unfold Function.LeftInverse; simp)
+--  (by unfold Function.RightInverse Function.LeftInverse; simp; intro x; ext; simp)
+
+
 /-
     These coercions commute with composition and Tensor Product
 -/
@@ -150,9 +182,9 @@ public theorem MatrixGateMulComm {n : ℕ} (M N : Matrix.unitaryGroup (Fin n) �
   by simp; unfold MatrixToGate; simp; rfl
 
 
-public theorem MatrixGateTensorCom {n m : ℕ} (M : Matrix.unitaryGroup (Fin m) ℂ) (N : Matrix.unitaryGroup (Fin n) ℂ) :
-  MatrixToGate (MatrixTensor M N) = (ComplexSpaceTensor n m).toLinearIsometry ≫ ((MatrixToGate M) ⊗ₕ (MatrixToGate N)) ≫ (ComplexSpaceTensor n m).inverse:=
-  by simp; sorry
+--public theorem MatrixGateTensorCom {n m : ℕ} (M : Matrix.unitaryGroup (Fin m) ℂ) (N : Matrix.unitaryGroup (Fin n) ℂ) :
+--  MatrixToGate (MatrixTensor M N) = (ComplexSpaceTensor n m).toLinearIsometry ≫ ((MatrixToGate M) ⊗ₕ (MatrixToGate N)) ≫ (ComplexSpaceTensor n m).inverse:=
+--  by simp; sorry
 
 
 end ComplexSpaces

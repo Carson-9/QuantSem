@@ -32,4 +32,9 @@ public theorem BasisStatesOrthogonal {R : TypeBasisRegister} (i j : R.indexing) 
 public theorem GetBasisStateAtOne {R : TypeBasisRegister} (i : R.indexing) :
   (GetBasisState i).toFun (1 : ℂ) = R.struct.toBasis i := by unfold GetBasisState; simp
 
+-- This does not obscure the register's norm down the line
+public noncomputable def BasisStateSelection {R : TypeBasisRegister} (x : R.space) (hNorm : ‖x‖ = 1) :
+  BasisStateSpace R := QuantumTypes.ElementInSpaceAsIso R.space x (by intro hAbs; rw[hAbs] at hNorm; rw[norm_zero] at hNorm; apply zero_ne_one at hNorm; apply hNorm)
+
+
 end BasisState

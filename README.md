@@ -4,7 +4,7 @@
 <ul style="list-style: none">
 <summary>
 <h1> 
-$\bigotimes\mathcal{H}^\dagger\bigoplus \quad \Huge{\color{#C022E0}\langle \space\text{Qu}\color{#9638D6}\text{an}\color{#7449CE}\text{tum}  \space \color{#4D6CCA}\mid \space\color{#4085CD}\text{Le} \color{#30A3D1}\text{an} \space \rangle} \quad \lambda.\Pi\Sigma$
+$\bigotimes\mathcal{H}^\dagger\bigoplus \quad \Huge{\color{#C022E0}\langle \space\text{Qu}\color{#9638D6}\text{an}\color{#7449CE}\text{tum}  \space \color{#4D6CCA}\mid \space\color{#4085CD}\text{Le} \color{#30A3D1}\text{an} \space \color{#30A3D1}\rangle} \quad \lambda.\Pi\Sigma$
 </h1>
 </br>
 <h2> A High-level Lean formalization of Quantum Computing </h2>

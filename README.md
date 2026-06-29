@@ -49,5 +49,4 @@ $\mathrm{QuantSem}$ provides a ```Test``` folder, in which the .lean files give 
   _one could also think of refining the non-dependent product with the property that the second element of the tuple forms a basis of the first element_
 * Modify BasisCircuit's RegisterSwap to take BasisReg iso's rather than QuantReg iso's [ ❌ ]
 * Complete the fact that a tensor register is the span of it's separable elements (the equivalence has been written, need to write the induction theorem to reflect the one on spans) [ ⏳ ]
-* Prove the correctness of Circuit Normal Form and provide tactics for circuit equivalence [ ⏳ ]
 * Find the syntax for Controlled Gates [ ⏳ ]

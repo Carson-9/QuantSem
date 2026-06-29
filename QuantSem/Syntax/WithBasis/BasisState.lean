@@ -19,6 +19,8 @@ namespace BasisState
 public abbrev BasisStateSpace (R : TypeBasisRegister) : Type := QuantumStateSpace (BasisRegToQuantReg R)
 public abbrev TypeBasisState : Type 1 := Σ R : TypeBasisRegister, BasisStateSpace R
 
+public abbrev TypeBasisState.space (S : TypeBasisState) := S.fst
+public abbrev TypeBasisState.state (S : TypeBasisState) := S.snd
 
 @[expose]
 public noncomputable def GetBasisState {R : TypeBasisRegister} (i : R.indexing) : BasisStateSpace R :=
@@ -35,6 +37,20 @@ public theorem GetBasisStateAtOne {R : TypeBasisRegister} (i : R.indexing) :
 -- This does not obscure the register's norm down the line
 public noncomputable def BasisStateSelection {R : TypeBasisRegister} (x : R.space) (hNorm : ‖x‖ = 1) :
   BasisStateSpace R := QuantumTypes.ElementInSpaceAsIso R.space x (by intro hAbs; rw[hAbs] at hNorm; rw[norm_zero] at hNorm; apply zero_ne_one at hNorm; apply hNorm)
+
+/-
+    Basis state tensor / NEED BECAUSE BRUTEFORCE CATEGORY
+-/
+
+public noncomputable def BasisStateTensor {R1 R2 : TypeBasisRegister} (S1 : BasisStateSpace R1)
+  (S2 : BasisStateSpace R2) : MonCatBasisReg'.tensorUnit ⟶ R1 ⊗ᵣ R2 :=
+  ((MonCatBasisReg'.leftUnitor MonCatBasisReg'.tensorUnit).inv ≫ (S1 ⊗ₕ S2))
+
+public noncomputable def BasisStateTensor' (S1 S2 : TypeBasisState) : TypeBasisState :=
+  ⟨ S1.space ⊗ᵣ S2.space, @BasisStateTensor S1.space S2.space S1.state S2.state ⟩
+
+
+notation S1 "⊗ₛ" S2 => BasisStateTensor' S1 S2
 
 
 end BasisState

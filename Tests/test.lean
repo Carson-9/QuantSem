@@ -27,17 +27,11 @@ noncomputable def qubit_plus  : BasisStateSpace QubitSpace :=
 -- Work is currently being done to identify √2 with it's galois representation
 -- Which simplifies the work down to identifying different conjugates, but is heavy computationally
 noncomputable def hadamard : BasisGateType QubitSpace QubitSpace :=
-  MatrixToGate ⟨ (((√2)⁻¹ : ℂ) • !![(1 : ℂ), 1; 1, -1]),
-    by rw[Matrix.mem_unitaryGroup_iff]; ext i j; rw[FinDimMatrixMul]; simp; sorry ⟩ --Matrix.smul_mul
+  MatrixToGate ⟨ (((√2)⁻¹ : ℂ) • !![(1 : ℂ), 1; 1, -1]), by unit_matrix_simple ⟩
 
 -- This is simpler on nice matrices
-noncomputable def pauli_x : BasisGateType QubitSpace QubitSpace := MatrixToGate ⟨!![0, 1 ; 1 , 0],
-    by rw[Matrix.mem_unitaryGroup_iff]; ext i j; simp; unfold Matrix.instStar Matrix.conjTranspose; simp;
-       unfold Matrix.vecMul; simp; sorry ⟩
-
-noncomputable def pauli_z : BasisGateType QubitSpace QubitSpace := MatrixToGate ⟨!![1, 0 ; 0 , -1],
-    by rw[Matrix.mem_unitaryGroup_iff]; ext i j; simp; unfold Matrix.instStar Matrix.conjTranspose; simp;
-       unfold Matrix.vecMul; simp; sorry ⟩
+noncomputable def pauli_x : BasisGateType QubitSpace QubitSpace := MatrixToGate ⟨!![0, 1 ; 1 , 0], by unit_matrix_simple  ⟩
+noncomputable def pauli_z : BasisGateType QubitSpace QubitSpace := MatrixToGate ⟨!![1, 0 ; 0 , -1], by unit_matrix_simple ⟩
 
 
 

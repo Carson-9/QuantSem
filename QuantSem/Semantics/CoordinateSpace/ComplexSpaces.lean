@@ -91,6 +91,10 @@ public noncomputable def ComplexSpaceTensor (n m : ℕ) :
     (by apply And.intro; intro i; simp; apply (ComplexSpace (n • m)).struct.isOrthonormal.left;
         simp; intro i j h; rw[FinTypeFoldingDifferent' i j] at h; apply (ComplexSpace (n • m)).struct.isOrthonormal.right; apply h)
 
+--public theorem SpaceTensorBasisState {n m : ℕ} (i : Fin (n * m)) :
+--  (GetBasisState i) ≫ (ComplexSpaceTensor n m).symm.toLinearIsometry =
+--    ↑(GetBasisState (Fin.divNat i)) ⊗ₛ ↑(GetBasisState (Fin.modNat i)) :=
+--    by rfl
 
 /-
     Coercion of unitary matrices as gates
@@ -236,8 +240,7 @@ public theorem MatrixGateMulComm {n : ℕ} (M N : Matrix.unitaryGroup (Fin n) �
 public theorem MatrixGateTensorCom {n m : ℕ} (M : Matrix.unitaryGroup (Fin m) ℂ) (N : Matrix.unitaryGroup (Fin n) ℂ) :
   MatrixToGate (MatrixTensor' M N) = (ComplexSpaceTensor m n).symm.toLinearIsometry ≫
     ((MatrixToGate M) ⊗ₕ (MatrixToGate N)) ≫ (ComplexSpaceTensor m n).toLinearIsometry :=
-  by simp; unfold MatrixToGate; unfold MatrixTensor'; simp; unfold MatrixTensor; simp;
-      unfold ComplexSpaceTensor; simp; sorry
+  by simp; ext i; simp; sorry
 
  --Unitary.tmul_mem
 

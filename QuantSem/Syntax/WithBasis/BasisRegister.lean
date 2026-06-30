@@ -37,6 +37,10 @@ public abbrev TypeBasisRegister.struct (R : TypeBasisRegister) := R.snd.snd
 public def BasisRegToQuantReg (R : TypeBasisRegister) : TypeQuantumRegister :=
   ⟨R.space, R.struct.toHilbertSpace⟩
 
+@[simp]
+public theorem BasisRegQuantRegSpace (R : TypeBasisRegister ) :
+  R.space = (BasisRegToQuantReg R).space := by rfl
+
 instance : Coe TypeBasisRegister TypeQuantumRegister where
   coe := BasisRegToQuantReg
 

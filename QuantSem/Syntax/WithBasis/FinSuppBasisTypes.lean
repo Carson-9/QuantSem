@@ -23,7 +23,7 @@ namespace BasisTypes
 
 -- ι should be a set to receive a decidable equality which is better for orthogonality check
 
-public class HilbertSpaceWithBasis (E : Type) (ι : Type) extends HilbertSpace E, Module.Basis ι ℂ E where
+public class HilbertSpaceWithBasis (E : Type) (ι : Type) extends  HilbertSpace E, Module.Basis ι ℂ E where
   basisType := ι
   isOrthonormal : Orthonormal ℂ (fun i : ι => toBasis i)
 
@@ -103,6 +103,19 @@ public theorem LinearIsometryBasisExt (E F ι γ : Type) [EH : HilbertSpaceWithB
    [F' : HilbertSpaceWithBasis F γ] (f g : E →ₗᵢ[ℂ] F)
   : (∀ i : ι, f (EH.toBasis i) = g (EH.toBasis i)) → (f = g) :=
   by intro h; apply (Module.Basis.ext_linearIsometry EH.toBasis); exact h
+
+/-
+    A Linear Isometry can be built from the image of a basis
+-/
+
+public noncomputable def LinearIsometryFromBasis (E F : Type) (ι γ : Type) [H1 : HilbertSpaceWithBasis E ι]
+  [H2 : HilbertSpaceWithBasis F γ] (f : ι → F) (hOrth : Orthonormal ℂ f)  : E →ₗᵢ[ℂ] F :=
+  LinearMap.isometryOfOrthonormal
+    (H1.constr ℂ f)
+    (H1.isOrthonormal)
+    (by unfold Orthonormal; apply And.intro; intro i; unfold Orthonormal at hOrth; simp;
+        apply hOrth.left i; intro i j h; simp; apply hOrth.right; apply h)
+
 
 
 end BasisTypes

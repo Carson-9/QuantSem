@@ -76,7 +76,7 @@ noncomputable def fixed_the_bad_recursive_circuit (n : ℕ) : TypeBasisCircuit :
 noncomputable def turning_a_two_qubit_circuit_in_a_quadradit_circuit : BasisCircuitOverRegister (ComplexSpace 4) :=
   RegisterSwap iso base_circuit where
   base_circuit := VerticalComp (Gate hadamard) (Gate pauli_z)
-  iso : (BasisRegister.MonCatBasisReg.tensorObj QubitSpace QubitSpace) ≅ (ComplexSpace 4) := _ -- todo, need to fix axiom of choice thingy
+  iso : (((BasisRegister.BasisRegToQuantReg QubitSpace) ⊗ᵣ (BasisRegister.BasisRegToQuantReg  QubitSpace)) : SyntacticRegister.TypeQuantumRegister) ≅ (ComplexSpace 4) := _ -- todo, need to fix axiom of choice thingy
 
 
 #check (SimpleCircuitGetShape (BasisCircuitAreSimpleCircuit (a_correct_recursive_circuit 4).circuit))

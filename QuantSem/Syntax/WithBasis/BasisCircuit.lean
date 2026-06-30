@@ -73,6 +73,14 @@ public theorem BasisGateReprIsSimpleGateRepr {R : TypeBasisRegister} (c : BasisC
     | VerticalComp c1 c2 c1h c2h => simp; rw[c1h, c2h]; rfl
 
 
+/-
+    Control Gates
+-/
+
+
+/-
+    Equivalence relation
+-/
 
 @[expose, simp]
 public def BasisCircuitEquivalence {R : TypeBasisRegister}

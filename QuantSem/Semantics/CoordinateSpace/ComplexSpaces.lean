@@ -46,6 +46,8 @@ public noncomputable abbrev QutritSpace : TypeBasisRegister := ComplexSpace 3
 public theorem ComplexSpaceNormIsEuclideanNorm {n : ℕ} (x : (ComplexSpace n).space) :
   (ComplexSpace n).struct.toNorm.norm x = ‖x‖ := by rfl
 
+public noncomputable abbrev ComplexSpaceDefaultState (n : ℕ) {hn : n > 0} : (ComplexSpace n).space :=
+  (ComplexSpace n).struct.toBasis ((@Fin.mk n 0 (by apply hn)))
 /-
     Tensor products of ℂⁿ-like spaces are isomorphic to ℂᵐ-like spaces
 -/
@@ -184,15 +186,17 @@ public noncomputable def MatrixToGate {n : ℕ} (M : Matrix.unitaryGroup (Fin n)
 public noncomputable instance {n : ℕ} : Coe (Matrix.unitaryGroup (Fin n) ℂ) (BasisGateType (ComplexSpace n) (ComplexSpace n)) where
   coe := MatrixToGate
 
--- public instance FinDimEuclidean {n : ℕ} : FiniteDimensional ℂ (ComplexSpace n).fst :=
---   Module.Basis.finiteDimensional_of_finite (ComplexSpace n).struct.toBasis
---
--- @[coe]
--- public noncomputable def GateToMatrix {n : ℕ} (G : BasisGateType (ComplexSpace n) (ComplexSpace n)) : Matrix.unitaryGroup (Fin n) ℂ
---   := (UnitaryMatrixToLinearIsometry.symm (G.toLinearIsometryEquiv FinDimEuclidean))
---
--- public noncomputable instance {n : ℕ} : Coe (BasisGateType (ComplexSpace n) (ComplexSpace n)) (Matrix.unitaryGroup (Fin n) ℂ) where
---   coe := GateToMatrix
+public instance FinDimEuclidean {n : ℕ} : FiniteDimensional ℂ (BasisRegToQuantReg (ComplexSpace n)).fst :=
+  Module.Basis.finiteDimensional_of_finite (ComplexSpace n).struct.toBasis
+
+@[coe]
+public noncomputable def GateToMatrix {n : ℕ} (G : BasisGateType (ComplexSpace n) (ComplexSpace n)) : Matrix.unitaryGroup (Fin n) ℂ
+  := (UnitaryMatrixToLinearIsometry.symm (G.toLinearIsometryEquiv (by rfl)))
+
+public noncomputable instance {n : ℕ} : Coe (BasisGateType (ComplexSpace n) (ComplexSpace n)) (Matrix.unitaryGroup (Fin n) ℂ) where
+  coe := GateToMatrix
+
+
 
 
 /-
@@ -248,9 +252,14 @@ public theorem MatrixGateTensorCom {n m : ℕ} (M : Matrix.unitaryGroup (Fin m) 
     Fin dim matrix product expression
 -/
 
--- Not very usable
 public theorem FinDimMatrixMul {n m p : ℕ} (M : Matrix (Fin n) (Fin m) ℂ) (N : Matrix (Fin m) (Fin p) ℂ)
   : ∀ i : (Fin n), ∀ j : (Fin p), (M * N) i j = ∑ k : (Fin m), (M i k) * (N k j) :=
   by intro i j; rfl
+
+/-
+    Matrix i-th column is the image of the i-th basis vector
+-/
+
+
 
 end ComplexSpaces

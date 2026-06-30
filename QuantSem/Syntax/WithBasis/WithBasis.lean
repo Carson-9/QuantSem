@@ -11,7 +11,7 @@ public import QuantSem.Syntax.WithBasis.BasisRegister
 public import QuantSem.Syntax.WithBasis.BasisState
 public import QuantSem.Syntax.WithBasis.BasisGate
 public import QuantSem.Syntax.WithBasis.BasisCircuit
-
+public import QuantSem.Syntax.WithBasis.BasisCircuitTactic
 
 namespace WithBasis
 open BasisTypes

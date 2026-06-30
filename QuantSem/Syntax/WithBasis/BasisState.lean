@@ -42,10 +42,12 @@ public noncomputable def BasisStateSelection {R : TypeBasisRegister} (x : R.spac
     Basis state tensor / NEED BECAUSE BRUTEFORCE CATEGORY
 -/
 
+@[expose]
 public noncomputable def BasisStateTensor {R1 R2 : TypeBasisRegister} (S1 : BasisStateSpace R1)
   (S2 : BasisStateSpace R2) : MonCatBasisReg'.tensorUnit ⟶ R1 ⊗ᵣ R2 :=
   ((MonCatBasisReg'.leftUnitor MonCatBasisReg'.tensorUnit).inv ≫ (S1 ⊗ₕ S2))
 
+@[expose]
 public noncomputable def BasisStateTensor' (S1 S2 : TypeBasisState) : TypeBasisState :=
   ⟨ S1.space ⊗ᵣ S2.space, @BasisStateTensor S1.space S2.space S1.state S2.state ⟩
 

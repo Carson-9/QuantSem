@@ -370,4 +370,8 @@ public noncomputable def MulTensor
 notation "⨂ᵣ" l => MulTensor l MonCatBasisReg'.tensorUnit true
 
 
+public theorem NormInTensorUnit (x : MonCatBasisReg'.tensorUnit.space) :
+  ‖x‖ = √(x.re * x.re + x.im * x.im) :=
+  by rw[Complex.norm_def, Complex.normSq_apply]
+
 end BasisRegister

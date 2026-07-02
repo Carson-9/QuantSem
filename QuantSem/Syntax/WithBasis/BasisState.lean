@@ -51,8 +51,11 @@ public noncomputable def BasisStateTensor {R1 R2 : TypeBasisRegister} (S1 : Basi
 public noncomputable def BasisStateTensor' (S1 S2 : TypeBasisState) : TypeBasisState :=
   ⟨ S1.space ⊗ᵣ S2.space, @BasisStateTensor S1.space S2.space S1.state S2.state ⟩
 
-
 notation S1 "⊗ₛ" S2 => BasisStateTensor' S1 S2
 
+
+public theorem BasisStateTensorAtOne (S1 S2 : TypeBasisState) :
+  (S1 ⊗ₛ S2).snd.toFun (1 : ℂ) = (S1.snd.toFun (1 : ℂ)) ⊗ₜ[ℂ] (S2.snd.toFun (1 : ℂ)) :=
+  by rfl
 
 end BasisState

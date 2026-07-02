@@ -115,15 +115,37 @@ public def StatesAsCombinationOfSeparables {R1 R2 : TypeQuantumRegister} :
     (by unfold Function.LeftInverse; intro x; simp)
     (by unfold Function.RightInverse; intro x; simp)
 
-public theorem RegisterInduction{R1 R2 : TypeQuantumRegister}
+public def SepToRegTensorProp {R1 R2 : TypeQuantumRegister}
+  (p : (x : TensorProduct ℂ R1.space R2.space) → (x ∈ Submodule.span ℂ {t : TensorProduct ℂ R1.space R2.space | ∃ (m : R1.space) (n : R2.space), m ⊗ₜ[ℂ] n = t}) → Prop)
+  : (R1 ⊗ᵣ R2).space → Prop :=
+  fun x => p (StatesAsCombinationOfSeparables x) (StatesAsCombinationOfSeparables x).prop
+
+public def RegTensorToSepProp {R1 R2 : TypeQuantumRegister}
+  (p : (R1 ⊗ᵣ R2).space → Prop) :
+  (x : TensorProduct ℂ R1.space R2.space) → (x ∈ Submodule.span ℂ {t : TensorProduct ℂ R1.space R2.space | ∃ (m : R1.space) (n : R2.space), m ⊗ₜ[ℂ] n = t}) → Prop :=
+  fun x hx => p (StatesAsCombinationOfSeparables.symm (Subtype.mk x hx))
+
+public theorem SeparablePropCoherence {R1 R2 : TypeQuantumRegister}  (p : (R1 ⊗ᵣ R2).space → Prop) :
+   ∀ x, (p x) ↔ ((RegTensorToSepProp p) (StatesAsCombinationOfSeparables x).val (StatesAsCombinationOfSeparables x).prop)
+  := by intro x; rfl
+
+public theorem RegisterInduction {R1 R2 : TypeQuantumRegister}
   (property : (R1 ⊗ᵣ R2).space → Prop)
   (hzero : property 0)
   (hAllBasis : ∀ x1 : R1.space, ∀ x2 : R2.space, property (x1 ⊗ₜ[ℂ] x2))
   (hLinear : ∀ x1 x2 : ((R1 ⊗ᵣ R2).space), property x1 → property x2 → property (x1 + x2))
   (hmul :  ∀ x : ((R1 ⊗ᵣ R2).space), ∀ c : ℂ, property x → property (c • x)) :
   ∀ x : ((R1 ⊗ᵣ R2).space), property x :=
-  by intro x; sorry
-  -- submodule span induction
+  by intro x; apply
+   (
+    Submodule.span_induction (p := (RegTensorToSepProp property))
+    (fun x hx => (SeparablePropCoherence property x).mp (by
+      have hab : ∃ a b, a ⊗ₜ[ℂ] b = x := hx.out
+      rcases hab with ⟨a, b, hfin⟩; rw[<- hfin]; apply hAllBasis a b))
+    ((SeparablePropCoherence property 0).mp hzero)
+    (fun x y hx hy wx wy => (SeparablePropCoherence property (x + y)).mp (hLinear x y ((SeparablePropCoherence property x).mpr wx) ((SeparablePropCoherence property y).mpr wy)))
+    (fun a x hx wx => (SeparablePropCoherence property (a • x)).mp (hmul x a ((SeparablePropCoherence property x).mp wx)))
+  ); apply (StatesAsCombinationOfSeparables x).prop
 
 
 @[expose]

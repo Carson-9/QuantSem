@@ -19,7 +19,7 @@ open BasisState
 open BasisRegister
 
 
-public abbrev RegisterSignature := Signature (TypeBasisRegister)
+public abbrev BasisSignature := RegisterSignature (TypeBasisRegister)
 public abbrev GateInterpretation (GateType : Type) := GateType → TypeBasisGate
 public abbrev ControlInterpretation (GateType : Type) := Σ ι : Type, ι → GateType
 
@@ -28,9 +28,6 @@ public abbrev ControlInterpretation (GateType : Type) := Σ ι : Type, ι → Ga
     Optimizations relative to control must be dealt with at the syntactic compilation layer
     (Here!)
 -/
-
-
-
 
 
 end WireCircuitCompile

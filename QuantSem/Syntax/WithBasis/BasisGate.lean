@@ -67,9 +67,9 @@ public abbrev IdGate (R : TypeBasisRegister) : BasisGateType R R := SyntacticReg
 public noncomputable def ControlGate  {R1 R2 : TypeBasisRegister} (control : R1.indexing → BasisGateType R2 R2) :
   BasisGateType (R1 ⊗ᵣ R2) (R1 ⊗ᵣ R2) :=
   GateFromBasis (fun (i, j) => (⟨R1, (GetBasisState i)⟩ ⊗ₛ ⟨R2, (GetBasisState j) ≫ (control i)⟩).snd ) --(R1.struct.toBasis i) ⊗ₜ[ℂ] ((control i).toFun (R2.struct.toBasis j)))
-  (by unfold Orthonormal; apply And.intro; intro i; simp; sorry;
+  (by simp; unfold Orthonormal; apply And.intro; intro i; simp; rw[NormInTensorUnit]; simp;
       simp; intro i j h; rcases i with ⟨fsti, sndi⟩; simp; rcases j with ⟨fstj, sndj⟩;
-        simp; --rw[RCLike.inner_tmul_eq]
+        simp;  --rw[RCLike.inner_tmul_eq]
         sorry
   )
 

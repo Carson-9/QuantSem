@@ -214,6 +214,8 @@ public noncomputable def BasisRegisterTensor (T1 T2 : TypeBasisRegister) : TypeB
 
 notation A "⊗ᵣ" B => BasisRegisterTensor A B
 
+
+
 @[simp]
 public theorem SpaceCommutesWithTensor (R1 R2 : TypeBasisRegister) :
   (R1 ⊗ᵣ R2).space = TensorProduct ℂ R1.space R2.space := by rfl
@@ -354,5 +356,18 @@ public noncomputable instance MonCatBasisReg' : MonoidalCategory TypeBasisRegist
   rightUnitor_naturality := by intro X Y f; ext x; simp; sorry
   triangle := by intro X Y; ext x; simp; sorry
   pentagon := by sorry
+
+
+
+@[expose]
+public noncomputable def MulTensor
+  (famReg : List TypeBasisRegister) (buffer : TypeBasisRegister) (fstRound : Bool) :=
+  match famReg with
+  | [] => buffer
+  | h :: t => if fstRound then MulTensor t h false
+                          else MulTensor t (buffer ⊗ᵣ h) false
+
+notation "⨂ᵣ" l => MulTensor l MonCatBasisReg'.tensorUnit true
+
 
 end BasisRegister

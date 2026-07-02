@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Star.Unitary
 
 namespace WireCircuit
 
-public abbrev Signature (A : Type) (n : ℕ) := Vector A n
+public abbrev Signature (A : Type*) (n : ℕ) := Vector A n
 
 /-
     A circuit is a sequence of layers
@@ -29,7 +29,7 @@ public inductive LayerOp {n : ℕ} (GateType : Type) : Type where
   | WireSwap (i j : (Fin n)) : LayerOp GateType
 
 
-public abbrev WireCircuitType (n : ℕ) (GateType : Type)  := List (@LayerOp n GateType)
+public abbrev WireCircuitType (n : ℕ) (GateType : Type) := List (@LayerOp n GateType)
 
 public def WireCircuitCoherent {n : ℕ} {GateType : Type} (c : WireCircuitType n GateType) : Bool :=
   match c with
@@ -50,5 +50,6 @@ public def WireCircuitComp {n : ℕ} {GateType : Type} (c1 c2 : WireCircuitType 
 
 
 notation a " · " b => WireCircuitComp a b
+notation a " · " l => WireCircuitAddLayer a l
 
 end WireCircuit

@@ -27,6 +27,9 @@ open CategoryTheory
 public abbrev BasisGateType (R1 R2 : TypeBasisRegister) : Type :=  QuantumGate (BasisRegToQuantReg R1) (BasisRegToQuantReg R2)
 public abbrev TypeBasisGate := Σ R1, Σ R2, BasisGateType R1 R2
 
+public abbrev TypeBasisGate.inRegister (g : TypeBasisGate) := g.fst
+public abbrev TypeBasisGate.outRegister (g : TypeBasisGate) := g.snd.fst
+public abbrev TypeBasisGate.gate (g : TypeBasisGate) := g.snd.snd
 
 /-
     Gate Extensionality with basis

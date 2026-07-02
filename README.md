@@ -44,6 +44,16 @@ $\mathrm{QuantSem}$ provides a ```Test``` folder, in which the .lean files give 
 
 </br>
 
+## ⛰️ Main Objectives
+
+$\mathrm{QuantSem}$ currently has three main objectives :
+* Producing a __verified compiler__ for __general__ Quantum Computation
+* Developping a __Lean library__ of Quantum Computing, allowing to prove results while relying on the usual setting of Quantum Computing
+* Instigating the effects of __constructivism__ on Quantum Computing, and formalizing the intrinsic links between __Linear logic-related frameworks__ and Quantum Computing.
+
+
+</br>
+
 ## TODO : 
 * Refine the Category of Hilbert spaces with a basis to be a dependent product allowing to carry the data of the basis (for now, it is the full subcategory produced by the property "there exists a basis", the axiom of choice comes back to bite us later) [ ❌ ]
   _one could also think of refining the non-dependent product with the property that the second element of the tuple forms a basis of the first element_

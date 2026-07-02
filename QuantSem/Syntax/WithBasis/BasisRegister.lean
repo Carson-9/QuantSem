@@ -369,6 +369,20 @@ public noncomputable def MulTensor
 
 notation "⨂ᵣ" l => MulTensor l MonCatBasisReg'.tensorUnit true
 
+public def MulTensorIndexing
+  (famReg : List TypeBasisRegister) (buffer : Type) (fstRound : Bool) : Type := match famReg with
+  | [] => buffer
+  | h :: t => if fstRound then MulTensorIndexing t h.indexing false
+                          else MulTensorIndexing t (buffer → h.indexing) false
+
+notation "Πᵣ" l => MulTensorIndexing l (Fin 1) true
+
+--public def MulTensorIndexingEquiv (l : List TypeBasisRegister) {hl : l.isEmpty == false} :
+--  (⨂ᵣ l).indexing ≃ (Πᵣ l) := match l with
+--    | [] => .mk (fun i => i) (fun i => i) (by unfold Function.LeftInverse; simp) (by unfold Function.RightInverse; unfold Function.LeftInverse; simp)
+--    | [h] => .mk (fun i => i) (fun i => i) (by unfold Function.LeftInverse; simp) (by unfold Function.RightInverse; unfold Function.LeftInverse; simp)
+--    | h :: t1 :: t2 => .mk (fun i => match i with |(i1, i2)  => _) _ _ _
+
 
 public theorem NormInTensorUnit (x : MonCatBasisReg'.tensorUnit.space) :
   ‖x‖ = √(x.re * x.re + x.im * x.im) :=

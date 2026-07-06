@@ -8,6 +8,7 @@ module
 
 public import QuantSem.Syntax.WithBasis.FinSuppBasisTypes
 public import QuantSem.Syntax.WithBasis.BasisRegister
+public import QuantSem.Syntax.WithBasis.PiBasisRegister
 public import QuantSem.Syntax.WithBasis.BasisState
 public import QuantSem.Syntax.WithBasis.BasisGate
 public import QuantSem.Syntax.WithBasis.BasisCircuit

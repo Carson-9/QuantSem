@@ -25,7 +25,7 @@ open CategoryTheory
 
 public inductive BasisCircuitOverRegister : (TypeBasisRegister → Type 1) where
   | IdWire {R : TypeBasisRegister} : BasisCircuitOverRegister R
-  | RegisterSwap {R1 R2 : TypeBasisRegister} (iso : BasisRegToQuantReg R1 ≅ BasisRegToQuantReg R2) (c : BasisCircuitOverRegister R1) : BasisCircuitOverRegister R2
+  | RegisterSwap {R1 R2 : TypeBasisRegister} (iso : R1 ≅ R2) (c : BasisCircuitOverRegister R1) : BasisCircuitOverRegister R2
   | Gate {R : TypeBasisRegister} (g : BasisGateType R R) : BasisCircuitOverRegister R
   | HorizontalComp {R : TypeBasisRegister} (c1 c2 : BasisCircuitOverRegister R) : BasisCircuitOverRegister R
   | VerticalComp {R₁ R₂ : TypeBasisRegister} (c1 : BasisCircuitOverRegister R₁) (c2 :BasisCircuitOverRegister R₂)
@@ -43,7 +43,7 @@ public noncomputable def BasisCircuitAreSimpleCircuit {R : TypeBasisRegister} (c
   : SimpleCircuitOverRegister (BasisRegToQuantReg R) :=
   match c with
   | IdWire => SimpleCircuitOverRegister.IdWire
-  | RegisterSwap iso c => SimpleCircuitOverRegister.RegisterSwap iso (BasisCircuitAreSimpleCircuit c)
+  | RegisterSwap iso c => SimpleCircuitOverRegister.RegisterSwap (BasisRegIsoToQuantRegIso iso) (BasisCircuitAreSimpleCircuit c)
   | Gate g => SimpleCircuitOverRegister.Gate g
   | HorizontalComp c1 c2 => SimpleCircuitOverRegister.HorizontalComp (BasisCircuitAreSimpleCircuit c1) (BasisCircuitAreSimpleCircuit c2)
   | VerticalComp c1 c2 => SimpleCircuitOverRegister.VerticalComp (BasisCircuitAreSimpleCircuit c1) (BasisCircuitAreSimpleCircuit c2)
@@ -67,7 +67,7 @@ public theorem BasisGateReprIsSimpleGateRepr {R : TypeBasisRegister} (c : BasisC
   by induction c with
     | IdWire => unfold BasisCircuitGateRepr; unfold SyntacticCircuit.SimpleCircuitGateRepr;
                 simp; unfold SyntacticRegister.id_map; rfl
-    | RegisterSwap iso c c_ih => simp; unfold SyntacticCircuit.SimpleCircuitGateRepr; rw[c_ih]; rfl
+    | RegisterSwap iso c c_ih => unfold SyntacticCircuit.SimpleCircuitGateRepr; simp; rw[c_ih];
     | Gate g => rfl
     | HorizontalComp c1 c2 c1h c2h => simp; rw[c1h, c2h]; rfl
     | VerticalComp c1 c2 c1h c2h => simp; rw[c1h, c2h]; rfl

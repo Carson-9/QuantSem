@@ -208,6 +208,17 @@ public theorem CatRegisterHomExtIff {R1 R2 : TypeBasisRegister} (f g : R1 ⟶ R2
   by apply Iff.intro; intro hEq; rw[hEq]; intro x; rfl; apply CatRegisterHomExt
 
 
+public def BasisRegIsoToQuantRegIso {R1 R2 : TypeBasisRegister} (i : R1 ≅ R2) :
+  (BasisRegToQuantReg R1) ≅ (BasisRegToQuantReg R2) :=
+  .mk i.hom i.inv i.hom_inv_id i.inv_hom_id
+
+@[simp]
+public theorem BasisRegToQuantRegIsoHom {R1 R2 : TypeBasisRegister} (i : R1 ≅ R2) :
+  (BasisRegIsoToQuantRegIso i).hom = i.hom := by rfl
+@[simp]
+public theorem BasisRegToQuantRegIsoInv {R1 R2 : TypeBasisRegister} (i : R1 ≅ R2) :
+  (BasisRegIsoToQuantRegIso i).inv = i.inv := by rfl
+
 @[expose]
 public noncomputable def BasisRegisterTensor (T1 T2 : TypeBasisRegister) : TypeBasisRegister :=
   ⟨TensorProduct ℂ T1.space T2.space, ⟨T1.indexing × T2.indexing, @HilbertBasisTensorFun T1.space T2.space T1.indexing T2.indexing T1.struct T2.struct ⟩⟩
@@ -246,7 +257,7 @@ public noncomputable def BasisRegHomTensor {R1 R2 R3 R4 : TypeBasisRegister}
     R1.struct.toHilbertSpace R2.struct.toHilbertSpace R3.struct.toHilbertSpace R4.struct.toHilbertSpace
     (f : R1.fst →ₗᵢ[ℂ] R3.fst) g
 
---notation f "⊗ₕ" g => BasisRegHomTensor f g
+-- notation f "⊗ₕ" g => BasisRegHomTensor f g
 
 
 @[simp]
@@ -274,7 +285,7 @@ public theorem one_is_id : ∀ X : TypeBasisRegister, 𝟙 X = id_map X :=
   by intro X; rfl
 
 @[simp]
-public theorem tensor_factorises : ∀ A A' C B B' D, ∀ (f : A' ⟶ C) (g : B' ⟶ D)
+public theorem tensor_factorises_basis : ∀ A A' C B B' D, ∀ (f : A' ⟶ C) (g : B' ⟶ D)
   (h : A ⟶ A') (i : B ⟶ B'),
   (BasisRegHomTensor h i) ≫ (BasisRegHomTensor f g) = BasisRegHomTensor (h ≫ f) (i ≫ g) :=
   by intro A A' B B' C D f g h i;
@@ -284,13 +295,13 @@ public theorem tensor_factorises : ∀ A A' C B B' D, ∀ (f : A' ⟶ C) (g : B'
       C.struct.toHilbertSpace D.struct.toHilbertSpace f g h i
 
 @[simp]
-public theorem id_is_neutral_left : ∀ A B : TypeBasisRegister, ∀ (f : A ⟶ B),
+public theorem id_is_neutral_left_basis : ∀ A B : TypeBasisRegister, ∀ (f : A ⟶ B),
   f ≫ (id_map B) = f :=
     by intro A B f;
        apply (@QuantumTypes.IdIsNeutralLeft A.space B.space A.struct.toHilbertSpace B.struct.toHilbertSpace f)
 
 @[simp]
-public theorem id_is_neutral_right : ∀ A B : TypeBasisRegister, ∀ (f : A ⟶ B),
+public theorem id_is_neutral_right_basis : ∀ A B : TypeBasisRegister, ∀ (f : A ⟶ B),
   (id_map A) ≫ f = f :=
     by intro A B f;
        apply (@QuantumTypes.IdIsNeutralRight A.space B.space A.struct.toHilbertSpace B.struct.toHilbertSpace f)
@@ -357,17 +368,6 @@ public noncomputable instance MonCatBasisReg' : MonoidalCategory TypeBasisRegist
   triangle := by intro X Y; ext x; simp; sorry
   pentagon := by sorry
 
-
-
-@[expose]
-public noncomputable def MulTensor
-  (famReg : List TypeBasisRegister) (buffer : TypeBasisRegister) (fstRound : Bool) :=
-  match famReg with
-  | [] => buffer
-  | h :: t => if fstRound then MulTensor t h false
-                          else MulTensor t (buffer ⊗ᵣ h) false
-
-notation "⨂ᵣ" l => MulTensor l MonCatBasisReg'.tensorUnit true
 
 
 public theorem NormInTensorUnit (x : MonCatBasisReg'.tensorUnit.space) :

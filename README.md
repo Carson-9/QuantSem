@@ -40,7 +40,9 @@ $\mathrm{QuantSem}$ is a Lean formalization of Quantum Computing aimed at concil
 
 $\mathrm{QuantSem}$ provides a ```Test``` folder, in which the .lean files give an idea of the language and it's current expressiveness power.
 
-* ```test.lean``` shows the concrete description of states, gates and circuits as programmed by the user. Some useful tactics for proving unitarity allow the user to not worry about their implementation as long as the data is indeed unitary in the usual Euclidean spaces.
+* ```test_basis_circuit.lean``` shows the concrete description of states, gates and circuits as programmed by the user. Some useful tactics for proving unitarity allow the user to not worry about their implementation as long as the data is indeed unitary in the usual Euclidean spaces.
+
+* ```test_list_circuit.lean``` is a refinement of ```test_basis_circuit.lean``` working with circuits over a _list_ of registers instead of a single register tensoring everything. This fixes the need for explicit associativity on the user's end.
 
 </br>
 

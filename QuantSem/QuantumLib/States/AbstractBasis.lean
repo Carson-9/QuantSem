@@ -8,8 +8,8 @@ Authors: William Hasley
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Category
-public import QuantSem.Syntax.WithBasis.BasisRegister
-public import QuantSem.Syntax.Category.State
+public import QuantSem.QuantumLib.Registers.AbstractBasis
+public import QuantSem.QuantumLib.States.Basic
 
 open BasisRegister
 open SyntacticState

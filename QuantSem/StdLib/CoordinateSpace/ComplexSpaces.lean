@@ -7,8 +7,8 @@ Authors: William Hasley
 module
 
 
-public import QuantSem.Syntax.Category.Category
-public import QuantSem.Syntax.WithBasis.WithBasis
+public import QuantSem.Imports.Basic
+public import QuantSem.Imports.AbstractBasis
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.LinearAlgebra.Matrix.Reindex

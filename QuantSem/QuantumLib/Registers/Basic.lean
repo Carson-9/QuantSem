@@ -17,7 +17,7 @@ public import Mathlib.Data.Complex.Basic
 public import Mathlib.Analysis.Real.Sqrt
 
 
-public import QuantSem.Syntax.Category.QuantumTypes
+public import QuantSem.QuantumLib.HilbertSpaces.Basic
 
 namespace SyntacticRegister
 

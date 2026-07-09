@@ -9,7 +9,7 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Category
 public import Mathlib.LinearAlgebra.TensorProduct.Defs
-public import QuantSem.Syntax.Category.Register
+public import QuantSem.QuantumLib.Registers.Basic
 
 open SyntacticRegister QuantumTypes
 open CategoryTheory

@@ -14,9 +14,9 @@ Authors: William Hasley
 module
 
 
-public import QuantSem.Syntax.WithBasis.FinSuppBasisTypes
-public import QuantSem.Syntax.WithBasis.BasisRegister
-public import QuantSem.Syntax.WithBasis.BasisState
+public import QuantSem.QuantumLib.HilbertSpaces.AbstractBasis
+public import QuantSem.QuantumLib.Registers.AbstractBasis
+public import QuantSem.QuantumLib.States.AbstractBasis
 -- A construction akin to strictification of monoidal categories
 -- !!! The natural constructions for lists imposes a right-parenthesing convention !!!
 -- !!! Have to reverse left and right operations !!!

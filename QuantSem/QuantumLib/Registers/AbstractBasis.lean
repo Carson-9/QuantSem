@@ -8,8 +8,8 @@ Authors: William Hasley
 module
 
 
-public import QuantSem.Syntax.WithBasis.FinSuppBasisTypes
-public import QuantSem.Syntax.Category.Register
+public import QuantSem.QuantumLib.HilbertSpaces.AbstractBasis
+public import QuantSem.QuantumLib.Registers.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.Monoidal.Subcategory
 

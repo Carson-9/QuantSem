@@ -6,11 +6,11 @@ Authors: William Hasley
 
 module
 
-public import QuantSem.Syntax.Category.QuantumTypes
-public import QuantSem.Syntax.Category.Register
-public import QuantSem.Syntax.Category.State
-public import QuantSem.Syntax.Category.Gate
-public import QuantSem.Syntax.Category.Circuit
+public import QuantSem.QuantumLib.HilbertSpaces.Basic
+public import QuantSem.QuantumLib.Registers.Basic
+public import QuantSem.QuantumLib.States.Basic
+public import QuantSem.QuantumLib.Gates.Basic
+public import QuantSem.QuantumLib.Circuits.Basic
 --public import QuantSem.Syntax.Category.CircuitComplexity
 --public import QuantSem.Syntax.Category.CircuitTactic
 

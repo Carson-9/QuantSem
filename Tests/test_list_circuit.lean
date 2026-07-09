@@ -4,7 +4,7 @@ Released under GNU GPL3 license as described in the file LICENSE.
 Authors: William Hasley
 -/
 
-import QuantSem.Semantics.CoordinateSpace.CoordinateSpace
+import QuantSem.StdLib.CoordinateSpace.CoordinateSpace
 
 open BasisRegister
 open BasisState

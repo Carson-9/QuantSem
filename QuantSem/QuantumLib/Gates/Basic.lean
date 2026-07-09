@@ -7,9 +7,9 @@ Authors: William Hasley
 
 module
 
-public import QuantSem.Syntax.Category.Register
-public import QuantSem.Syntax.Category.State
-public import QuantSem.Syntax.Category.QuantumTypes
+public import QuantSem.QuantumLib.Registers.Basic
+public import QuantSem.QuantumLib.States.Basic
+public import QuantSem.QuantumLib.HilbertSpaces.Basic
 
 namespace SyntacticGate
 

@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
 
-public import QuantSem.Syntax.Category.QuantumTypes
+public import QuantSem.QuantumLib.HilbertSpaces.Basic
 
 
 open ContinuousLinearMap InnerProductSpace

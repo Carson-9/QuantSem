@@ -7,12 +7,12 @@ Authors: William Hasley
 
 module
 
-public import QuantSem.Syntax.WithBasis.FinSuppBasisTypes
-public import QuantSem.Syntax.WithBasis.PiBasisRegister
-public import QuantSem.Syntax.WithBasis.BasisRegister
-public import QuantSem.Syntax.WithBasis.BasisState
-public import QuantSem.Syntax.Category.Gate
-public import QuantSem.Syntax.Category.State
+public import QuantSem.QuantumLib.HilbertSpaces.AbstractBasis
+public import QuantSem.QuantumLib.Registers.PiAbstractBasis
+public import QuantSem.QuantumLib.Registers.AbstractBasis
+public import QuantSem.QuantumLib.States.AbstractBasis
+public import QuantSem.QuantumLib.Gates.Basic
+public import QuantSem.QuantumLib.States.Basic
 
 namespace BasisGate
 

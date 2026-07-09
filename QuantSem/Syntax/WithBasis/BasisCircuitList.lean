@@ -39,6 +39,19 @@ public abbrev TypeBasisCircuitList := Σ R : List TypeBasisRegister, BasisCircui
 public abbrev TypeBasisCircuitList.register (c : TypeBasisCircuitList) := c.fst
 public abbrev TypeBasisCircuitList.circuit (c : TypeBasisCircuitList) := c.snd
 
+@[simp]
+public theorem BasisCircuitRewriteList {l1 l2 : List TypeBasisRegister} (eq : l1 = l2) :
+  (BasisCircuitOverList l1) = (BasisCircuitOverList l2) := by rw[eq]
+
+public def BasisCircuitListCoe {l1 l2 : List TypeBasisRegister} (eq : l1 = l2)
+  (c : BasisCircuitOverList l1) : BasisCircuitOverList l2 :=
+    by rw[eq] at c; apply c
+    -- That's funny, thank you lean! (please give us axiom of univalence)
+
+
+-- public instance CircuitSameList {l1 l2 : List TypeBasisRegister} (hl : l1 = l2) :
+--   Coe (BasisCircuitOverList l1) (BasisCircuitOverList l2) where
+--   coe := BasisCircuitListCoe hl
 
 open BasisCircuitOverList
 
@@ -53,6 +66,12 @@ public noncomputable def BasisCircuit'AreBasisCircuit {R : List TypeBasisRegiste
 
 public noncomputable instance (R : TypeBasisRegister) : Coe (BasisCircuitOverRegister R) (SimpleCircuitOverRegister (BasisRegToQuantReg R)) where
   coe := BasisCircuitAreSimpleCircuit
+
+public theorem BasisCircuitListCoeVert {R1 R2 : List TypeBasisRegister} (c1 : BasisCircuitOverList R1)
+  (c2 : BasisCircuitOverList R2) :
+  BasisCircuit'AreBasisCircuit (@VerticalComp R1 R2 c1 c2) =
+   BasisCircuitOverRegister.RegisterSwap (MulTensorIso R1 R2) (BasisCircuitOverRegister.VerticalComp (BasisCircuit'AreBasisCircuit c1) (BasisCircuit'AreBasisCircuit c2)) :=
+   by rfl
 
 @[simp]
 public noncomputable def BasisCircuit'GateRepr {R : List TypeBasisRegister} (c : BasisCircuitOverList R)
@@ -70,7 +89,9 @@ public theorem BasisGateReprIsSimpleGateRepr {R : List TypeBasisRegister} (c : B
     | IdWire => unfold BasisCircuit'GateRepr; simp; rfl
     | Gate g => unfold BasisCircuit'GateRepr; simp; rfl
     | HorizontalComp c1 c2 c1h c2h => simp; rw[c1h, c2h]; simp; rfl
-    | @VerticalComp R1 R2 c1 c2 c1h c2h => unfold BasisCircuit'GateRepr; rw[c1h, c2h]; simp; sorry -- rfl
+    | @VerticalComp R1 R2 c1 c2 c1h c2h =>
+      unfold BasisCircuit'GateRepr; rw[c1h, c2h];
+      rw[BasisCircuitListCoeVert]; sorry
 
 
 /-
@@ -91,6 +112,12 @@ public def InductiveCircuit' (f : ℕ → List TypeBasisRegister)
   (n : ℕ) : BasisCircuitOverList (f n) := match n with
   | 0 => baseCase
   | Nat.succ k => ind k (InductiveCircuit' f baseCase ind k)
+
+public def InductiveCircuit'' (f : ℕ → List TypeBasisRegister)
+  (baseCase : BasisCircuitOverList (f 0))
+  (ind : (n : ℕ) →  BasisCircuitOverList (f n) → BasisCircuitOverList (f (n + 1)))
+  (n : ℕ) : TypeBasisCircuitList :=
+  ⟨f n, InductiveCircuit' f baseCase ind n⟩
 
 
 end BasisCircuitList

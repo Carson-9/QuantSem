@@ -47,11 +47,19 @@ noncomputable def a_bad_recursive_circuit_explained (n : ℕ) : TypeBasisCircuit
 -- which allows lean to typecheck the circuit family
 
 @[simp]
-noncomputable def my_shape_iter (n : ℕ) : List TypeBasisRegister := List.replicate (n + 2) QubitSpace
+noncomputable def my_shape_iter (n : ℕ) : List TypeBasisRegister := match n with
+  | 0 => [QubitSpace, QubitSpace]
+  | Nat.succ k => (my_shape_iter k) ++ [QubitSpace]
+--List.replicate (n + 2) QubitSpace
 
 @[simp]
 theorem my_shape_iter_induction (n : ℕ) : my_shape_iter (n + 1) = ((my_shape_iter n) ++ [QubitSpace])
-  := by unfold my_shape_iter; sorry -- to prove
+  := by rfl
+@[simp]
+theorem my_shape_iter_induction' (n : ℕ) : my_shape_iter (n + 1) = ([QubitSpace] ++ (my_shape_iter n))
+  := by induction n with
+    |zero => rfl
+    |succ k ih => unfold my_shape_iter; rw[<- List.append_assoc]; rw[ih];
 
 noncomputable def a_bad_recursive_circuit_better (n : ℕ) : TypeBasisCircuitList :=
   ⟨my_shape_iter n, (InductiveCircuit' my_shape_iter base_case ind) n⟩ where
@@ -61,4 +69,13 @@ noncomputable def a_bad_recursive_circuit_better (n : ℕ) : TypeBasisCircuitLis
     :=
     HorizontalComp
     (VerticalComp c (@Gate [QubitSpace] pauli_x))
-    (VerticalComp (@Gate [QubitSpace] pauli_z) c)
+    (BasisCircuitListCoe (my_shape_iter_induction' n).symm (VerticalComp (@Gate [QubitSpace] pauli_z) c)) -- relies on my_shape_iter_induction'
+
+noncomputable def a_bad_recursive_circuit_better' (n : ℕ) : TypeBasisCircuitList :=
+  InductiveCircuit'' my_shape_iter base_case ind n where
+  base_case : BasisCircuitOverList (my_shape_iter 0) := a_simple_circuit_part
+  ind (n : ℕ) (c : BasisCircuitOverList (my_shape_iter n)) : BasisCircuitOverList (my_shape_iter (n + 1))
+    :=
+    HorizontalComp
+    (VerticalComp c (@Gate [QubitSpace] pauli_x))
+    (BasisCircuitListCoe (my_shape_iter_induction' n).symm (VerticalComp (@Gate [QubitSpace] pauli_z) c)) -- relies on my_shape_iter_induction'

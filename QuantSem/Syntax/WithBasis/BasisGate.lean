@@ -8,6 +8,7 @@ Authors: William Hasley
 module
 
 public import QuantSem.Syntax.WithBasis.FinSuppBasisTypes
+public import QuantSem.Syntax.WithBasis.PiBasisRegister
 public import QuantSem.Syntax.WithBasis.BasisRegister
 public import QuantSem.Syntax.WithBasis.BasisState
 public import QuantSem.Syntax.Category.Gate
@@ -18,6 +19,7 @@ namespace BasisGate
 
 open SyntacticGate
 open BasisTypes
+open PiBasisRegister
 open BasisRegister
 open BasisState
 open QuantumTypes
@@ -72,6 +74,11 @@ public noncomputable def ControlGate  {R1 R2 : TypeBasisRegister} (control : R1.
         simp;  --rw[RCLike.inner_tmul_eq]
         sorry
   )
+
+--public noncomputable def SwapGate {R : List TypeBasisRegister} (i j : Fin (R.length)) :
+--  BasisGateType (⨂ᵣ R) (⨂ᵣ R) :=
+--  GateFromBasis
+--     _ _
 
 
 end BasisGate

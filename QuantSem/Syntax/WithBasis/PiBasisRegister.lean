@@ -95,4 +95,11 @@ public noncomputable def MulTensorIso (l1 l2 : List TypeBasisRegister) :
   ((MulTensorPar l1) ⊗ᵣ (MulTensorPar l2)) ≅ (MulTensorPar (l1 ++ l2)) :=
     .mk (MulTensorThetaFam l1 l2) (MulTensorThetaFamInv l1 l2) (MulTensorThetaLeftInv l1 l2) (MulTensorThetaRightInv l1 l2)
 
+/-
+    Give a constructive way of talking about a basis for MulTensors
+-/
+
+
+
+
 end PiBasisRegister

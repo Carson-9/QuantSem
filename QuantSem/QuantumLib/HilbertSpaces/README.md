@@ -1,5 +1,5 @@
 <h1> 
-$\bigotimes\mathcal{H}^\dagger\bigoplus \quad \Huge{\color{#30A3D1} \langle Hilbert Spaces \rangle} \quad \lambda.\Pi\Sigma$
+$\bigotimes\mathcal{H}^\dagger\bigoplus \quad \Huge{\color{#30A3D1} \langle \text{Hilbert Spaces} \rangle} \quad \lambda.\Pi\Sigma$
 </h1>
 
 ## 🎯 Purpose 

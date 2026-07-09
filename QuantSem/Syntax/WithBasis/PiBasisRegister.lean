@@ -4,12 +4,19 @@ Released under GNU GPL3 license as described in the file LICENSE.
 Authors: William Hasley
 -/
 
+
+/-
+    This should be rewritten along with adding files to better interface with
+    already implemented "Pi" constructions (have to redo the hilbert space hierarchy with it)
+-/
+
+
 module
 
 
 public import QuantSem.Syntax.WithBasis.FinSuppBasisTypes
 public import QuantSem.Syntax.WithBasis.BasisRegister
-
+public import QuantSem.Syntax.WithBasis.BasisState
 -- A construction akin to strictification of monoidal categories
 -- !!! The natural constructions for lists imposes a right-parenthesing convention !!!
 -- !!! Have to reverse left and right operations !!!
@@ -23,7 +30,7 @@ open BasisTypes
 open Monoid
 open CategoryTheory
 open BasisRegister
-
+open BasisState
 
 @[expose]
 public noncomputable def MulTensorPar (famReg : List TypeBasisRegister) : TypeBasisRegister :=
@@ -31,6 +38,10 @@ public noncomputable def MulTensorPar (famReg : List TypeBasisRegister) : TypeBa
   | [] => MonCatBasisReg'.tensorUnit
   | [h] => h
   | h :: t => h ⊗ᵣ (MulTensorPar t)
+
+
+public noncomputable instance : Coe (List TypeBasisRegister) TypeBasisRegister where
+  coe := MulTensorPar
 
 @[simp]
 public theorem MulTensorParEmpty : MulTensorPar [] = MonCatBasisReg'.tensorUnit := by rfl
@@ -95,11 +106,44 @@ public noncomputable def MulTensorIso (l1 l2 : List TypeBasisRegister) :
   ((MulTensorPar l1) ⊗ᵣ (MulTensorPar l2)) ≅ (MulTensorPar (l1 ++ l2)) :=
     .mk (MulTensorThetaFam l1 l2) (MulTensorThetaFamInv l1 l2) (MulTensorThetaLeftInv l1 l2) (MulTensorThetaRightInv l1 l2)
 
+
+/-
+    Coercion between list of TypeBasisRegister and their tensored version
+-/
+
+
+public instance VecToFam {n : ℕ} : Coe (Fin n → TypeBasisRegister) (Vector TypeBasisRegister n) where
+  coe := Vector.ofFn
+
+public instance FamToVec {n : ℕ} : Coe (Vector TypeBasisRegister n) (Fin n → TypeBasisRegister)  where
+  coe := fun v => v.get
+
+public def ListBasisRegToFamily (l : List TypeBasisRegister) :
+   (Fin (l.length) → TypeBasisRegister) := (Vector.ofFn (fun k => l.get k))
+
+public def FamilyBasisRegToList {n : ℕ} (f : Fin n → TypeBasisRegister) :
+   (List TypeBasisRegister) := (Vector.toList (Vector.ofFn f))
+
+
 /-
     Give a constructive way of talking about a basis for MulTensors
 -/
 
 
+public def PiPickState {R : List TypeBasisRegister} : Type :=
+  (i : (Fin R.length)) → BasisStateSpace (R.get i)
+
+@[expose]
+public def MulTensorBasis (R : List TypeBasisRegister) : Type :=
+  (PiBasisRegisterTensor (I := (Fin R.length)) (ListBasisRegToFamily R)).indexing
+
+
+-- public def PiTypesBasisEquiv (l : List TypeBasisRegister) :
+--   (⨂ᵣ l).indexing ≃ (MulTensorBasis l) :=
+--   match l with
+--   | [] => .mk (fun i => _ ) _ _ _
+--   | [h] => _
+--   | h :: h' :: t => _
 
 
 end PiBasisRegister

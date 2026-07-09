@@ -10,6 +10,7 @@ module
 
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
 
 public import QuantSem.Syntax.Category.QuantumTypes
 
@@ -115,6 +116,30 @@ public noncomputable def LinearIsometryFromBasis (E F : Type) (ι γ : Type) [H1
     (H1.isOrthonormal)
     (by unfold Orthonormal; apply And.intro; intro i; unfold Orthonormal at hOrth; simp;
         apply hOrth.left i; intro i j h; simp; apply hOrth.right; apply h)
+
+
+/-
+    Pi notation for a family of Hilbert Spaces (Need to be a module at least)
+-/
+
+
+@[default_instance]
+public noncomputable instance PiNormedAddCommGroupTensor {I : Type} [Fintype I] {H : I → Type}
+  {ι : I → Type} [S : (i : I) → HilbertSpaceWithBasis (H i) (ι i)]
+  : NormedAddCommGroup (PiTensorProduct ℂ (fun i : I => H i)) :=
+  by sorry
+
+
+@[default_instance]
+public noncomputable instance PiHilbertBasisTensor {I : Type} [Finite I] {H : I → Type}
+  {ι : I → Type} [S : (i : I) → HilbertSpaceWithBasis (H i) (ι i)]
+  : HilbertSpaceWithBasis (PiTensorProduct ℂ (fun i : I => H i)) (Π i : I, ι i) := by sorry
+  -- repr := (Basis.piTensorProduct (fun i : I => (S i).toBasis)).repr
+  -- isOrthonormal := _
+
+public noncomputable abbrev PiHilbertBasisTensorFun (I : Type) [Finite I]
+  (H ι : I → Type) [S : (i : I) → HilbertSpaceWithBasis (H i) (ι i)]
+  : HilbertSpaceWithBasis (PiTensorProduct ℂ H) (Π i : I, ι i) := PiHilbertBasisTensor
 
 
 

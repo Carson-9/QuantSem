@@ -43,10 +43,9 @@ public abbrev TypeBasisCircuitList.circuit (c : TypeBasisCircuitList) := c.snd
 public theorem BasisCircuitRewriteList {l1 l2 : List TypeBasisRegister} (eq : l1 = l2) :
   (BasisCircuitOverList l1) = (BasisCircuitOverList l2) := by rw[eq]
 
-public def BasisCircuitListCoe {l1 l2 : List TypeBasisRegister} (eq : l1 = l2)
-  (c : BasisCircuitOverList l1) : BasisCircuitOverList l2 :=
-    by rw[eq] at c; apply c
-    -- That's funny, thank you lean! (please give us axiom of univalence)
+public def BasisCircuitListCoe {l1 l2 : List TypeBasisRegister} (eq : l1 = l2) :
+  (BasisCircuitOverList l1) ≃ (BasisCircuitOverList l2) :=
+  Equiv.cast (BasisCircuitRewriteList eq)
 
 
 -- public instance CircuitSameList {l1 l2 : List TypeBasisRegister} (hl : l1 = l2) :

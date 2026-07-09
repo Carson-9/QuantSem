@@ -14,6 +14,8 @@ public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.Analysis.InnerProductSpace.TensorProduct
 public import Mathlib.LinearAlgebra.TensorProduct.Defs
 public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
+public import Mathlib.Analysis.Normed.Module.PiTensorProduct.ProjectiveSeminorm
 
 open ContinuousLinearMap InnerProductSpace
 open scoped InnerProduct ComplexInnerProductSpace
@@ -249,7 +251,5 @@ public theorem NormFromInner (E : Type) [E' : HilbertSpace E] (z : E) :
   by calc
     ‖z‖ = √(‖z‖ ^ 2)                    := by symm; simp;
      _  = √(Complex.re (E'.inner z z))  := by rw[E'.norm_sq_eq_re_inner]; rfl
-
-
 
 end QuantumTypes

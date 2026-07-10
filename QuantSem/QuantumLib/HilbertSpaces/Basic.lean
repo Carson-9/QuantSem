@@ -9,11 +9,9 @@ module
 
 
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
-public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.Analysis.InnerProductSpace.TensorProduct
 public import Mathlib.LinearAlgebra.TensorProduct.Defs
-public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
 public import Mathlib.Analysis.Normed.Module.PiTensorProduct.ProjectiveSeminorm
 
 open ContinuousLinearMap InnerProductSpace
@@ -34,9 +32,10 @@ variable {E F G H : Type} [EH : HilbertSpace E] [HilbertSpace F] [HilbertSpace G
 
 @[default_instance]
 public noncomputable instance HilbertTensor : HilbertSpace (TensorProduct ℂ E F) where
-  complete := by intro f cauchy_f; sorry
+  complete := by intro f cauchy_f; sorry -- known todo of mathlib
 
-public noncomputable abbrev HilbertTensorFun : HilbertSpace (TensorProduct ℂ E F) := HilbertTensor
+public noncomputable abbrev HilbertTensorFun (E F : Type) [HilbertSpace E] [HilbertSpace F]
+  : HilbertSpace (TensorProduct ℂ E F) := HilbertTensor
 
 public noncomputable abbrev HilbertTensorAssoc :
   TensorProduct ℂ (TensorProduct ℂ E F) G ≃ₗᵢ[ℂ]
@@ -202,10 +201,37 @@ public theorem LinearIsometriesOnCAgree'
     Computation of the norm in a Hilbert Space
 -/
 
-public theorem NormFromInner (z : E) :
-  ‖z‖ = √ (Complex.re (inner ℂ z z)) :=
-  by calc
-    ‖z‖ = √(‖z‖ ^ 2)                    := by symm; simp;
+public theorem NormFromInner (z : E) : ‖z‖ = √ (Complex.re (inner ℂ z z))
+  := by calc
+    ‖z‖ = √(‖z‖ ^ 2)                   := by symm; simp;
      _  = √(Complex.re (inner ℂ z z))  := by rw[EH.norm_sq_eq_re_inner]; rfl
+
+
+/-
+    Pi Tensor Product -- TODO, Relies heavily on mathlib, but mathlib has TODOs
+-/
+
+-- @[default_instance]
+-- public noncomputable instance {I : Type} {H : I → Type} [(i : I) → HilbertSpace (H i)] :
+--   NormedAddCommGroup (PiTensorProduct ℂ H) :=
+--   AddGroupNorm.toNormedAddCommGroup (_)
+--
+-- @[default_instance]
+-- public noncomputable instance {I : Type} {H : I → Type} [(i : I) → HilbertSpace (H i)] :
+--   NormedAddCommGroup (PiTensorProduct ℂ H) :=
+--   NormedAddCommGroup.ofAddDist _ _
+
+-- @[default_instance]
+-- public noncomputable instance {I : Type} {H : I → Type} [(i : I) → HilbertSpace (H i)] :
+--   NormedAddCommGroup (PiTensorProduct ℂ H) :=
+--   .ofSeparation (by intro x; rfl)
+
+@[default_instance]
+public noncomputable instance HilbertPiTensor {I : Type} {H : I → Type} [(i : I) → HilbertSpace (H i)] :
+  HilbertSpace (PiTensorProduct ℂ H) := by sorry
+
+@[implicit_reducible]
+public noncomputable def HilbertPiTensorFun (I : Type) (H : I → Type)
+  [(i : I) → HilbertSpace (H i)] : HilbertSpace (PiTensorProduct ℂ H) := HilbertPiTensor
 
 end QuantumTypes

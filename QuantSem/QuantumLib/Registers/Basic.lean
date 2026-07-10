@@ -7,30 +7,23 @@ Authors: William Hasley
 
 module
 
-/- These imports make the file happy :) -/
-public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Analysis.InnerProductSpace.Defs
-
-public import Mathlib.CategoryTheory.Monoidal.Category
-public import Mathlib.LinearAlgebra.TensorProduct.Defs
-public import Mathlib.Data.Complex.Basic
-public import Mathlib.Analysis.Real.Sqrt
-
 
 public import QuantSem.QuantumLib.HilbertSpaces.Basic
+public import Mathlib.CategoryTheory.Monoidal.Category
 
 namespace SyntacticRegister
 
 open QuantumTypes
-open Monoid
 open CategoryTheory
-open InnerProductSpace
-open InnerProductSpace.Core
 
 /-
 Quantum registers depend on Quantum Type composition.
 Often, the given composition will be the Tensor product of hilbert spaces
 -/
+
+public structure QuantumRegister : Type 1 where
+  space : Type
+  struct : HilbertSpace space
 
 --public abbrev QuantumRegister := TypeQuantumTypes
 public abbrev QuantReg (R : Type) := QuantumTypes.HilbertSpace R
@@ -186,7 +179,7 @@ public theorem one_is_id : ∀ X : TypeQuantumRegister, 𝟙 X = @IdMap X.fst X.
 public theorem tensor_factorises : ∀ A A' C B B' D, ∀ (f : A' ⟶ C) (g : B' ⟶ D)
   (h : A ⟶ A') (i : B ⟶ B'),
   (QuantRegHomTensor h i) ≫ (QuantRegHomTensor f g) = QuantRegHomTensor (h ≫ f) (i ≫ g) :=
-  by intro A A' B B' C D f g h i; apply @TensorFactorises A.fst A'.fst B.fst B'.fst C.fst D.fst A.snd A'.snd B.snd B'.snd C.snd D.snd f g h i
+  by intro A A' B B' C D f g h i; apply TensorFactorises f g h i
 
 @[simp]
 public theorem id_is_neutral_left : ∀ A B : TypeQuantumRegister, ∀ (f : A ⟶ B),

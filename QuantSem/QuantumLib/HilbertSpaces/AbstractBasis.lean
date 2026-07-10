@@ -17,7 +17,6 @@ public import QuantSem.QuantumLib.HilbertSpaces.Basic
 
 open ContinuousLinearMap InnerProductSpace
 open scoped InnerProduct ComplexInnerProductSpace
-open CategoryTheory
 open QuantumTypes
 
 namespace BasisTypes
@@ -28,6 +27,11 @@ public class HilbertSpaceWithBasis (E : Type) (ι : Type) extends  HilbertSpace 
   basisType := ι
   isOrthonormal : Orthonormal ℂ (fun i : ι => toBasis i)
 
+
+variable {E F G H ι γ κ δ : Type}
+  [EH : HilbertSpaceWithBasis E ι] [FH : HilbertSpaceWithBasis F γ]
+  [GH : HilbertSpaceWithBasis G κ] [HH : HilbertSpaceWithBasis H δ]
+
 /-
     Hilbert spaces with basis can be composed with the Tensor product
 -/
@@ -35,33 +39,28 @@ public class HilbertSpaceWithBasis (E : Type) (ι : Type) extends  HilbertSpace 
 
 -- The (lack of) excluded middle is both annoying and insightful
 @[default_instance]
-public noncomputable instance HilbertBasisTensor {E F : Type} {ι γ : Type}
-  [H1 : HilbertSpaceWithBasis E ι] [H2 : HilbertSpaceWithBasis F γ]
+public noncomputable instance HilbertBasisTensor
   : HilbertSpaceWithBasis (TensorProduct ℂ E F) (ι × γ) where
-  repr := (Module.Basis.tensorProduct H1.toBasis H2.toBasis).repr
-  --(TensorProduct.congr (H1.repr) (H2.repr)) ≪≫ₗ (finsuppTensorFinsuppLid ℂ ℂ ι γ)
-  isOrthonormal := Orthonormal.basisTensorProduct H1.isOrthonormal H2.isOrthonormal
+  repr := (Module.Basis.tensorProduct EH.toBasis FH.toBasis).repr
+  isOrthonormal := Orthonormal.basisTensorProduct EH.isOrthonormal FH.isOrthonormal
 
-public noncomputable abbrev HilbertBasisTensorFun (E F : Type) (ι γ : Type)
+public noncomputable abbrev HilbertBasisTensorFun (E F ι γ : Type)
   [H1 : HilbertSpaceWithBasis E ι] [H2 : HilbertSpaceWithBasis F γ]
   : HilbertSpaceWithBasis (TensorProduct ℂ E F) (ι × γ) := HilbertBasisTensor
 
-
-public theorem BasisToHilbertCastCoherence (E F : Type) (ι γ : Type) [H1 : HilbertSpaceWithBasis E ι]
-  [H2 : HilbertSpaceWithBasis F γ] :
-  HilbertTensorFun E F =
-  (HilbertBasisTensorFun E F ι γ).toHilbertSpace := by rfl
+public theorem BasisToHilbertCastCoherence (E F ι γ : Type)
+  [H1 : HilbertSpaceWithBasis E ι] [H2 : HilbertSpaceWithBasis F γ] :
+  HilbertTensorFun = (HilbertBasisTensorFun E F ι γ).toHilbertSpace := by rfl
 
 /-
     The basis vectors of the tensor space are given by eᵢ ⊗ fⱼ
 -/
 
-public theorem BasisOfTensor (E F : Type) (ι γ : Type) [H1 : HilbertSpaceWithBasis E ι]
-  [H2 : HilbertSpaceWithBasis F γ] :
-  ∀ index : ι × γ, (HilbertBasisTensorFun E F ι γ).toBasis index =
-    TensorProduct.tmul ℂ (H1.toBasis index.fst) (H2.toBasis index.snd) :=
+public theorem BasisOfTensor : ∀ index : ι × γ,
+  (HilbertBasisTensorFun E F ι γ).toBasis index =
+    TensorProduct.tmul ℂ (EH.toBasis index.fst) (FH.toBasis index.snd) :=
   by intro i; unfold HilbertBasisTensorFun; unfold HilbertBasisTensor; simp
-     rw[Module.Basis.tensorProduct_apply' H1.toBasis H2.toBasis i]
+     rw[Module.Basis.tensorProduct_apply' EH.toBasis FH.toBasis i]
 
 /-
     ℂ is the unit of the tensor product. It is a Hilbert space
@@ -94,14 +93,12 @@ public noncomputable def CIsHilbertBasis : HilbertSpaceWithBasis ℂ (Fin 1) := 
 
 
 @[ext]
-public theorem LinearIsometryProductBasisExt (E E' F ι κ γ : Type) [EH : HilbertSpaceWithBasis E ι]
-  [E'H : HilbertSpaceWithBasis E' κ] [F' : HilbertSpaceWithBasis F γ] (f g : (TensorProduct ℂ E E') →ₗᵢ[ℂ] F)
-  : (∀ c : E × E', f (TensorProduct.tmul ℂ c.fst c.snd) = g (TensorProduct.tmul ℂ c.fst c.snd)) → (f = g) :=
-  by intro h; apply (Module.Basis.ext_linearIsometry (Module.Basis.ofRepr (HilbertBasisTensorFun E E' ι κ).repr)); intro i; simp; rw[BasisOfTensor]; apply (h (EH.toBasis i.1, E'H.toBasis i.2))
+public theorem LinearIsometryProductBasisExt (f g : (TensorProduct ℂ E F) →ₗᵢ[ℂ] G)
+  : (∀ c : E × F, f (TensorProduct.tmul ℂ c.fst c.snd) = g (TensorProduct.tmul ℂ c.fst c.snd)) → (f = g) :=
+  by intro h; apply (Module.Basis.ext_linearIsometry (Module.Basis.ofRepr (HilbertBasisTensorFun E F ι γ).repr)); intro i; simp; rw[BasisOfTensor]; apply (h (EH.toBasis i.1, FH.toBasis i.2))
 
 @[ext]
-public theorem LinearIsometryBasisExt (E F ι γ : Type) [EH : HilbertSpaceWithBasis E ι]
-   [F' : HilbertSpaceWithBasis F γ] (f g : E →ₗᵢ[ℂ] F)
+public theorem LinearIsometryBasisExt (f g : E →ₗᵢ[ℂ] F)
   : (∀ i : ι, f (EH.toBasis i) = g (EH.toBasis i)) → (f = g) :=
   by intro h; apply (Module.Basis.ext_linearIsometry EH.toBasis); exact h
 
@@ -109,11 +106,10 @@ public theorem LinearIsometryBasisExt (E F ι γ : Type) [EH : HilbertSpaceWithB
     A Linear Isometry can be built from the image of a basis
 -/
 
-public noncomputable def LinearIsometryFromBasis (E F : Type) (ι γ : Type) [H1 : HilbertSpaceWithBasis E ι]
-  [H2 : HilbertSpaceWithBasis F γ] (f : ι → F) (hOrth : Orthonormal ℂ f)  : E →ₗᵢ[ℂ] F :=
+public noncomputable def LinearIsometryFromBasis (f : ι → F) (hOrth : Orthonormal ℂ f)  : E →ₗᵢ[ℂ] F :=
   LinearMap.isometryOfOrthonormal
-    (H1.constr ℂ f)
-    (H1.isOrthonormal)
+    (EH.constr ℂ f)
+    (EH.isOrthonormal)
     (by unfold Orthonormal; apply And.intro; intro i; unfold Orthonormal at hOrth; simp;
         apply hOrth.left i; intro i j h; simp; apply hOrth.right; apply h)
 
@@ -121,13 +117,6 @@ public noncomputable def LinearIsometryFromBasis (E F : Type) (ι γ : Type) [H1
 /-
     Pi notation for a family of Hilbert Spaces (Need to be a module at least)
 -/
-
-
-@[default_instance]
-public noncomputable instance PiNormedAddCommGroupTensor {I : Type} [Fintype I] {H : I → Type}
-  {ι : I → Type} [S : (i : I) → HilbertSpaceWithBasis (H i) (ι i)]
-  : NormedAddCommGroup (PiTensorProduct ℂ (fun i : I => H i)) :=
-  by sorry
 
 
 @[default_instance]

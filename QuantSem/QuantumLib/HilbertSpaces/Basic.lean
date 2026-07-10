@@ -51,16 +51,18 @@ public noncomputable instance CHilbert : HilbertSpace ℂ where
 @[expose, implicit_reducible]
 public noncomputable def CIsHilbert : HilbertSpace ℂ := CHilbert
 
-@[expose]
-public noncomputable def CIsLeftNeutral :
+public noncomputable abbrev CIsLeftNeutral :
   TensorProduct ℂ ℂ E ≃ₗᵢ[ℂ] E := TensorProduct.lidIsometry ℂ E
 
-@[expose]
-public noncomputable def CIsRightNeutral :
+public noncomputable abbrev CIsRightNeutral :
   TensorProduct ℂ E ℂ ≃ₗᵢ[ℂ] E :=
   LinearIsometryEquiv.trans (TensorProduct.commIsometry ℂ E ℂ) (CIsLeftNeutral)
 
+public theorem CLeftNeutralOnSeparables :
+  ∀ x : ℂ, ∀ y : E, CIsLeftNeutral (x ⊗ₜ[ℂ] y) = x • y := by intro x y; simp;
 
+public theorem CRightNeutralOnSeparables :
+  ∀ x : E, ∀ y : ℂ, CIsRightNeutral (x ⊗ₜ[ℂ] y) = y • x := by intro x y; simp;
 /-
     An element of R is uniquely determined by an isometry from ℂ to R
 -/
@@ -88,6 +90,13 @@ public theorem ElementInSpacePointsTo (x : E) (hX : x ≠ 0) :
 public noncomputable abbrev TensorLinearIsometries (f : E →ₗᵢ[ℂ] G) (g : F →ₗᵢ[ℂ] H) :
   (TensorProduct ℂ E F) →ₗᵢ[ℂ] (TensorProduct ℂ G H) := TensorProduct.mapIsometry f g
 
+/-
+    Compute a Tensor of Linear Isometries on Separable states
+-/
+
+public theorem TensorLinearIsometriesOnSeparables (f : E →ₗᵢ[ℂ] G) (g : F →ₗᵢ[ℂ] H) :
+  ∀ x : E, ∀ y : F, (TensorLinearIsometries f g) (x ⊗ₜ[ℂ] y) = (f x) ⊗ₜ[ℂ] (g y) :=
+  by intro x y; rfl
 
 
 @[simp]
@@ -169,13 +178,12 @@ public theorem LinearIsometryEquivalenceComp (f : E ≃ₗᵢ[ℂ] F) (g : F ≃
 @[simp]
 public theorem EquivalenceToIsometryOfSymmLeft (f : E ≃ₗᵢ[ℂ] F) :
   LinearIsometry.comp f.toLinearIsometry f.symm.toLinearIsometry = IdMap F :=
-    by unfold LinearIsometry.comp; ext; simp;
-
+    by ext x; apply LinearIsometryEquiv.apply_symm_apply
 
 @[simp]
 public theorem EquivalenceToIsometryOfSymmRight (f : E ≃ₗᵢ[ℂ] F) :
   LinearIsometry.comp  f.symm.toLinearIsometry f.toLinearIsometry  = IdMap E :=
-    by unfold LinearIsometry.comp; ext; simp;
+    by ext x; apply LinearIsometryEquiv.symm_apply_apply
 
 
 /-
@@ -206,6 +214,94 @@ public theorem NormFromInner (z : E) : ‖z‖ = √ (Complex.re (inner ℂ z z)
     ‖z‖ = √(‖z‖ ^ 2)                   := by symm; simp;
      _  = √(Complex.re (inner ℂ z z))  := by rw[EH.norm_sq_eq_re_inner]; rfl
 
+/-
+    Normalize vectors
+-/
+
+public noncomputable abbrev NormalizeElement (x : E) : E := ‖x‖⁻¹ • x
+
+public theorem ElementIsUnitAndSize (x : E) : ‖x‖ ≠ 0 → x = ‖x‖ • (NormalizeElement x) :=
+  by intro h; unfold NormalizeElement; rw[<- mul_smul, Field.mul_inv_cancel ‖x‖]; simp; apply h
+
+public theorem NormOfNormalizedIsOne (x : E) : ‖x‖ ≠ 0 → ‖(NormalizeElement x)‖ = 1 :=
+  by intro hX; unfold NormalizeElement; rw[norm_smul]; simp; rw[mul_comm, Field.mul_inv_cancel ‖x‖]; apply hX
+
+public theorem NormZeroIffZero : ∀ x : E, ‖x‖ = 0 ↔ x = 0 :=
+  by intro x; apply Iff.trans (normSqZero x) (innerZero x) where
+    normSqZero : ∀ x : E, ‖x‖ = 0 ↔ (inner ℂ x x).re = 0 := by intro x; rw[NormFromInner]; simp; apply Real.sqrt_eq_zero; rw[<- Complex.ofReal_pow, Complex.ofReal_re]; apply Even.pow_nonneg; simp
+    normSqExpr : ∀ x : E, (inner ℂ x x).re = 0 ↔ (inner ℂ x x) = 0 := by intro x; apply Iff.intro; intro hX; apply Complex.ext; rw[hX]; simp; simp; rw[<- Complex.ofReal_pow, Complex.ofReal_im]; intro h; rw[h]; simp
+    innerZero : ∀ x : E, (inner ℂ x x).re = 0 ↔ x = 0 := by intro x; apply Iff.trans (normSqExpr x) (inner_self_eq_zero)
+
+/-
+    Induction on separable element
+-/
+
+
+public def StatesAsCombinationOfSeparables (E F : Type) [HilbertSpace E] [HilbertSpace F] :
+  TensorProduct ℂ E F ≃
+    Submodule.span ℂ {t : TensorProduct ℂ E F | ∃ (m : E) (n : F), m ⊗ₜ[ℂ] n = t} :=
+    .mk (fun x => ⟨x, by rw[TensorProduct.span_tmul_eq_top ℂ E F]; simp⟩) (fun a => a.val)
+    (by unfold Function.LeftInverse; intro x; simp)
+    (by unfold Function.RightInverse; intro x; simp)
+
+public def SepToTensorProp
+  (p : (x : TensorProduct ℂ E F) → (x ∈ Submodule.span ℂ {t : TensorProduct ℂ E F | ∃ (m : E) (n : F), m ⊗ₜ[ℂ] n = t}) → Prop)
+  : TensorProduct ℂ E F → Prop :=
+  fun x => p (StatesAsCombinationOfSeparables E F x) (StatesAsCombinationOfSeparables E F x).prop
+
+public def TensorToSepProp
+  (p : TensorProduct ℂ E F → Prop) :
+  (x : TensorProduct ℂ E F) → (x ∈ Submodule.span ℂ {t : TensorProduct ℂ E F| ∃ (m : E) (n : F), m ⊗ₜ[ℂ] n = t}) → Prop :=
+  fun x hx => p ((StatesAsCombinationOfSeparables E F).symm (Subtype.mk x hx))
+
+public theorem SeparablePropCoherence (p : TensorProduct ℂ E F → Prop) :
+   ∀ x, (p x) ↔ ((TensorToSepProp p) (StatesAsCombinationOfSeparables E F x).val (StatesAsCombinationOfSeparables E F x).prop)
+  := by intro x; rfl
+
+public theorem TensorInduction
+  (property : TensorProduct ℂ E F → Prop)
+  (hzero : property 0)
+  (hAllBasis : ∀ x1 : E, ∀ x2 : F, property (x1 ⊗ₜ[ℂ] x2))
+  (hLinear : ∀ x1 x2 : (TensorProduct ℂ E F), property x1 → property x2 → property (x1 + x2))
+  (hmul :  ∀ x : (TensorProduct ℂ E F), ∀ c : ℂ, property x → property (c • x)) :
+  ∀ x : (TensorProduct ℂ E F), property x :=
+  by intro x; apply
+   (
+    Submodule.span_induction (p := (TensorToSepProp property))
+    (fun x hx => (SeparablePropCoherence property x).mp (by
+      have hab : ∃ a b, a ⊗ₜ[ℂ] b = x := hx.out
+      rcases hab with ⟨a, b, hfin⟩; rw[<- hfin]; apply hAllBasis a b))
+    ((SeparablePropCoherence property 0).mp hzero)
+    (fun x y hx hy wx wy => (SeparablePropCoherence property (x + y)).mp (hLinear x y ((SeparablePropCoherence property x).mpr wx) ((SeparablePropCoherence property y).mpr wy)))
+    (fun a x hx wx => (SeparablePropCoherence property (a • x)).mp (hmul x a ((SeparablePropCoherence property x).mp wx)))
+  ); apply (StatesAsCombinationOfSeparables E F x).prop
+
+/-
+    Extensionnality of Linear Isometries on Tensor space
+-/
+
+public theorem LinearIsometryExtOnTensor (f g : (TensorProduct ℂ E F) →ₗᵢ[ℂ] G)
+  (h :  ∀ x : E, ∀ y : F, f (x ⊗ₜ[ℂ] y) = g (x ⊗ₜ[ℂ] y)) : f = g :=
+  LinearIsometry.ext (
+      TensorInduction
+      (fun x => f x = g x)
+      (by rw[LinearIsometry.map_zero, LinearIsometry.map_zero])
+      h
+      (by intro x y h1 h2; simp; rw[h1, h2])
+      (by intro x c h'; simp; rw[h']))
+
+public theorem LinearIsometryExtOnTensorIff (f g : (TensorProduct ℂ E F) →ₗᵢ[ℂ] G) :
+  f = g ↔ ∀ x : E, ∀ y : F, f (x ⊗ₜ[ℂ] y) = g (x ⊗ₜ[ℂ] y) :=
+  by apply Iff.intro; intro h x y; rw[h]; intro h; apply LinearIsometryExtOnTensor; apply h
+
+
+/-
+    Linear Isometry composition and application -- why is this not in mathlib? did I miss it?
+-/
+
+@[simp]
+public theorem LinearIsometryCompApply (f : E →ₗᵢ[ℂ] F) (g : F →ₗᵢ[ℂ] G) (x : E) :
+  (g.comp f) x = g (f x) := by rfl
 
 /-
     Pi Tensor Product -- TODO, Relies heavily on mathlib, but mathlib has TODOs

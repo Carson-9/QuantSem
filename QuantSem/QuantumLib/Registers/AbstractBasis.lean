@@ -27,40 +27,42 @@ public structure BasisRegister : Type 1 where
 @[default_instance]
 public instance (R : BasisRegister) : HilbertSpaceWithBasis R.space R.indexing := R.struct
 
-@[default_instance]
-public instance BasisRegisterCat : Category BasisRegister where
-  Hom R1 R2 :=  R1.space →ₗᵢ[ℂ] R2.space
-  id R := IdMap R.space
-  comp f1 f2 := LinearIsometry.comp f2 f1
-
-public def BasisRegisterToQuantumRegister (R : BasisRegister)
+public abbrev BasisRegisterToQuantumRegister (R : BasisRegister)
   : SyntacticRegister.QuantumRegister := .mk R.space R.struct.toHilbertSpace
 
 @[default_instance]
 public instance : Coe BasisRegister SyntacticRegister.QuantumRegister where
   coe := BasisRegisterToQuantumRegister
 
+@[default_instance]
+public instance BasisRegisterCat : Category BasisRegister where
+  Hom R1 R2   := SyntacticRegister.QuantumRegisterCat.Hom R1 R2
+  id R        := SyntacticRegister.QuantumRegisterCat.id R
+  comp f1 f2  := SyntacticRegister.QuantumRegisterCat.comp f1 f2
+
 @[simp]
 public theorem HomPromoteEq (R1 R2 : BasisRegister) :
-  BasisRegisterCat.Hom R1 R2 = SyntacticRegister.QuantumRegisterCat.Hom (↑R1) (↑R2)
-  := by rfl
+  BasisRegisterCat.Hom R1 R2 = SyntacticRegister.QuantumRegisterCat.Hom (↑R1) (↑R2) := by rfl
 
 public def HomPromote {R1 R2 : BasisRegister} :
-  SyntacticRegister.QuantumRegisterCat.Hom (↑R1) (↑R2) ≃ BasisRegisterCat.Hom R1 R2
-  := Equiv.cast (HomPromoteEq R1 R2).symm
+  SyntacticRegister.QuantumRegisterCat.Hom (↑R1) (↑R2) ≃ BasisRegisterCat.Hom R1 R2 := Equiv.cast (HomPromoteEq R1 R2).symm
 
--- @[default_instance]
--- public instance {R1 R2 : BasisRegister} : Coe (BasisRegisterCat.Hom R1 R2) (SyntacticRegister.QuantumRegisterCat.Hom (↑R1) (↑R2))
---   where coe := HomPromote.symm
--- @[default_instance]
--- public instance {R1 R2 : BasisRegister} : Coe (SyntacticRegister.QuantumRegisterCat.Hom (↑R1) (↑R2)) (BasisRegisterCat.Hom R1 R2)
---   where coe := HomPromote
+@[simp]
+public theorem HomEqPromote {R1 R2 : BasisRegister} (f g : BasisRegisterToQuantumRegister R1 ⟶ BasisRegisterToQuantumRegister R2)
+  (eq : f = g) : (HomPromote f) = (HomPromote g) := by rw[eq]
 
-public theorem HomEqPromote {R1 R2 : BasisRegister} (f g : BasisRegisterToQuantumRegister R1 ⟶ BasisRegisterToQuantumRegister R2) (eq : f = g) :
-  (HomPromote f) = (HomPromote g) := by rw[eq]
+@[simp]
+public theorem HomCompPromote {R1 R2 R3 : BasisRegister} (f : BasisRegisterToQuantumRegister R1 ⟶ BasisRegisterToQuantumRegister R2)
+  (g : BasisRegisterToQuantumRegister R2 ⟶ BasisRegisterToQuantumRegister R3) :
+  (HomPromote (f ≫ g)) = (HomPromote f) ≫ (HomPromote g) := by rfl
+
 
 public def IsoPromote {R1 R2 : BasisRegister} :
   (↑R1 ≅ ↑R2) ≃ (R1 ≅ R2) := .mk id id (by intro x; simp) (by intro x; simp)
+
+@[simp]
+public theorem IsoPromoteEq {R1 R2 : BasisRegister} :
+   (R1 ≅ R2) = (↑R1 ≅ ↑R2) := by rfl
 
 @[expose]
 public noncomputable def BasisRegisterTensor (R1 R2 : BasisRegister) : BasisRegister :=
@@ -94,26 +96,27 @@ public noncomputable abbrev CBasisRegister : BasisRegister := .mk ℂ (Fin 1) CH
 
 
 @[default_instance]
-public noncomputable instance BasisRegisterMonCat : MonoidalCategory BasisRegister -- :=  sorry
-
-  where
-  tensorObj := BasisRegisterTensor
-  whiskerLeft X Y1 Y2 f := HomPromote ((TensorIso X Y1) ≫ (SyntacticRegister.QuantumRegisterMonCat.whiskerLeft ↑X f) ≫ (TensorIso X Y2).symm)
-  whiskerRight := @fun X1 X2 f Y => HomPromote ((TensorIso X1 Y) ≫ (SyntacticRegister.QuantumRegisterMonCat.whiskerRight f ↑Y) ≫ (TensorIso X2 Y).symm)
-  whiskerLeft_id := by sorry
-  id_whiskerRight := by sorry
-  tensorUnit := CBasisRegister
-  associator X Y Z := by sorry -- IsoPromote (SyntacticRegister.QuantumRegisterMonCat.associator ↑X ↑Y ↑Z)
-  leftUnitor X := by sorry --IsoPromote (SyntacticRegister.QuantumRegisterMonCat.leftUnitor ↑X)
-  rightUnitor X := by sorry
-  id_tensorHom_id X Y := by sorry
-  tensorHom_def f g := by sorry
-  tensorHom_comp_tensorHom f g h i := by sorry
-  associator_naturality f g h := by sorry
-  leftUnitor_naturality := by sorry
-  rightUnitor_naturality := by sorry
-  triangle X Y := by sorry
-  pentagon := by sorry
+public noncomputable instance BasisRegisterMonCat : MonoidalCategory BasisRegister
+  :=  sorry
+  -- where
+  -- tensorObj := BasisRegisterTensor
+  -- whiskerLeft X Y1 Y2 f := SyntacticRegister.QuantumRegisterMonCat.whiskerLeft ↑X f
+  -- whiskerRight := @fun X1 X2 f Y => SyntacticRegister.QuantumRegisterMonCat.whiskerRight f ↑Y
+  -- whiskerLeft_id X Y := SyntacticRegister.QuantumRegisterMonCat.whiskerLeft_id X Y
+  -- id_whiskerRight X Y := SyntacticRegister.QuantumRegisterMonCat.id_whiskerRight X Y
+  -- tensorUnit := CBasisRegister
+  -- -- get this to work, and we're good
+  -- associator X Y Z := SyntacticRegister.QuantumRegisterMonCat.associator X Y Z
+  -- leftUnitor X :=  SyntacticRegister.QuantumRegisterMonCat.leftUnitor X
+  -- rightUnitor X := SyntacticRegister.QuantumRegisterMonCat.rightUnitor X
+  -- id_tensorHom_id X Y := SyntacticRegister.QuantumRegisterMonCat.id_tensorHom_id ↑X ↑Y
+  -- tensorHom_def f g := SyntacticRegister.QuantumRegisterMonCat.tensorHom_def f g
+  -- tensorHom_comp_tensorHom f g h i := SyntacticRegister.QuantumRegisterMonCat.tensorHom_comp_tensorHom f g h i
+  -- associator_naturality f g h := SyntacticRegister.QuantumRegisterMonCat.associator_naturality f g h
+  -- leftUnitor_naturality := SyntacticRegister.QuantumRegisterMonCat.leftUnitor_naturality
+  -- rightUnitor_naturality := SyntacticRegister.QuantumRegisterMonCat.rightUnitor_naturality
+  -- triangle := SyntacticRegister.QuantumRegisterMonCat.triangle
+  -- pentagon := SyntacticRegister.QuantumRegisterMonCat.pentagon
 
 
 public noncomputable def QuantumRegister.MulTensor (I : Type) [Finite I] (H : I → BasisRegister) : BasisRegister :=

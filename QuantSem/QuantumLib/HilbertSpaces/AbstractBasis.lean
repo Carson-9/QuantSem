@@ -50,7 +50,7 @@ public noncomputable abbrev HilbertBasisTensorFun (E F ι γ : Type)
 
 public theorem BasisToHilbertCastCoherence (E F ι γ : Type)
   [H1 : HilbertSpaceWithBasis E ι] [H2 : HilbertSpaceWithBasis F γ] :
-  HilbertTensorFun = (HilbertBasisTensorFun E F ι γ).toHilbertSpace := by rfl
+  HilbertTensorFun E F = (HilbertBasisTensorFun E F ι γ).toHilbertSpace := by rfl
 
 /-
     The basis vectors of the tensor space are given by eᵢ ⊗ fⱼ

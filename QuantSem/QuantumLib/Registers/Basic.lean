@@ -71,10 +71,6 @@ notation A "⊗ᵣ" B => QuantumRegisterTensor A B
 public theorem SpaceCommutesWithTensor (R1 R2 : QuantumRegister) :
   (R1 ⊗ᵣ R2).space = TensorProduct ℂ R1.space R2.space := by rfl
 
-/-
-    Elements of a Tensor can always be written as a sum of separables
--/
-
 
 @[expose]
 public noncomputable def QuantRegHomTensor {R1 R2 R3 R4 : QuantumRegister}
@@ -161,6 +157,12 @@ public theorem TriangleEquality (R1 R2 : QuantumRegister) :
     (CRightUnitor R1).hom ⊗ₕ (id_map R2) :=
   by apply LinearIsometryExtOnTensor; intro x y; simp; sorry
 
+public theorem PentagonEquality (R1 R2 R3 R4 : QuantumRegister) :
+  (((QuantRegHomTensorAssoc R1 R2 R3).hom ⊗ₕ (id_map R4)) ≫
+      (QuantRegHomTensorAssoc R1 (R2 ⊗ᵣ R3) R4).hom ≫ (id_map R1) ⊗ₕ(QuantRegHomTensorAssoc R2 R3 R4).hom) =
+    (QuantRegHomTensorAssoc (R1 ⊗ᵣ R2) R3 R4).hom ≫ (QuantRegHomTensorAssoc R1 R2 (R3 ⊗ᵣ R4)).hom :=
+  by simp; sorry
+
 @[default_instance]
 public noncomputable instance QuantumRegisterMonCat : MonoidalCategory QuantumRegister where
   tensorObj := QuantumRegisterTensor
@@ -176,7 +178,7 @@ public noncomputable instance QuantumRegisterMonCat : MonoidalCategory QuantumRe
   leftUnitor_naturality := LeftUnitorNaturality
   rightUnitor_naturality := RightUnitorNaturality
   triangle := TriangleEquality
-  pentagon := by sorry
+  pentagon := PentagonEquality
 
 
 public noncomputable def QuantumRegister.MulTensor (I : Type) (H : I → QuantumRegister)

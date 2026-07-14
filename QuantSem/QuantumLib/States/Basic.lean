@@ -72,14 +72,11 @@ public theorem StateNormAtOne {R : QuantumRegister} (s : QuantumStateSpace R) :
     Induction principle for states over a tensor
 -/
 
--- public theorem StateTensorInduction {R1 R2 : QuantumRegister} :
---  (p : QuantumStateSpace (R1 ⊗ᵣ R2) → Prop)
---  (hzero : p 0)
---  (hAllBasis : ∀ x1 : E, ∀ x2 : F, property (x1 ⊗ₜ[ℂ] x2))
---  (hLinear : ∀ x1 x2 : (TensorProduct ℂ E F), property x1 → property x2 → property (x1 + x2))
---  (hmul :  ∀ x : (TensorProduct ℂ E F), ∀ c : ℂ, property x → property (c • x)) :
---  ∀ x : (TensorProduct ℂ E F), property x :=
-
+--public theorem StateTensorInduction {R1 R2 : QuantumRegister}
+--  (p : (QuantumStateSpace (R1 ⊗ᵣ R2)) → Prop)
+--  (hAllBasis : ∀ x1 : QuantumStateSpace R1, ∀ x2 : QuantumStateSpace R2, p (x1 ⊗ₛ x2)) :
+--  ∀ x : (QuantumStateSpace (R1 ⊗ᵣ R2)), p x :=
+--  by
 
 -- public noncomputable def QuantumState.MulTensor (I : Type) (H : I → QuantumRegister)
 --   (S : (i : I) → QuantumStateSpace (H i)) : QuantumStateSpace (QuantumRegister.MulTensor I H)

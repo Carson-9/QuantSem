@@ -84,6 +84,10 @@ notation f "⊗ₕ" g => QuantRegHomTensor f g
 public theorem arrow_is_comp {R1 R2 R3 : QuantumRegister} (f : R1 ⟶ R2) (g : R2 ⟶ R3)
   : (f ≫ g) = (LinearIsometry.comp g f) := by rfl
 
+@[simp]
+public theorem comp_apply {R1 R2 R3 : QuantumRegister} (f : R1 ⟶ R2) (g : R2 ⟶ R3)
+  (x : R1.space) : (f ≫ g).toFun x = g.toFun (f.toFun x) := by rfl
+
 public abbrev id_map (R : QuantumRegister) : R ⟶ R := IdMap R.space
 
 @[simp]
@@ -98,6 +102,10 @@ public theorem id_map_is_neutral_right {R1 R2 : QuantumRegister}
 public theorem id_tensor_id : ∀ X Y,
   QuantRegHomTensor (id_map X) (id_map Y) = id_map (X ⊗ᵣ Y) :=
   by intro X Y; apply TensorOfIdIsId
+
+@[simp]
+public theorem apply_tensor {R1 R2 R3 R4: QuantumRegister} (f : R1 ⟶ R2) (g : R3 ⟶ R4)
+  (x : R1.space) (y : R3.space) : (f ⊗ₕ g).toFun (x ⊗ₜ[ℂ] y) = (f.toFun x) ⊗ₜ[ℂ] (g.toFun y) := by rfl
 
 @[simp]
 public theorem one_is_id : ∀ X : QuantumRegister, 𝟙 X = id_map X :=
@@ -141,7 +149,13 @@ public theorem AssocNaturality {R1 R2 R3 R4 R5 R6 : QuantumRegister}
 
 public theorem LeftUnitorNaturality {R1 R2 : QuantumRegister} (f : R1 ⟶ R2) :
   ((id_map CRegister) ⊗ₕ f) ≫ (CLeftUnitor R2).hom = (CLeftUnitor R1).hom ≫ f :=
-  by apply LinearIsometryExtOnTensor; intro x y; simp;
+  by -- apply LinearIsometryExtOnTensor; intro x y; calc
+     -- ((id_map CRegister⊗ₕf) ≫ (CLeftUnitor R2).hom).toFun (x ⊗ₜ[ℂ] y) =
+     --   ((CLeftUnitor R2).hom).toFun ((id_map CRegister⊗ₕf).toFun (x ⊗ₜ[ℂ] y)) := by rfl
+     -- _ = (CLeftUnitor R2).hom.toFun (x ⊗ₜ[ℂ] (f.toFun y)) := by rfl
+     -- _ = f.toFun y := by unfold CLeftUnitor CIsLeftNeutral; simp;
+     --
+     -- simp; unfold CIsLeftNeutral;
       --rw[LinearIsometryCompApply, TensorLinearIsometriesOnSeparables]
       sorry
 

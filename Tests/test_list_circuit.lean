@@ -6,7 +6,7 @@ Authors: William Hasley
 
 import QuantSem.StdLib.CoordinateSpace.CoordinateSpace
 
-open BasisRegister
+open AbstractBasisRegister
 open BasisState
 open BasisGate
 open ComplexSpaces

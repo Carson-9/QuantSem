@@ -7,7 +7,6 @@ Authors: William Hasley
 module
 
 
-public import QuantSem.Imports.Basic
 public import QuantSem.Imports.AbstractBasis
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.LinearAlgebra.UnitaryGroup
@@ -19,7 +18,7 @@ public import Mathlib.Algebra.Star.LinearMap
 namespace ComplexSpaces
 
 open BasisTypes
-open BasisRegister
+open AbstractBasisRegister
 open BasisState
 open BasisGate
 
@@ -36,11 +35,11 @@ public noncomputable instance EuclideanHilbertBasis (n : ℕ) :
   repr := (EuclideanSpace.basisFun (Fin n) ℂ).toBasis.repr
   isOrthonormal := OrthonormalBasis.orthonormal (EuclideanSpace.basisFun (Fin n) ℂ)
 
-public noncomputable abbrev ComplexSpace (n : ℕ) : TypeBasisRegister :=
-  ⟨EuclideanSpace ℂ (Fin n), ⟨Fin n, (EuclideanHilbertBasis n)⟩⟩
+public noncomputable abbrev ComplexSpace (n : ℕ) : BasisRegister :=
+  .mk (EuclideanSpace ℂ (Fin n)) (Fin n) (EuclideanHilbertBasis n)
 
-public noncomputable abbrev QubitSpace : TypeBasisRegister := ComplexSpace 2
-public noncomputable abbrev QutritSpace : TypeBasisRegister := ComplexSpace 3
+public noncomputable abbrev QubitSpace : BasisRegister := ComplexSpace 2
+public noncomputable abbrev QutritSpace : BasisRegister := ComplexSpace 3
 
 @[simp]
 public theorem ComplexSpaceNormIsEuclideanNorm {n : ℕ} (x : (ComplexSpace n).space) :
@@ -48,6 +47,7 @@ public theorem ComplexSpaceNormIsEuclideanNorm {n : ℕ} (x : (ComplexSpace n).s
 
 public noncomputable abbrev ComplexSpaceDefaultState (n : ℕ) {hn : n > 0} : (ComplexSpace n).space :=
   (ComplexSpace n).struct.toBasis ((@Fin.mk n 0 (by apply hn)))
+
 /-
     Tensor products of ℂⁿ-like spaces are isomorphic to ℂᵐ-like spaces
 -/
@@ -67,28 +67,28 @@ public theorem FinTypeFoldingDifferent {n m : ℕ} (i j : Fin n × Fin m) :
   i ≠ j ↔ FinTypeFolding i ≠ FinTypeFolding j :=
   by apply Iff.intro; intro h; simp; apply h; intro h; simp at h; apply h
 
-public theorem FinTypeFoldingDifferent' {n m : ℕ} (i j : ((ComplexSpace n) ⊗ᵣ (ComplexSpace m)).indexing) :
+public theorem FinTypeFoldingDifferent' {n m : ℕ} (i j : (BasisRegisterTensor (ComplexSpace n) (ComplexSpace m)).indexing) :
   i ≠ j ↔ FinTypeFolding i ≠ FinTypeFolding j :=
   by apply FinTypeFoldingDifferent
 
 @[default_instance]
-public instance {n m : ℕ} : Fintype ((ComplexSpace n) ⊗ᵣ (ComplexSpace m)).indexing :=
+public instance {n m : ℕ} : Fintype (BasisRegisterTensor (ComplexSpace n) (ComplexSpace m)).indexing :=
   instFintypeProd (Fin n) (Fin m)
 
 @[default_instance]
-public instance {n m : ℕ} : DecidableEq ((ComplexSpace n) ⊗ᵣ (ComplexSpace m)).indexing :=
+public instance {n m : ℕ} : DecidableEq (BasisRegisterTensor (ComplexSpace n) (ComplexSpace m)).indexing :=
   instDecidableEqProd
 
 public noncomputable def ComplexSpaceTensor (n m : ℕ) :
-  ((ComplexSpace n) ⊗ᵣ (ComplexSpace m)).space ≃ₗᵢ[ℂ] (ComplexSpace (n • m)).space :=
+  (BasisRegisterTensor (ComplexSpace n) (ComplexSpace m)).space ≃ₗᵢ[ℂ] (ComplexSpace (n • m)).space :=
   LinearEquiv.isometryOfOrthonormal
 
     (Module.Basis.equiv
-        ((ComplexSpace n) ⊗ᵣ (ComplexSpace m)).struct.toBasis
+        (BasisRegisterTensor (ComplexSpace n) (ComplexSpace m)).struct.toBasis
         ((ComplexSpace (n • m)).struct.toBasis)
         (FinTypeFolding))
 
-    ((ComplexSpace n) ⊗ᵣ (ComplexSpace m)).struct.isOrthonormal
+    (BasisRegisterTensor (ComplexSpace n) (ComplexSpace m)).struct.isOrthonormal
 
     (by apply And.intro; intro i; simp; apply (ComplexSpace (n • m)).struct.isOrthonormal.left;
         simp; intro i j h; rw[FinTypeFoldingDifferent' i j] at h; apply (ComplexSpace (n • m)).struct.isOrthonormal.right; apply h)
@@ -186,7 +186,7 @@ public noncomputable def MatrixToGate {n : ℕ} (M : Matrix.unitaryGroup (Fin n)
 public noncomputable instance {n : ℕ} : Coe (Matrix.unitaryGroup (Fin n) ℂ) (BasisGateType (ComplexSpace n) (ComplexSpace n)) where
   coe := MatrixToGate
 
-public instance FinDimEuclidean {n : ℕ} : FiniteDimensional ℂ (BasisRegToQuantReg (ComplexSpace n)).fst :=
+public instance FinDimEuclidean {n : ℕ} : FiniteDimensional ℂ (ComplexSpace n).space :=
   Module.Basis.finiteDimensional_of_finite (ComplexSpace n).struct.toBasis
 
 @[coe]
@@ -207,7 +207,7 @@ public abbrev nDimUnitVector (n : ℕ) := {v : (EuclideanSpace ℂ (Fin n)) // �
 
 @[coe]
 public noncomputable def UnitVectorToState {n : ℕ} (v : nDimUnitVector n) : BasisStateSpace (ComplexSpace n) :=
-  (@BasisStateSelection (ComplexSpace n) v.val v.prop)
+  (SyntacticState.QuantumStateSelection v.val v.prop)
 
 
 public noncomputable instance {n : ℕ} : Coe (nDimUnitVector n) (BasisStateSpace (ComplexSpace n)) where

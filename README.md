@@ -56,8 +56,8 @@ $\mathrm{QuantSem}$ currently has three main objectives :
 
 </br>
 
-## TODO :
-* Rewrite "Vertical Circuit Rewriting Theorems" with the Induction principle for Tensored spaces [ ❌ ] 
+## TODO : 
+* Rewrite Tensoring of BasisRegisters so that their cast be Definitionally equal to what is expected [ ❌ ] 
 * Rewrite List / Pi version of everything [ ❌ ]
 * Find the syntax for Controlled Gates [ ⏳ ]
 * Continue writing the "Wire Circuit" Framework [ ⏳ ]

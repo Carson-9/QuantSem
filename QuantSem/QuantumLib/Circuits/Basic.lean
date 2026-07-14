@@ -23,12 +23,6 @@ namespace SyntacticCircuit
     or other quantum operations I'm not aware of -/
 
 
--- Should the circuit algebra be fixed? Eckman hilton can come in handy ⟶ Only in 1D
--- Better to add IdWire as a separate construction as it now becomes decidable to know
--- whether we are dealing with IdWire or a non-trivial gate (although the trivial gate)
--- is still possible
-
-
 public inductive SimpleCircuitOverRegister : (QuantumRegister → Type 1) where
   | IdWire {R : QuantumRegister} : SimpleCircuitOverRegister R
   | RegisterSwap {R1 R2 : QuantumRegister} (iso : R1 ≅ R2) (c : SimpleCircuitOverRegister R1) : SimpleCircuitOverRegister R2

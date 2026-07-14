@@ -17,7 +17,7 @@ public import QuantSem.QuantumLib.Circuits.ListAbstractBasis
 
 namespace WithBasis
 open BasisTypes
-open BasisRegister
+open AbstractBasisRegister
 open BasisState
 open BasisGate
 open BasisCircuit

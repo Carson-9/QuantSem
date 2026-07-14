@@ -28,6 +28,9 @@ open CategoryTheory
 
 public abbrev BasisGateType (R1 R2 : BasisRegister) : Type := QuantumGate R1 R2
 
+
+public abbrev IdGate (R : BasisRegister) : BasisGateType R R := BasisRegisterCat.id R
+
 /-
     Gate Extensionality with basis
 -/

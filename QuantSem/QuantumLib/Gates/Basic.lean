@@ -79,5 +79,4 @@ public theorem GateEqImpliesStateEvolve {R1 R2 : QuantumRegister} (g1 g2 : Quant
 
 
 
-
 end SyntacticGate

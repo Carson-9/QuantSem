@@ -22,17 +22,17 @@ Often, the given composition will be the Tensor product of hilbert spaces
 -/
 
 public structure QuantumRegister : Type 1 where
-  space : Type
-  struct : HilbertSpace space
+  space   : Type
+  struct  : HilbertSpace space
 
 @[default_instance]
 public instance (R : QuantumRegister) : HilbertSpace R.space := R.struct
 
 @[default_instance]
 public instance QuantumRegisterCat : Category QuantumRegister where
-  Hom R1 R2 :=  R1.space →ₗᵢ[ℂ] R2.space
-  id R := IdMap R.space
-  comp f1 f2 := LinearIsometry.comp f2 f1
+  Hom R1 R2   :=  R1.space →ₗᵢ[ℂ] R2.space
+  id R        := IdMap R.space
+  comp f1 f2  := LinearIsometry.comp f2 f1
 
 
 @[ext]

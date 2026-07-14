@@ -89,7 +89,7 @@ public noncomputable instance BasisRegisterMonCat : MonoidalCategory BasisRegist
   id_tensorHom_id X Y := SyntacticRegister.QuantumRegisterMonCat.id_tensorHom_id X Y
   tensorHom_def f g := SyntacticRegister.QuantumRegisterMonCat.tensorHom_def f g
   tensorHom_comp_tensorHom f g h i := SyntacticRegister.QuantumRegisterMonCat.tensorHom_comp_tensorHom f g h i
-  -- whi does "by apply xx" work but not directly xx  ;(((
+  -- why does "by apply xx" work but not directly xx  ;(((
   associator_naturality f g h := by apply (SyntacticRegister.QuantumRegisterMonCat.associator_naturality f g h)
   leftUnitor_naturality f := by apply (SyntacticRegister.QuantumRegisterMonCat.leftUnitor_naturality f)
   rightUnitor_naturality f := by apply (SyntacticRegister.QuantumRegisterMonCat.rightUnitor_naturality f)

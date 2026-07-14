@@ -1,0 +1,75 @@
+/-
+Copyright (c) 2026 William Hasley. All rights reserved.
+Released under GNU GPL3 license as described in the file LICENSE.
+Authors: William Hasley
+-/
+
+
+module
+
+public import QuantSem.QuantumLib.HilbertSpaces.AbstractBasis
+--public import QuantSem.QuantumLib.Registers.PiAbstractBasis
+public import QuantSem.QuantumLib.Registers.AbstractBasis
+public import QuantSem.QuantumLib.States.AbstractBasis
+public import QuantSem.QuantumLib.Gates.Basic
+public import QuantSem.QuantumLib.States.Basic
+
+namespace BasisGate
+
+
+open SyntacticGate
+open BasisTypes
+--open PiBasisRegister
+open AbstractBasisRegister
+open BasisState
+open QuantumTypes
+open CategoryTheory
+
+
+public abbrev BasisGateType (R1 R2 : BasisRegister) : Type := QuantumGate R1 R2
+
+
+public abbrev IdGate (R : BasisRegister) : BasisGateType R R := BasisRegisterCat.id R
+
+/-
+    Gate Extensionality with basis
+-/
+
+@[ext]
+public theorem GateExtBasis {R1 R2 : BasisRegister} (g1 g2 : BasisGateType R1 R2) :
+  (∀ i : R1.indexing , ((GetBasisState i) ≫ g1) = ((GetBasisState i) ≫ g2)) → (g1 = g2) :=
+  by intro hyp
+     apply @LinearIsometryBasisExt R1.space R2.space R1.indexing R2.indexing R1.struct R2.struct g1 g2;
+     intro i; specialize hyp i;
+     rw[<- GetBasisStateAtOne i]
+     rw[QuantumTypes.LinearIsometriesOnCAgree] at hyp
+     simp at hyp; apply hyp
+
+public theorem GateExtBasisIff {R1 R2 : BasisRegister} (g1 g2 : BasisGateType R1 R2) :
+   (g1 = g2) ↔ (∀ i : R1.indexing , ((GetBasisState i) ≫ g1) = ((GetBasisState i) ≫ g2)):=
+  by apply Iff.intro; intro hyp; rw[hyp]; intro i; rfl; apply GateExtBasis
+
+public noncomputable def GateFromBasis {R1 R2 : BasisRegister} (f : R1.indexing → BasisStateSpace R2)
+  (hOrth : Orthonormal ℂ (fun i => (f i).toFun (1 / (‖(1 : ℂ)‖) : ℂ))) : BasisGateType R1 R2 :=
+  LinearIsometryFromBasis (fun i => (f i).toFun (1 / (‖(1 : ℂ)‖) : ℂ)) (hOrth)
+
+/-
+    Control Gates
+-/
+
+-- public noncomputable def ControlGate  {R1 R2 : BasisRegister} (control : R1.indexing → BasisGateType R2 R2) :
+--   BasisGateType (R1 ⊗ᵣ R2) (R1 ⊗ᵣ R2) :=
+--   GateFromBasis (fun (i, j) => (⟨R1, (GetBasisState i)⟩ ⊗ₛ ⟨R2, (GetBasisState j) ≫ (control i)⟩).snd ) --(R1.struct.toBasis i) ⊗ₜ[ℂ] ((control i).toFun (R2.struct.toBasis j)))
+--   (by simp; unfold Orthonormal; apply And.intro; intro i; simp; rw[NormInTensorUnit]; simp;
+--       simp; intro i j h; rcases i with ⟨fsti, sndi⟩; simp; rcases j with ⟨fstj, sndj⟩;
+--         simp;  --rw[RCLike.inner_tmul_eq]
+--         sorry
+--   )
+
+--public noncomputable def SwapGate {R : List TypeBasisRegister} (i j : Fin (R.length)) :
+--  BasisGateType (⨂ᵣ R) (⨂ᵣ R) :=
+--  GateFromBasis
+--     _ _
+
+
+end BasisGate

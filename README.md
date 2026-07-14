@@ -57,8 +57,7 @@ $\mathrm{QuantSem}$ currently has three main objectives :
 </br>
 
 ## TODO : 
+* Rewrite Tensoring of BasisRegisters so that their cast be Definitionally equal to what is expected [ ❌ ] 
 * Rewrite List / Pi version of everything [ ❌ ]
-* Refine the Category of Hilbert spaces with a basis to be a dependent product allowing to carry the data of the basis (for now, it is the full subcategory produced by the property "there exists a basis", the axiom of choice comes back to bite us later) [ ❌ ]
-  _one could also think of refining the non-dependent product with the property that the second element of the tuple forms a basis of the first element_
 * Find the syntax for Controlled Gates [ ⏳ ]
 * Continue writing the "Wire Circuit" Framework [ ⏳ ]

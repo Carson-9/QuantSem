@@ -6,7 +6,7 @@ Authors: William Hasley
 
 module
 
-import QuantSem.Semantics.CoordinateSpace.ComplexSpaces
+import QuantSem.StdLib.CoordinateSpace.ComplexSpaces
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.LinearAlgebra.Matrix.Reindex

@@ -54,8 +54,39 @@ public noncomputable def GateFromBasis {R1 R2 : BasisRegister} (f : R1.indexing 
   LinearIsometryFromBasis (fun i => (f i).toFun (1 / (‖(1 : ℂ)‖) : ℂ)) (hOrth)
 
 /-
-    Control Gates
+    Applying a gate to an orthonormal family yields an orthonormal family
 -/
+
+public theorem GateEvolveOrthonormal {R1 R2 : BasisRegister}
+  {I : Type} (f : I → BasisStateSpace R1) (g : BasisGateType R1 R2)
+  (hOrth : Orthonormal ℂ (fun i => (f i).toFun (1 / (‖(1 : ℂ)‖) : ℂ)))
+  : Orthonormal ℂ (fun i => (GateStateEvolve g (f i)).toFun (1 / (‖(1 : ℂ)‖) : ℂ)) :=
+  by simp; unfold Orthonormal; apply And.intro; intro i; simp; sorry;
+      simp; sorry -- apply hOrth.right
+
+
+/-
+    Control Gates over a Family of wires
+    -- Mathlib not developped enough yet
+-/
+
+-- PiTensorProduct.singleAlgHom
+
+-- public noncomputable def DirtySingleControlGate (I : Type) [Finite I] (H : I → BasisRegister)
+--   (controlWire controlGate : I) (hDiff : controlWire ≠ controlGate)
+--   (controlEffect : (H controlWire).indexing → BasisGateType (H controlGate) (H controlGate))
+--   : BasisGateType (BasisRegister.MulTensor I H) (BasisRegister.MulTensor I H) :=
+--   GateFromBasis (fun i_prod => GetBasisState i_prod) (by sorry)
+
+-- public noncomputable def DirtyControlGate (I : Type) [Finite I] (H : I → BasisRegister)
+--   {ιGate ιWire : Type} [Finite ιGate] [Finite ιWire]
+--   (GateIndexing : ιGate → I) (WireIndexing : ιWire → I)
+--   (controlEffect :
+--   (BasisRegister.MulTensor ιWire (fun i => (H (WireIndexing i)))).indexing →
+--     (BasisGateType (BasisRegister.MulTensor ιGate (fun i => H (GateIndexing i))) (BasisRegister.MulTensor ιGate (fun i => H (GateIndexing i)))))
+--   : BasisGateType (BasisRegister.MulTensor I H) (BasisRegister.MulTensor I H) :=
+--   by sorry
+
 
 -- public noncomputable def ControlGate  {R1 R2 : BasisRegister} (control : R1.indexing → BasisGateType R2 R2) :
 --   BasisGateType (R1 ⊗ᵣ R2) (R1 ⊗ᵣ R2) :=

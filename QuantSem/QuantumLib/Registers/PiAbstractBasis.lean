@@ -38,6 +38,7 @@ public noncomputable def MulTensorPar (famReg : List BasisRegister) : BasisRegis
   | [] => BasisRegisterMonCat.tensorUnit
   | _ => ⨂ᵣ famReg
 
+-- PiTensorProduct.subsingletonEquiv
 
 public noncomputable instance : Coe (List BasisRegister) BasisRegister where
   coe := MulTensorPar
@@ -117,5 +118,7 @@ public noncomputable def MulTensorIso (l1 l2 : List BasisRegister) :
   (AbstractBasisRegister.BasisRegisterTensor (⨂ᵣ l1) (⨂ᵣ l2)) ≅ (⨂ᵣ (l1 ++ l2)) :=
   by sorry
 
+
+-- PiTensorProduct.singleAlgHom
 
 end PiBasisRegister

@@ -72,7 +72,7 @@ noncomputable def a_bad_recursive_circuit_better (n : ℕ) : TypeBasisCircuitLis
     (BasisCircuitListCoe (my_shape_iter_induction' n).symm (VerticalComp (@Gate [QubitSpace] pauli_z) c)) -- relies on my_shape_iter_induction'
 
 noncomputable def a_bad_recursive_circuit_better' (n : ℕ) : TypeBasisCircuitList :=
-  InductiveCircuit'' my_shape_iter base_case ind n where
+  InductiveCircuit my_shape_iter base_case ind n where
   base_case : BasisCircuitOverList (my_shape_iter 0) := a_simple_circuit_part
   ind (n : ℕ) (c : BasisCircuitOverList (my_shape_iter n)) : BasisCircuitOverList (my_shape_iter (n + 1))
     :=

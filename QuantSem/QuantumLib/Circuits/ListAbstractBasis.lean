@@ -89,15 +89,15 @@ public theorem BasisGateReprIsSimpleGateRepr {R : List BasisRegister} (c : Basis
     Definition of a circuit by induction
 -/
 
-public def InductiveCircuit (baseRegList : List BasisRegister)
+public def InductiveCircuit'' (baseRegList : List BasisRegister)
   (baseCase : BasisCircuitOverList baseRegList) (f : List BasisRegister → List BasisRegister)
   (ind : (R : List BasisRegister) → BasisCircuitOverList R → BasisCircuitOverList (f R))
   : ℕ → BasisListCircuit := fun n => match n with
   | 0 => .mk baseRegList baseCase
   | Nat.succ k =>
     .mk
-    (f (InductiveCircuit baseRegList baseCase f ind k).regList)
-    (ind (InductiveCircuit baseRegList baseCase f ind k).regList (InductiveCircuit baseRegList baseCase f ind k).circuit)
+    (f (InductiveCircuit'' baseRegList baseCase f ind k).regList)
+    (ind (InductiveCircuit'' baseRegList baseCase f ind k).regList (InductiveCircuit'' baseRegList baseCase f ind k).circuit)
 
 public def InductiveCircuit' (f : ℕ → List BasisRegister)
   (baseCase : BasisCircuitOverList (f 0))
@@ -106,7 +106,7 @@ public def InductiveCircuit' (f : ℕ → List BasisRegister)
   | 0 => baseCase
   | Nat.succ k => ind k (InductiveCircuit' f baseCase ind k)
 
-public def InductiveCircuit'' (f : ℕ → List BasisRegister)
+public def InductiveCircuit (f : ℕ → List BasisRegister)
   (baseCase : BasisCircuitOverList (f 0))
   (ind : (n : ℕ) →  BasisCircuitOverList (f n) → BasisCircuitOverList (f (n + 1)))
   (n : ℕ) : BasisListCircuit :=

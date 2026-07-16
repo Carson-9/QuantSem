@@ -83,9 +83,12 @@ public theorem GateEqImpliesStateEvolve {R1 R2 : QuantumRegister} (g1 g2 : Quant
     -- Mathlib not developped enough yet
 -/
 
--- public def SyntacticGate.MulTensor {I : Type} {H : I → QuantumRegister}
---   (gFam : (i : I) → QuantumGate (H i) (H i)) : QuantumGate (QuantumRegister.MulTensor I H) (QuantumRegister.MulTensor I H)
---   := PiTensorProduct.map gFam
+public def GateMulTensor {I : Type} {H : I → QuantumRegister}
+  (gFam : (i : I) → QuantumGate (H i) (H i)) : QuantumGate (QuantumRegister.MulTensor I H) (QuantumRegister.MulTensor I H)
+  := by sorry
+  -- LinearIsometry.mk
+  -- (PiTensorProduct.map (ι := I) (R := ℂ) (s := (fun i => (H i).space)) (t := (fun i => (H i).space)) (fun i => (gFam i).toLinearMap))
+  --  (by intro x; sorry)
 
 
 

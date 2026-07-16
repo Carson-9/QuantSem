@@ -53,9 +53,6 @@ public noncomputable abbrev ComplexSpaceDefaultState (n : ℕ) {hn : n > 0} : (C
 -/
 
 
--- The usual "folding" equivalence :
--- Fin n × Fin m ≃ Fin n • m
-
 public def FinTypeFolding {n m : ℕ} : Fin n × Fin m ≃ Fin (n • m) :=
   .mk
   (fun (x, y) => Fin.mkDivMod x y)
@@ -93,10 +90,23 @@ public noncomputable def ComplexSpaceTensor (n m : ℕ) :
     (by apply And.intro; intro i; simp; apply (ComplexSpace (n • m)).struct.isOrthonormal.left;
         simp; intro i j h; rw[FinTypeFoldingDifferent' i j] at h; apply (ComplexSpace (n • m)).struct.isOrthonormal.right; apply h)
 
---public theorem SpaceTensorBasisState {n m : ℕ} (i : Fin (n * m)) :
---  (GetBasisState i) ≫ (ComplexSpaceTensor n m).symm.toLinearIsometry =
---    ↑(GetBasisState (Fin.divNat i)) ⊗ₛ ↑(GetBasisState (Fin.modNat i)) :=
---    by rfl
+-- public theorem SpaceTensorBasisState {n m : ℕ} (i : Fin (n • m)) :
+--   (@GetBasisState (ComplexSpace (n • m)) i) ≫ (ComplexSpaceTensor n m).symm.toLinearIsometry =
+--     (@GetBasisState (ComplexSpace n) (Fin.divNat i)) ⊗ₛ (@GetBasisState (ComplexSpace m) (Fin.modNat i)) :=
+--     by sorry
+
+/-
+    For Pi notation
+-/
+
+-- public def PiFinTypeFolding {n : ℕ} (f : Fin n → ℕ) : Π i : Fin n, Fin (f i) ≃ Fin (∏ i : Fin n, f i) :=
+--   .mk
+--   (fun pi => Fin.mkDivMod x y)
+--   (fun x => (Fin.divNat x, Fin.modNat x))
+--   (by unfold Function.LeftInverse; simp)
+--   (by unfold Function.RightInverse Function.LeftInverse; simp)
+
+
 
 /-
     Coercion of unitary matrices as gates
@@ -117,6 +127,7 @@ public def MatrixTensor (N : Matrix.unitaryGroup ι1 ℂ) (M : Matrix.unitaryGro
   : Matrix.unitaryGroup (ι1 × ι2) ℂ :=
   ⟨Matrix.kronecker N M, Matrix.kronecker_mem_unitary N.mem M.mem⟩
 
+@[simp]
 public theorem ReindexAlgEquivStar {m n : Type*} [Fintype n] [Fintype m]  [DecidableEq m] [DecidableEq n]
   (e : m ≃ n) (M : Matrix m m ℂ) :
   star (Matrix.reindexAlgEquiv ℂ ℂ e M) = (Matrix.reindexAlgEquiv ℂ ℂ e (star M)) :=
@@ -151,11 +162,6 @@ public theorem StarCommutesToLin (M : Matrix ι ι ℂ) :
         rw[Matrix.toEuclideanLin_conjTranspose_eq_adjoint];
         rfl
 
--- Useful lemmas but deprecated :(
--- Matrix.toEuclideanLin_toLp
--- Matrix.piLp_ofLp_toEuclideanLin
--- Matrix.toEuclideanLin_apply
--- Matrix.ofLp_toEuclideanLin_apply
 
 public noncomputable def MatrixEuclideanMapStar :
   Matrix ι ι ℂ ≃⋆* (EuclideanSpace ℂ ι →L[ℂ] EuclideanSpace ℂ ι) :=
@@ -244,7 +250,8 @@ public theorem MatrixGateMulComm {n : ℕ} (M N : Matrix.unitaryGroup (Fin n) �
 public theorem MatrixGateTensorCom {n m : ℕ} (M : Matrix.unitaryGroup (Fin m) ℂ) (N : Matrix.unitaryGroup (Fin n) ℂ) :
   MatrixToGate (MatrixTensor' M N) = (ComplexSpaceTensor m n).symm.toLinearIsometry ≫
     ((MatrixToGate M) ⊗ₕ (MatrixToGate N)) ≫ (ComplexSpaceTensor m n).toLinearIsometry :=
-  by simp; ext i; simp; sorry
+  by simp; apply GateExtBasis; intro i;
+      unfold MatrixTensor'; simp; sorry
 
  --Unitary.tmul_mem
 

@@ -28,9 +28,6 @@ open CategoryTheory
 
 public abbrev BasisGateType (R1 R2 : BasisRegister) : Type := QuantumGate R1 R2
 
-
-public abbrev IdGate (R : BasisRegister) : BasisGateType R R := BasisRegisterCat.id R
-
 /-
     Gate Extensionality with basis
 -/
@@ -70,13 +67,18 @@ public theorem GateEvolveOrthonormal {R1 R2 : BasisRegister}
     -- Mathlib not developped enough yet
 -/
 
+public instance {R : BasisRegister} : Coe (BasisGateType R R) (BasisGateType (⨂ᵣ [R]) (⨂ᵣ [R])) where
+  coe := by sorry
+
 -- PiTensorProduct.singleAlgHom
 
 -- public noncomputable def DirtySingleControlGate (I : Type) [Finite I] (H : I → BasisRegister)
 --   (controlWire controlGate : I) (hDiff : controlWire ≠ controlGate)
 --   (controlEffect : (H controlWire).indexing → BasisGateType (H controlGate) (H controlGate))
 --   : BasisGateType (BasisRegister.MulTensor I H) (BasisRegister.MulTensor I H) :=
---   GateFromBasis (fun i_prod => GetBasisState i_prod) (by sorry)
+--   GateFromBasis (fun i_prod => -- (i_prod controlWire)
+--
+--   GetBasisState i_prod) (by sorry)
 
 -- public noncomputable def DirtyControlGate (I : Type) [Finite I] (H : I → BasisRegister)
 --   {ιGate ιWire : Type} [Finite ιGate] [Finite ιWire]
@@ -102,5 +104,12 @@ public theorem GateEvolveOrthonormal {R1 R2 : BasisRegister}
 --  GateFromBasis
 --     _ _
 
+
+public def BasisGateMulTensorGateMulTensor {I : Type} [Finite I] {H : I → BasisRegister}
+  (gFam : (i : I) → BasisGateType (H i) (H i)) : BasisGateType (BasisRegister.MulTensor I H) (BasisRegister.MulTensor I H)
+  := by sorry
+  -- LinearIsometry.mk
+  -- (PiTensorProduct.map (ι := I) (R := ℂ) (s := (fun i => (H i).space)) (t := (fun i => (H i).space)) (fun i => (gFam i).toLinearMap))
+  --  (by intro x; sorry)
 
 end BasisGate

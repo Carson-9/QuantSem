@@ -326,7 +326,7 @@ public theorem LinearIsometryCompApply (f : E →ₗᵢ[ℂ] F) (g : F →ₗᵢ
 public noncomputable instance HilbertPiTensor {I : Type} {H : I → Type} [(i : I) → HilbertSpace (H i)] :
   HilbertSpace (PiTensorProduct ℂ H) := by sorry
 
-@[implicit_reducible]
+@[expose, implicit_reducible]
 public noncomputable def HilbertPiTensorFun (I : Type) (H : I → Type)
   [(i : I) → HilbertSpace (H i)] : HilbertSpace (PiTensorProduct ℂ H) := HilbertPiTensor
 

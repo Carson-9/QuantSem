@@ -9,6 +9,7 @@ module
 
 public import QuantSem.QuantumLib.Registers.PiAbstractBasis
 public import QuantSem.QuantumLib.Gates.AbstractBasis
+public import QuantSem.QuantumLib.Gates.Basic
 public import QuantSem.QuantumLib.Registers.AbstractBasis
 public import QuantSem.QuantumLib.Circuits.AbstractBasis
 public import QuantSem.QuantumLib.Circuits.Basic
@@ -20,6 +21,7 @@ open SyntacticCircuit
 open PiBasisRegister
 open AbstractBasisRegister
 open BasisGate
+open SyntacticGate
 open CategoryTheory
 
 

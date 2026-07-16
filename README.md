@@ -57,7 +57,6 @@ $\mathrm{QuantSem}$ currently has three main objectives :
 </br>
 
 ## TODO : 
-* Rewrite Tensoring of BasisRegisters so that their cast be Definitionally equal to what is expected [ ❌ ] 
-* Rewrite List / Pi version of everything [ ❌ ]
-* Find the syntax for Controlled Gates [ ⏳ ]
+* Rewrite List / Pi version of everything [ ⏱️ (Waiting for Mathlib) ]
+* Find the syntax for Controlled Gates [ ⏳ / ⏱️ (Waiting for Mathlib) ]
 * Continue writing the "Wire Circuit" Framework [ ⏳ ]

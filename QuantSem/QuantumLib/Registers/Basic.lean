@@ -195,10 +195,16 @@ public noncomputable instance QuantumRegisterMonCat : MonoidalCategory QuantumRe
   pentagon := PentagonEquality
 
 
+@[expose, reducible]
 public noncomputable def QuantumRegister.MulTensor (I : Type) (H : I → QuantumRegister)
   : QuantumRegister :=
     .mk
     (PiTensorProduct ℂ (fun i => (H i).space))
     (HilbertPiTensorFun I (fun i => (H i).space))
+
+@[simp]
+public theorem MulTensorSpace (I : Type) (H : I → QuantumRegister) :
+  (QuantumRegister.MulTensor I H).space = PiTensorProduct ℂ (fun i => (H i).space) := by rfl
+
 
 end SyntacticRegister

@@ -37,9 +37,9 @@ public instance : Coe BasisRegister SyntacticRegister.QuantumRegister where
 
 @[default_instance]
 public instance BasisRegisterCat : Category BasisRegister where
-  Hom R1 R2   := SyntacticRegister.QuantumRegisterCat.Hom R1 R2
-  id R        := SyntacticRegister.QuantumRegisterCat.id R
-  comp f1 f2  := SyntacticRegister.QuantumRegisterCat.comp f1 f2
+  Hom   R1 R2 := SyntacticRegister.QuantumRegisterCat.Hom   R1 R2
+  id    R     := SyntacticRegister.QuantumRegisterCat.id    R
+  comp  f1 f2 := SyntacticRegister.QuantumRegisterCat.comp  f1 f2
 
 public def IsoPromote {R1 R2 : BasisRegister} :
   (BasisRegisterForget R1 ≅ BasisRegisterForget R2) ≃ (R1 ≅ R2) :=
@@ -104,5 +104,10 @@ public noncomputable def BasisRegister.MulTensor (I : Type) [Finite I] (H : I �
     (PiHilbertBasisTensorFun I (fun i => (H i).space) (fun i => (H i).indexing))
 
 notation "⨂ᵣ" l => BasisRegister.MulTensor (Fin (List.length l)) (fun i => (List.get l i))
+
+@[simp]
+public theorem BasisMulTensorIsQuantumMulTensor (I : Type) [Finite I] (H : I → BasisRegister) :
+  ↑(BasisRegister.MulTensor I H) = SyntacticRegister.QuantumRegister.MulTensor I (fun i => ↑(H i))
+  := by unfold BasisRegister.MulTensor SyntacticRegister.QuantumRegister.MulTensor; simp
 
 end AbstractBasisRegister

@@ -48,6 +48,7 @@ public noncomputable abbrev HilbertBasisTensorFun (E F ι γ : Type)
   [H1 : HilbertSpaceWithBasis E ι] [H2 : HilbertSpaceWithBasis F γ]
   : HilbertSpaceWithBasis (TensorProduct ℂ E F) (ι × γ) := HilbertBasisTensor
 
+@[simp]
 public theorem BasisToHilbertCastCoherence (E F ι γ : Type)
   [H1 : HilbertSpaceWithBasis E ι] [H2 : HilbertSpaceWithBasis F γ] :
   HilbertTensorFun E F = (HilbertBasisTensorFun E F ι γ).toHilbertSpace := by rfl
@@ -130,6 +131,10 @@ public noncomputable abbrev PiHilbertBasisTensorFun (I : Type) [Finite I]
   (H ι : I → Type) [S : (i : I) → HilbertSpaceWithBasis (H i) (ι i)]
   : HilbertSpaceWithBasis (PiTensorProduct ℂ H) (Π i : I, ι i) := PiHilbertBasisTensor
 
-
+@[simp]
+public theorem PiBasisToHilbertCastCoherence (I : Type) [Finite I]
+  (H ι : I → Type) [S : (i : I) → HilbertSpaceWithBasis (H i) (ι i)] :
+  HilbertPiTensorFun I H = (PiHilbertBasisTensorFun I H ι).toHilbertSpace :=
+  by sorry;
 
 end BasisTypes

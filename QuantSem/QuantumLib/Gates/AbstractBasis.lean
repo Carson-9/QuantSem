@@ -105,11 +105,8 @@ public instance {R : BasisRegister} : Coe (BasisGateType R R) (BasisGateType (�
 --     _ _
 
 
-public def BasisGateMulTensorGateMulTensor {I : Type} [Finite I] {H : I → BasisRegister}
+public def BasisGateMulTensor {I : Type} [Finite I] {H : I → BasisRegister}
   (gFam : (i : I) → BasisGateType (H i) (H i)) : BasisGateType (BasisRegister.MulTensor I H) (BasisRegister.MulTensor I H)
-  := by sorry
-  -- LinearIsometry.mk
-  -- (PiTensorProduct.map (ι := I) (R := ℂ) (s := (fun i => (H i).space)) (t := (fun i => (H i).space)) (fun i => (gFam i).toLinearMap))
-  --  (by intro x; sorry)
+  := by sorry -- (GateMulTensor gFam)
 
 end BasisGate

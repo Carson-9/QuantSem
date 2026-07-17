@@ -195,7 +195,7 @@ public noncomputable instance QuantumRegisterMonCat : MonoidalCategory QuantumRe
   pentagon := PentagonEquality
 
 
-@[expose, reducible]
+@[expose]
 public noncomputable def QuantumRegister.MulTensor (I : Type) (H : I → QuantumRegister)
   : QuantumRegister :=
     .mk

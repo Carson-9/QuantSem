@@ -25,7 +25,7 @@ public noncomputable def SingleQubitControlGate {n : ℕ}
   : BasisGateType (BasisRegister.MulTensor (Fin n) (fun _ => QubitSpace)) (BasisRegister.MulTensor (Fin n) (fun _ => QubitSpace)) :=
   GateFromBasis
     (fun i => if (BitVecBasis n i)[controlWire] then
-      (GateStateEvolve (BasisGateMulTensorGateMulTensor (fun k => if k == controlledGate then actualGate else (IdGate QubitSpace))) (GetBasisState i))
+      (GateStateEvolve (BasisGateMulTensor (fun k => if k == controlledGate then actualGate else (IdGate QubitSpace))) (GetBasisState i))
       else (GetBasisState i))
     (by sorry)
 

@@ -21,4 +21,4 @@ public theorem two_by_two_mul (M N : Matrix (Fin 2) (Fin 2) ℂ) :
 
 macro "unit_vector_simple" : tactic => `(tactic| rw[EuclideanSpace.norm_eq] <;> simp <;> field)
 macro "unit_matrix_simple" : tactic => `(tactic| rw[Matrix.mem_unitaryGroup_iff] <;> ext i j <;> rw[ComplexSpaces.FinDimMatrixMul] <;> apply Complex.ext <;> fin_cases i <;> fin_cases j <;> simp <;> grind)
-macro "two_by_two_matrix_simple" : tactic => `(tactic| rw[Matrix.mem_unitaryGroup_iff, two_by_two_mul] <;> simp)
+macro "two_by_two_matrix_simple" : tactic => `(tactic| rw[Matrix.mem_unitaryGroup_iff, two_by_two_mul] <;> ext i j <;> fin_cases i <;> fin_cases j <;> simp)

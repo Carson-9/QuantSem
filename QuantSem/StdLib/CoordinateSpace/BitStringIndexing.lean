@@ -11,6 +11,7 @@ public import Batteries.Data.BitVec.Basic
 public import Batteries.Data.Vector.Lemmas
 
 open AbstractBasisRegister
+open BasisState
 open ComplexSpaces
 
 namespace BitStringIndexing
@@ -40,6 +41,9 @@ public instance {n : ℕ} : Coe (BitVec n) (List.Vector Bool n) where
   coe := fun bv => List.Vector.ofFn (fun (i : Fin n) => bv[i])
 
 notation "(" k ")" "|" n "⟩" => List.Vector.ofFn (fun (i : Fin k) => (BitVec.ofNat k n)[i])
+
+public noncomputable abbrev QubitZeroState (n : ℕ) : BasisStateSpace (BasisRegister.MulTensor (Fin n) (fun _ => QubitSpace))
+  := GetBasisState (n)|0⟩
 
 -- #check (5)|0b111⟩
 

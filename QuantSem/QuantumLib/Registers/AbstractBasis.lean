@@ -8,6 +8,7 @@ Authors: William Hasley
 module
 
 
+public import QuantSem.LeanTools.Attributes
 public import QuantSem.QuantumLib.HilbertSpaces.AbstractBasis
 public import QuantSem.QuantumLib.Registers.Basic
 public import Mathlib.CategoryTheory.Monoidal.Category
@@ -17,6 +18,7 @@ namespace AbstractBasisRegister
 open QuantumTypes
 open BasisTypes
 open CategoryTheory
+open SyntacticRegister
 
 
 public structure BasisRegister : Type 1 where
@@ -27,6 +29,7 @@ public structure BasisRegister : Type 1 where
 @[default_instance]
 public instance (R : BasisRegister) : HilbertSpaceWithBasis R.space R.indexing := R.struct
 
+@[coe]
 public abbrev BasisRegisterToQuantumRegister (R : BasisRegister)
   : SyntacticRegister.QuantumRegister := .mk R.space R.struct.toHilbertSpace
 public abbrev BasisRegisterForget : BasisRegister → SyntacticRegister.QuantumRegister := BasisRegisterToQuantumRegister
@@ -41,13 +44,23 @@ public instance BasisRegisterCat : Category BasisRegister where
   id    R     := SyntacticRegister.QuantumRegisterCat.id    R
   comp  f1 f2 := SyntacticRegister.QuantumRegisterCat.comp  f1 f2
 
+@[simp]
+public theorem HomEq (R1 R2 : BasisRegister) :
+  (R1 ⟶ R2) = (BasisRegisterToQuantumRegister R1 ⟶ BasisRegisterToQuantumRegister R2) := by rfl
+
 public def IsoPromote {R1 R2 : BasisRegister} :
-  (BasisRegisterForget R1 ≅ BasisRegisterForget R2) ≃ (R1 ≅ R2) :=
+  (BasisRegisterToQuantumRegister R1 ≅ BasisRegisterToQuantumRegister R2) ≃ (R1 ≅ R2) :=
   .mk
   (fun i => .mk (i.hom) (i.inv) (i.hom_inv_id) (i.inv_hom_id))
   (fun i => .mk (i.hom) (i.inv) (i.hom_inv_id) (i.inv_hom_id))
   (by intro x; simp)
   (by intro x; simp)
+
+public abbrev LinearIsometryEquivToIso {R1 R2 : BasisRegister}
+  (e : R1.space ≃ₗᵢ[ℂ] R2.space) : R1 ≅ R2 :=
+  .mk e.toLinearIsometry e.symm.toLinearIsometry
+    (by apply EquivalenceToIsometryOfSymmRight e)
+    (by apply EquivalenceToIsometryOfSymmLeft e)
 
 @[expose]
 public noncomputable def BasisRegisterTensor (R1 R2 : BasisRegister) : BasisRegister :=
@@ -96,8 +109,8 @@ public noncomputable instance BasisRegisterMonCat : MonoidalCategory BasisRegist
   triangle X Y := by apply SyntacticRegister.QuantumRegisterMonCat.triangle X Y
   pentagon W X Y Z := by apply SyntacticRegister.QuantumRegisterMonCat.pentagon W X Y Z
 
-@[expose]
-public noncomputable def BasisRegister.MulTensor (I : Type) [Finite I] (H : I → BasisRegister) : BasisRegister :=
+@[simps]
+public noncomputable abbrev BasisRegister.MulTensor (I : Type) [Finite I] (H : I → BasisRegister) : BasisRegister :=
     .mk
     (PiTensorProduct ℂ (fun i => (H i).space))
     (Π i : I, (H i).indexing)
@@ -105,9 +118,17 @@ public noncomputable def BasisRegister.MulTensor (I : Type) [Finite I] (H : I �
 
 notation "⨂ᵣ" l => BasisRegister.MulTensor (Fin (List.length l)) (fun i => (List.get l i))
 
-@[simp]
+@[simp, norm_cast]
 public theorem BasisMulTensorIsQuantumMulTensor (I : Type) [Finite I] (H : I → BasisRegister) :
-  ↑(BasisRegister.MulTensor I H) = SyntacticRegister.QuantumRegister.MulTensor I (fun i => ↑(H i))
-  := by unfold BasisRegister.MulTensor SyntacticRegister.QuantumRegister.MulTensor; simp
+  ↑(BasisRegister.MulTensor I H) = SyntacticRegister.QuantumRegister.MulTensor I (fun i => BasisRegisterToQuantumRegister (H i))
+  := by simp
+
+@[simp]
+public theorem BasisMulTensorSingletonIsList (R : BasisRegister) :
+  (⨂ᵣ [R]) = (BasisRegister.MulTensor (Fin 1) (fun _ => R)) := by simp
+
+@[find_better]
+public noncomputable def BasisMulTensorSingletonIso (R : BasisRegister) : R ≅ (BasisRegister.MulTensor (Fin 1) (fun _ => R)) :=
+  by apply IsoPromote.toFun; rw[BasisMulTensorIsQuantumMulTensor]; exact (SyntacticRegister.MulTensorSingletonIso R)
 
 end AbstractBasisRegister

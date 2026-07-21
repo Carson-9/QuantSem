@@ -38,8 +38,8 @@ public noncomputable def rotation (k : ℤ) : BasisGateType QubitSpace QubitSpac
          simp; left; rw[Complex.norm_exp]; simp; left; rw[Complex.im_eq_zero_iff_isSelfAdjoint]; unfold IsSelfAdjoint; simp⟩
 
 
-public theorem hadamard_zero : |0⟩ ≫ hadamard = |+⟩ :=
-    -- by unfold qubit_zero hadamard qubit_plus; rw[MatrixStateEvolve]; simp; ext i;
+public theorem hadamard_zero : |0⟩ ≫ hadamard = |+⟩ := by
+    --unfold qubit_zero hadamard qubit_plus; rw[MatrixStateEvolve]; simp; ext i;
     --      fin_cases i; simp;
     sorry
 

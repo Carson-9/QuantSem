@@ -17,6 +17,7 @@ QuantSem is the framework providing a description of Quantum Computing, as well 
 ```
 .
 ├── Imports     -- Import files related to different settings of Quantum Computing
+├── LeanTools   -- External tools for Lean, such as custom attributes
 ├── QuantumLib  -- The library describing Quantum Computing
 ├── README.md
 └── StdLib      -- Usual constructions relying on QuantumLib

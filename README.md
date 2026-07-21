@@ -60,3 +60,4 @@ $\mathrm{QuantSem}$ currently has three main objectives :
 * Rewrite List / Pi version of everything [ ⏱️ (Waiting for Mathlib) ]
 * Find the syntax for Controlled Gates [ ⏳ / ⏱️ (Waiting for Mathlib) ]
 * Continue writing the "Wire Circuit" Framework [ ⏳ ]
+* Rewrite definitions with @\[find_better\] attribute [ ❌ ]

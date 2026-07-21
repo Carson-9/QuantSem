@@ -35,7 +35,7 @@ public theorem WireFamiltyAtZero : WireFamily 0 = [QubitSpace] := by rfl
 
 noncomputable def QFT (n : ℕ) : BasisListCircuit :=
   InductiveCircuit WireFamily baseCase ind n where
-  baseCase : BasisCircuitOverList (WireFamily 0) := BasisCircuitOverList.Gate (↑hadamard)
+  baseCase : BasisCircuitOverList (WireFamily 0) := BasisCircuitOverList.Gate (hadamard)
   ind (k : ℕ) (c : BasisCircuitOverList (WireFamily k)) : BasisCircuitOverList (WireFamily (k + 1))
   :=  _ -- BasisCircuitOverList.HorizontalComp
       -- (BasisCircuitOverList.VerticalComp )

@@ -214,6 +214,14 @@ public theorem NormFromInner (z : E) : ‖z‖ = √ (Complex.re (inner ℂ z z)
     ‖z‖ = √(‖z‖ ^ 2)                   := by symm; simp;
      _  = √(Complex.re (inner ℂ z z))  := by rw[EH.norm_sq_eq_re_inner]; rfl
 
+
+/-
+    Norm of 1 in ℂ
+-/
+
+@[simp]
+public theorem ComplexNormOfOne : CHilbert.norm (1 : ℂ) = 1 := by rw[NormFromInner]; simp
+
 /-
     Normalize vectors
 -/
@@ -329,5 +337,17 @@ public noncomputable instance HilbertPiTensor {I : Type} {H : I → Type} [(i : 
 @[expose, implicit_reducible]
 public noncomputable def HilbertPiTensorFun (I : Type) (H : I → Type)
   [(i : I) → HilbertSpace (H i)] : HilbertSpace (PiTensorProduct ℂ H) := HilbertPiTensor
+
+
+public noncomputable def HilbertPiSingletonEquiv :
+  (PiTensorProduct ℂ (fun (i : Fin 1) => (fun (i : Fin 1) => E) i)) ≃ₗᵢ[ℂ] E :=
+  by sorry
+  -- .mk
+  -- (PiTensorProduct.subsingletonEquiv (0 : Fin 1))
+  -- (by intro x; sorry)
+
+-- public noncomputable def HilbertPiSingletonEquiv' :
+--   (PiTensorProduct ℂ (fun (i : Fin 1) => ([E].get) i)) ≃ₗᵢ[ℂ] E :=
+--   by sorry
 
 end QuantumTypes

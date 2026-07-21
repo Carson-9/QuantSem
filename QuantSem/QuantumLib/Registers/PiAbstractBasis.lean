@@ -13,7 +13,7 @@ Authors: William Hasley
 
 module
 
-
+public import QuantSem.LeanTools.Attributes
 public import QuantSem.QuantumLib.HilbertSpaces.AbstractBasis
 public import QuantSem.QuantumLib.Registers.AbstractBasis
 public import QuantSem.QuantumLib.States.AbstractBasis

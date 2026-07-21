@@ -189,6 +189,7 @@ public noncomputable def UnitaryMatrixToLinearIsometry :
 public noncomputable def MatrixToGate {n : ℕ} (M : Matrix.unitaryGroup (Fin n) ℂ) : BasisGateType (ComplexSpace n) (ComplexSpace n)
   := (UnitaryMatrixToLinearIsometry M).toLinearIsometry
 
+@[default_instance]
 public noncomputable instance {n : ℕ} : Coe (Matrix.unitaryGroup (Fin n) ℂ) (BasisGateType (ComplexSpace n) (ComplexSpace n)) where
   coe := MatrixToGate
 
@@ -199,6 +200,7 @@ public instance FinDimEuclidean {n : ℕ} : FiniteDimensional ℂ (ComplexSpace 
 public noncomputable def GateToMatrix {n : ℕ} (G : BasisGateType (ComplexSpace n) (ComplexSpace n)) : Matrix.unitaryGroup (Fin n) ℂ
   := (UnitaryMatrixToLinearIsometry.symm (G.toLinearIsometryEquiv (by rfl)))
 
+@[default_instance]
 public noncomputable instance {n : ℕ} : Coe (BasisGateType (ComplexSpace n) (ComplexSpace n)) (Matrix.unitaryGroup (Fin n) ℂ) where
   coe := GateToMatrix
 
@@ -211,30 +213,20 @@ public noncomputable instance {n : ℕ} : Coe (BasisGateType (ComplexSpace n) (C
 
 public abbrev nDimUnitVector (n : ℕ) := {v : (EuclideanSpace ℂ (Fin n)) // ‖v‖ = 1}
 
-@[coe]
-public noncomputable def UnitVectorToState {n : ℕ} (v : nDimUnitVector n) : BasisStateSpace (ComplexSpace n) :=
-  (SyntacticState.QuantumStateSelection v.val v.prop)
+public noncomputable def UnitVectorToState {n : ℕ} :
+  (nDimUnitVector n) ≃ BasisStateSpace (ComplexSpace n) :=
+  .mk
+  (fun v => SyntacticState.QuantumStateSelection v.val v.prop)
+  (fun s => Subtype.mk (s.toFun (1 : ℂ)) (by simp; rw[QuantumTypes.ComplexNormOfOne]))
+  (by unfold Function.LeftInverse; intro x; simp)
+  (by unfold Function.RightInverse Function.LeftInverse; simp; intro x; ext; simp)
 
-
-@[coe]
-public noncomputable def StateToUnitVector {n : ℕ} (s : BasisStateSpace (ComplexSpace n)) : nDimUnitVector n :=
-  .mk (s.toFun ((1 : ℂ) / (‖(1 : ℂ)‖ : ℂ))) (by simp; sorry)
-
+@[default_instance]
 public noncomputable instance {n : ℕ} : Coe (nDimUnitVector n) (BasisStateSpace (ComplexSpace n)) where
   coe := UnitVectorToState
-
+@[default_instance]
 public noncomputable instance {n : ℕ} : Coe (BasisStateSpace (ComplexSpace n)) (nDimUnitVector n) where
-  coe := StateToUnitVector
-
-
--- Need to fix the categories first
---public noncomputable def UnitVectorToState' {n : ℕ} :
---  (nDimUnitVector n) ≃ BasisStateSpace (ComplexSpace n) :=
---  .mk
---  (fun v => @BasisStateSelection (ComplexSpace n) v.val v.prop)
---  (fun s => Subtype.mk (s.toFun (1 : ℂ)) (by simp; rw[s.norm_map (1 : ℂ)]))
---  (by unfold Function.LeftInverse; intro x; simp; rw[Subtype.ext_iff]; rfl)
---  (by unfold Function.RightInverse Function.LeftInverse; simp; intro x; simp)
+  coe := UnitVectorToState.symm
 
 
 /-
@@ -250,11 +242,11 @@ public theorem MatrixGateMulComm {n : ℕ} (M N : Matrix.unitaryGroup (Fin n) �
 
 @[simp]
 public theorem MatrixStateEvolve {n : ℕ} (M : Matrix.unitaryGroup (Fin n) ℂ)
-  (v : (nDimUnitVector n)) :
-  (UnitVectorToState v) ≫ (MatrixToGate M) =
+  (v : (nDimUnitVector n)) : (UnitVectorToState v) ≫ (MatrixToGate M) =
     UnitVectorToState (Subtype.mk
       ((UnitaryMatrixToLinearIsometry M).toLinearIsometry v.val)
-      (by simp; apply v.prop)) := by simp; sorry
+      (by simp; apply v.prop)) :=
+      by simp;  sorry
 
 public theorem MatrixGateTensorCom {n m : ℕ} (M : Matrix.unitaryGroup (Fin m) ℂ) (N : Matrix.unitaryGroup (Fin n) ℂ) :
   MatrixToGate (MatrixTensor' M N) = (ComplexSpaceTensor m n).symm.toLinearIsometry ≫

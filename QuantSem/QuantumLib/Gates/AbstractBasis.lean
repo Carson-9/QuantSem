@@ -47,8 +47,8 @@ public theorem GateExtBasisIff {R1 R2 : BasisRegister} (g1 g2 : BasisGateType R1
   by apply Iff.intro; intro hyp; rw[hyp]; intro i; rfl; apply GateExtBasis
 
 public noncomputable def GateFromBasis {R1 R2 : BasisRegister} (f : R1.indexing → BasisStateSpace R2)
-  (hOrth : Orthonormal ℂ (fun i => (f i).toFun (1 / (‖(1 : ℂ)‖) : ℂ))) : BasisGateType R1 R2 :=
-  LinearIsometryFromBasis (fun i => (f i).toFun (1 / (‖(1 : ℂ)‖) : ℂ)) (hOrth)
+  (hOrth : Orthonormal ℂ (fun i => (f i).toFun (1 : ℂ))) : BasisGateType R1 R2 :=
+  LinearIsometryFromBasis (fun i => (f i).toFun (1 : ℂ)) (hOrth)
 
 /-
     Applying a gate to an orthonormal family yields an orthonormal family
@@ -56,10 +56,10 @@ public noncomputable def GateFromBasis {R1 R2 : BasisRegister} (f : R1.indexing 
 
 public theorem GateEvolveOrthonormal {R1 R2 : BasisRegister}
   {I : Type} (f : I → BasisStateSpace R1) (g : BasisGateType R1 R2)
-  (hOrth : Orthonormal ℂ (fun i => (f i).toFun (1 / (‖(1 : ℂ)‖) : ℂ)))
-  : Orthonormal ℂ (fun i => (GateStateEvolve g (f i)).toFun (1 / (‖(1 : ℂ)‖) : ℂ)) :=
-  by simp; unfold Orthonormal; apply And.intro; intro i; simp; sorry;
-      simp; sorry -- apply hOrth.right
+  (hOrth : Orthonormal ℂ (fun i => (f i).toFun (1 : ℂ)))
+  : Orthonormal ℂ (fun i => (GateStateEvolve g (f i)).toFun (1 : ℂ)) :=
+  by simp; unfold Orthonormal; apply And.intro; intro i; simp; rw[ComplexNormOfOne];
+      simp; apply hOrth.right
 
 
 /-
@@ -67,8 +67,8 @@ public theorem GateEvolveOrthonormal {R1 R2 : BasisRegister}
     -- Mathlib not developped enough yet
 -/
 
-public instance {R : BasisRegister} : Coe (BasisGateType R R) (BasisGateType (⨂ᵣ [R]) (⨂ᵣ [R])) where
-  coe := by sorry
+-- public noncomputable instance {R : BasisRegister} : Coe (BasisGateType R R) (BasisGateType (⨂ᵣ [R]) (⨂ᵣ [R])) where
+--   coe := fun g =>  GateFromBasis (fun i => (@GateStateEvolve R R g (@GetBasisState R (i 0)))) (by simp; sorry)
 
 -- PiTensorProduct.singleAlgHom
 

@@ -32,7 +32,7 @@ public theorem GetBasisStateAtOne {R : BasisRegister} (i : R.indexing) :
   (GetBasisState i).toFun (1 : ℂ) = R.struct.toBasis i := by unfold GetBasisState; simp
 
 -- nice instance lol
-@[find_better]
+-- @[find_better]
 public noncomputable instance {R : BasisRegister} : Coe (BasisStateSpace R) (BasisStateSpace (⨂ᵣ [R])) where
   coe := fun s => by simp; exact s ≫ (IsoPromote.symm (BasisMulTensorSingletonIso R)).hom
 

@@ -6,6 +6,7 @@ Authors: William Hasley
 
 import QuantSem.StdLib.CoordinateSpace.CoordinateSpace
 import QuantSem.StdLib.Constructions.QubitControl
+import QuantSem.StdLib.Constructions.QubitData
 import Mathlib.Data.Complex.Basic
 
 open BasisCircuitList
@@ -15,30 +16,40 @@ open BasisGate
 open ComplexSpaces
 open CoordinateSpace
 open QubitControl
+open QubitData
 
 
-noncomputable def qubit_zero : BasisStateSpace QubitSpace := UnitVectorToState ⟨ !₂[(1 : ℂ), 0], by unit_vector_simple ⟩
-noncomputable def qubit_one : BasisStateSpace QubitSpace := UnitVectorToState ⟨ !₂[(0 : ℂ), 1], by unit_vector_simple ⟩
-noncomputable def qubit_plus  : BasisStateSpace QubitSpace := UnitVectorToState ⟨ (√2)⁻¹ • !₂[(1 : ℂ), 1], by unit_vector_simple ⟩
-noncomputable def qubit_minus  : BasisStateSpace QubitSpace := UnitVectorToState ⟨ (√2)⁻¹ • !₂[(1 : ℂ), -1], by unit_vector_simple ⟩
-
-noncomputable def hadamard : BasisGateType QubitSpace QubitSpace := MatrixToGate ⟨ (((√2)⁻¹ : ℂ) • !![(1 : ℂ), 1; 1, -1]), by unit_matrix_simple ⟩
-noncomputable def rotation (k : ℤ) : BasisGateType QubitSpace QubitSpace :=
-  MatrixToGate ⟨!![(1 : ℂ), 0; 0, (Complex.exp (2 * Real.pi * Complex.I * (2 ^ (-k))))],
-   by sorry⟩
-
-
-
+@[reducible]
 noncomputable def WireFamily (n : ℕ) : List BasisRegister := List.replicate (n + 1) QubitSpace
-@[simp]
+
+@[simp, defeq]
 public theorem WireFamiltyAtZero : WireFamily 0 = [QubitSpace] := by rfl
+
+@[simp]
+public theorem WireFamilyInduction (k : ℕ) : WireFamily (k + 1) = (WireFamily k) ++ [QubitSpace]
+  := by sorry
+
+@[simp]
+public theorem WireFamilyLen (k : ℕ) : (WireFamily k).length = k + 1
+  := by simp
+
+@[simp]
+public theorem WireFamilyGet (k : ℕ) (i : Fin (WireFamily k).length)
+  : (WireFamily k).get i = QubitSpace := by simp
+
+public noncomputable def hadamard' : BasisGateType (⨂ᵣ [QubitSpace]) (⨂ᵣ [QubitSpace]) := hadamard
+
+open BasisCircuitOverList
 
 noncomputable def QFT (n : ℕ) : BasisListCircuit :=
   InductiveCircuit WireFamily baseCase ind n where
-  baseCase : BasisCircuitOverList (WireFamily 0) := BasisCircuitOverList.Gate (hadamard)
+  baseCase : BasisCircuitOverList (WireFamily 0) := Gate (hadamard')
   ind (k : ℕ) (c : BasisCircuitOverList (WireFamily k)) : BasisCircuitOverList (WireFamily (k + 1))
-  :=  _ -- BasisCircuitOverList.HorizontalComp
-      -- (BasisCircuitOverList.VerticalComp )
-      -- (BasisCircuitOverList.HorizontalComp
-      -- ()
-      -- ())
+  :=  HorizontalComp
+        (HorizontalComp
+          (BasisCircuitListCoe (WireFamilyInduction k).symm (VerticalComp c IdWire))
+          (Gate (SingleQubitControlGate (k + 2) (.mk k (by simp)) 0 (rotation (k + 1)))))
+          -- typechecking helped with the indices!
+
+
+        (VerticalComp IdWire c)

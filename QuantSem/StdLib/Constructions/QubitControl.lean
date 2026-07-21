@@ -19,7 +19,7 @@ open BitStringIndexing
 
 namespace QubitControl
 
-public noncomputable def SingleQubitControlGate {n : ℕ}
+public noncomputable def SingleQubitControlGate (n : ℕ)
   (controlWire controlledGate : Fin n)
   (actualGate : BasisGateType QubitSpace QubitSpace)
   : BasisGateType (BasisRegister.MulTensor (Fin n) (fun _ => QubitSpace)) (BasisRegister.MulTensor (Fin n) (fun _ => QubitSpace)) :=

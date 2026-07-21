@@ -67,8 +67,8 @@ public theorem GateEvolveOrthonormal {R1 R2 : BasisRegister}
     -- Mathlib not developped enough yet
 -/
 
--- public noncomputable instance {R : BasisRegister} : Coe (BasisGateType R R) (BasisGateType (⨂ᵣ [R]) (⨂ᵣ [R])) where
---   coe := fun g =>  GateFromBasis (fun i => (@GateStateEvolve R R g (@GetBasisState R (i 0)))) (by simp; sorry)
+public noncomputable instance {R : BasisRegister} : Coe (BasisGateType R R) (BasisGateType (⨂ᵣ [R]) (⨂ᵣ [R])) where
+  coe := fun g =>  GateFromBasis (fun i => (@GateStateEvolve R R g (@GetBasisState R (i 0)))) (by simp; sorry)
 
 -- PiTensorProduct.singleAlgHom
 

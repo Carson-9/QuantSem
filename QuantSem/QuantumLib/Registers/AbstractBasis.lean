@@ -109,7 +109,7 @@ public noncomputable instance BasisRegisterMonCat : MonoidalCategory BasisRegist
   triangle X Y := by apply SyntacticRegister.QuantumRegisterMonCat.triangle X Y
   pentagon W X Y Z := by apply SyntacticRegister.QuantumRegisterMonCat.pentagon W X Y Z
 
-@[simps]
+@[simps, inline]
 public noncomputable abbrev BasisRegister.MulTensor (I : Type) [Finite I] (H : I → BasisRegister) : BasisRegister :=
     .mk
     (PiTensorProduct ℂ (fun i => (H i).space))
@@ -127,7 +127,7 @@ public theorem BasisMulTensorIsQuantumMulTensor (I : Type) [Finite I] (H : I →
 public theorem BasisMulTensorSingletonIsList (R : BasisRegister) :
   (⨂ᵣ [R]) = (BasisRegister.MulTensor (Fin 1) (fun _ => R)) := by simp
 
-@[find_better]
+-- @[find_better]
 public noncomputable def BasisMulTensorSingletonIso (R : BasisRegister) : R ≅ (BasisRegister.MulTensor (Fin 1) (fun _ => R)) :=
   by apply IsoPromote.toFun; rw[BasisMulTensorIsQuantumMulTensor]; exact (SyntacticRegister.MulTensorSingletonIso R)
 

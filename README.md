@@ -44,6 +44,8 @@ $\mathrm{QuantSem}$ provides a ```Test``` folder, in which the .lean files give 
 
 * ```test_list_circuit.lean``` is a refinement of ```test_basis_circuit.lean``` working with circuits over a _list_ of registers instead of a single register tensoring everything. This fixes the need for explicit associativity on the user's end.
 
+* ```test_qft.lean``` is a file implementing the Quantum Fourier Transform circuit(s) with the tools provided by the library. At the moment, the description suffers from having to explicit a lot of computational equalities in order to have coercions, although the description of the circuit still remains relatively small.
+
 </br>
 
 ## ⛰️ Main Objectives

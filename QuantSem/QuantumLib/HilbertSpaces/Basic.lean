@@ -71,7 +71,7 @@ public theorem CRightNeutralOnSeparables :
 public noncomputable def ElementInSpaceAsIso (x : E) (hX : x ≠ 0) : ℂ →ₗᵢ[ℂ] E :=
   LinearIsometry.mk
     (LinearMap.mk
-      (AddHom.mk (fun c : ℂ => ((c * ‖x‖⁻¹) : ℂ) • x) (by intro y z; simp; ring; rw[add_smul]))
+      (AddHom.mk (fun c : ℂ => ((c * ‖x‖⁻¹) : ℂ) • x) (by intro y z; simp; rw[right_distrib, add_smul]))
       (by intro y z; simp; rw[mul_smul, mul_smul, mul_smul]))
     (by intro y; simp; rw[mul_smul, norm_smul, norm_smul,]; simp; calc
       ‖y‖ * (‖x‖⁻¹ * ‖x‖) = ‖y‖ * (‖x‖ * ‖x‖⁻¹) := by rw[mul_comm ‖x‖⁻¹ ‖x‖]

@@ -27,7 +27,9 @@ public theorem WireFamiltyAtZero : WireFamily 0 = [QubitSpace] := by rfl
 
 @[simp]
 public theorem WireFamilyInduction (k : ℕ) : WireFamily (k + 1) = (WireFamily k) ++ [QubitSpace]
-  := by sorry
+  := by induction k with
+    | zero => rfl
+    | succ n ih => unfold WireFamily; unfold WireFamily at ih; unfold List.replicate; rw[ih]; rfl
 
 @[simp]
 public theorem WireFamilyLen (k : ℕ) : (WireFamily k).length = k + 1
@@ -48,7 +50,8 @@ noncomputable def QFT (n : ℕ) : BasisListCircuit :=
   :=  HorizontalComp
         (HorizontalComp
           (BasisCircuitListCoe (WireFamilyInduction k).symm (VerticalComp c IdWire))
-          (Gate (SingleQubitControlGate (k + 2) (.mk k (by simp)) 0 (rotation (k + 1)))))
+          (Gate (DirtyControlGate (WireFamily (k + 1)) (.mk (k + 1) (by simp)) (.mk 0 (by simp)) (fun b => if b == 1 then rotation (k + 1) else (SyntacticGate.IdGate QubitSpace)))))
+          --(Gate (SingleQubitControlGate (k + 2) (.mk (k + 1) (by simp)) 0 (rotation (k + 1)))))
           -- typechecking helped with the indices!
 
 

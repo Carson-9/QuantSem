@@ -109,4 +109,21 @@ public def BasisGateMulTensor {I : Type} [Finite I] {H : I → BasisRegister}
   (gFam : (i : I) → BasisGateType (H i) (H i)) : BasisGateType (BasisRegister.MulTensor I H) (BasisRegister.MulTensor I H)
   := by sorry -- (GateMulTensor gFam)
 
+--@[find_better]
+public noncomputable def DirtyControlGate (l : List BasisRegister)
+  (controlWire controlledGate : Fin l.length)
+  (actualGateFam : (l.get controlWire).indexing → BasisGateType (l.get controlledGate) (l.get controlledGate))
+  : BasisGateType (BasisRegister.MulTensor (Fin l.length) l.get) (BasisRegister.MulTensor (Fin l.length) l.get) :=
+  GateFromBasis
+    (fun i => (GateStateEvolve
+      (BasisGateMulTensor
+        (fun k : Fin l.length => if heq : k = controlledGate
+          then by rw[heq]; apply (actualGateFam (i controlWire))
+          else (IdGate (l.get k))))
+      (GetBasisState i))
+    )
+    (by sorry)
+
+
+
 end BasisGate
